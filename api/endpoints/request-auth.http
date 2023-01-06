@@ -1,0 +1,20 @@
+
+### user login
+POST http://localhost:3001/api/v1/auth/login
+Content-Type: application/json
+
+{
+    "email": "hein@gmail.com",
+    "password": "hein123!@#"
+}
+
+### change user password
+POST http://localhost:3001/api/v1/auth/change_user_password
+Content-Type: application/json
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTY3MjkyNzMyOCwiZXhwIjoxNjcyOTQ4OTI4fQ._WZp8p96UYcGMlSmgh3gLd-RzvwpkskWNfChaOJY-30
+
+{
+    "oldPassword": "admin123!@#",
+    "newPassword": "hein123!@#",
+    "confirmPassword": "hein123!@#"
+}

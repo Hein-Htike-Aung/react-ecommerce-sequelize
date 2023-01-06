@@ -1,0 +1,36 @@
+### create category
+POST http://localhost:3001/api/v1/categories/create
+Content-Type: application/json
+
+{
+    "categoryName": "testwerdf05",
+    "parentCategoryId": 5,
+    "description": "Boxing",
+    "img": "https://res.cloudinary.com/techgater/image/upload/v1669198509/my-uploads/qr6vpmsi7que0uenbwkl.png"
+}
+
+### update category
+PATCH http://localhost:3001/api/v1/categories/update/4
+Content-Type: application/json
+
+{
+    "categoryName": "updated 1",
+    "parentCategoryId": 6,
+    "description": "Mobiles",
+    "img": "https://res.cloudinary.com/techgater/image/upload/v1669198823/my-uploads/ixx3ym9ezdrizeaxepqg.webp"
+}
+
+### delete category
+DELETE http://localhost:3001/api/v1/categories/2
+
+### by id
+GET http://localhost:3001/api/v1/categories/by_id/3
+
+### by category name
+GET http://localhost:3001/api/v1/categories/by_categoryName?categoryName=mo&page=0&pageSize=10
+
+### list with pagination
+GET http://localhost:3001/api/v1/categories/list?page=0&pageSize=10
+
+### list
+GET http://localhost:3001/api/v1/categories/list

@@ -1,0 +1,32 @@
+@import "../../../assets/index";
+
+.navbar {
+  @include themify($themes) {
+    .appbar {
+      background-color: themed(bg);
+      color: themed(textColor);
+      z-index: 999;
+      box-shadow: none;
+    }
+
+    .navbarMenus {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      width: 100%;
+      gap: 20px;
+
+      span {
+        font-size: 16px;
+        font-weight: 300;
+      }
+      .profilePic {
+        width: 40px;
+        height: 40px;
+        border-radius: 25px;
+        object-fit: cover;
+        cursor: pointer;
+      }
+    }
+  }
+}

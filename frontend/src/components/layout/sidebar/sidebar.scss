@@ -1,0 +1,15 @@
+@import "../../../assets/index";
+
+.sidebar {
+  @include themify($themes) {
+    background-color: themed(bg);
+    height: 100%;
+
+    .logo {
+      background: url("../../../assets/logo.svg");
+      width: 180px;
+      padding-top: 40px;
+      background-repeat: no-repeat;
+    }
+  }
+}

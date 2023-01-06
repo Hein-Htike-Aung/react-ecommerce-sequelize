@@ -1,0 +1,26 @@
+### create new letter
+POST http://localhost:3001/api/v1/newLetters/create
+Content-Type: application/json
+
+{
+    "title": "new title 3",
+    "description": "new desc"
+}
+
+### update new letter
+PATCH http://localhost:3001/api/v1/newLetters/update/1
+Content-Type: application/json
+
+{
+    "title": "updated title",
+    "description": "new desc"
+}
+
+### delete new letter
+DELETE http://localhost:3001/api/v1/newLetters/delete/3
+
+### get new letter by id
+GET http://localhost:3001/api/v1/newLetters/by_id/2
+
+### list
+GET http://localhost:3001/api/v1/newLetters/list?page=0&pageSize=10

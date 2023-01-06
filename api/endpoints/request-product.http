@@ -1,0 +1,65 @@
+### create product
+POST http://localhost:3001/api/v1/products/create
+Content-Type: application/json
+
+{
+    "categoryId": 1,
+    "productName": "nike",
+    "product_code": "P=2d223",
+    "product_sku": "few2ccvvg",
+    "regular_price": 10,
+    "tags": "New, Sale, Featured",
+    "sizes": "XS, XL, SM",
+    "quantity": 1,
+    "color": "blue, black",
+    "gender": "MALE",
+    "isFeatured": true,
+    "status": true,
+    "description": "Sneaker",
+    "productImages": [
+        "https://res.cloudinary.com/techgater/image/upload/v1671813004/my-uploads/xipxx419xyp4zdpoqlfm.png",
+        "https://res.cloudinary.com/techgater/image/upload/v1669555821/my-uploads/t7nusmko4m6y3tt7ufuk.jpg"
+    ]
+}
+
+### update product
+PATCH  http://localhost:3001/api/v1/products/update/4
+Content-Type: application/json
+
+{
+    "categoryId": 1,
+    "productName": "nike",
+    "product_code": "P=2d223",
+    "product_sku": "few2ccvvg",
+    "regular_price": 10,
+    "sale_price": 19,
+    "tags": "New, Sale, Featured",
+    "sizes": "XS, XL, SM",
+    "quantity": 1,
+    "color": "blue, black",
+    "gender": "MALE",
+    "isFeatured": true,
+    "status": true,
+    "description": "Sneaker",
+    "productImages": [
+        "https://res.cloudinary.com/techgater/image/upload/v1669532034/my-uploads/o7npjubwq1jwaofqbcs6.webp",
+        "https://res.cloudinary.com/techgater/image/upload/v1669555821/my-uploads/t7nusmko4m6y3tt7ufuk.jpg"
+    ]
+}
+
+
+### delete product
+DELETE http://localhost:3001/api/v1/products/delete/2
+
+### by id
+GET http://localhost:3001/api/v1/products/by_id/1
+
+### by productName
+GET http://localhost:3001/api/v1/products/by_productName?productName=sne&page=0&pageSize=10
+
+### list
+GET http://localhost:3001/api/v1/products/list
+
+
+### list with pagination
+GET http://localhost:3001/api/v1/products/list?page=0&pageSize=10
