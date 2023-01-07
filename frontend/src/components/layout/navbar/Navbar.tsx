@@ -7,6 +7,7 @@ import { useContext } from "react";
 import { AuthContext } from "../../../context/authContext";
 import { ThemeContext } from "../../../context/themeContext";
 import { MaterialUISwitch } from "../../form/MaterialUISwitch";
+import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
 import "./navbar.scss";
 
 const Navbar: React.FC<{
@@ -41,7 +42,12 @@ const Navbar: React.FC<{
             <MenuIcon />
           </IconButton>
           <div className="navbarMenus">
+            <div className="notification">
+              <NotificationsNoneIcon />
+              <span>3</span>
+            </div>
             <FormControlLabel
+            sx={{ marginRight: 0 }}
               control={
                 <MaterialUISwitch
                   name="themeSwitch"
@@ -51,9 +57,8 @@ const Navbar: React.FC<{
               }
               label=""
             />
-            <span>{currentUser.username}</span>
             <img
-              src={`./images/${currentUser.profilePic || "user-profile.png"}`}
+              src={`https://images.pexels.com/photos/1382731/pexels-photo-1382731.jpeg?auto=compress&cs=tinysrgb&w=1200`}
               alt=""
               className="profilePic"
             />

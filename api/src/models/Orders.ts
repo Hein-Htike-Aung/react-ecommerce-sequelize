@@ -55,14 +55,15 @@ Orders.init(
       allowNull: false,
     },
     order_date: {
-      type: DataTypes.DATE,
+      type: "TIMESTAMP",
       allowNull: false,
     },
     paymentMethod: {
       type: DataTypes.STRING,
       allowNull: false,
     },
-    status: { // Delivered, OnTheWay, Pending, Cancelled, Returned
+    status: {
+      // Delivered, OnTheWay, Pending, Cancelled, Returned
       type: DataTypes.STRING,
       allowNull: false,
       defaultValue: "Pending",

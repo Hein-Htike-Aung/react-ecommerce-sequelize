@@ -15,7 +15,7 @@ interface Props {
 const Layout = (props: Props) => {
   const { window } = props;
   const [mobileOpen, setMobileOpen] = useState(false);
-  const drawerWidth = 240;
+  const drawerWidth = 218;
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -33,7 +33,10 @@ const Layout = (props: Props) => {
       />
       <Box
         component="nav"
-        sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
+        sx={{
+          width: { sm: drawerWidth },
+          flexShrink: { sm: 0 },
+        }}
         aria-label="mailbox folders"
       >
         <Drawer
@@ -72,7 +75,7 @@ const Layout = (props: Props) => {
         component="main"
         sx={{
           flexGrow: 1,
-          p: 3,
+          height: { sm: `calc(100vh - ${80}px)` },
           width: { sm: `calc(100% - ${drawerWidth}px)` },
         }}
       >

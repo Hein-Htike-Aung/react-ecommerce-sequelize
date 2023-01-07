@@ -11,6 +11,13 @@ import { ThemeContext } from "./context/themeContext";
 import Dashboard from "./pages/dashboard/Dashboard";
 import Login from "./pages/login/Login";
 import "./assets/app.scss";
+import CategoryList from "./pages/categories-list/CategoryList";
+import NewLetterList from "./pages/newLetter-list/NewLetterList";
+import OrderList from "./pages/orders-list/OrderList";
+import ProductList from "./pages/product-list/ProductList";
+import Settings from "./pages/settings/Settings";
+import UserLIst from "./pages/users-list/UserLIst";
+import CategoryEdit from "./pages/category-edit/CategoryEdit";
 
 const App = () => {
   const currentUser = true;
@@ -46,6 +53,34 @@ const App = () => {
         {
           path: "/",
           element: <Dashboard />,
+        },
+        {
+          path: "/categories",
+          element: <CategoryList />,
+        },
+        {
+          path: "/categories/edit/:id",
+          element: <CategoryEdit />,
+        },
+        {
+          path: "/newLetter-list",
+          element: <NewLetterList />,
+        },
+        {
+          path: "/orders-list",
+          element: <OrderList />,
+        },
+        {
+          path: "/product-list",
+          element: <ProductList />,
+        },
+        {
+          path: "/settings",
+          element: <Settings />,
+        },
+        {
+          path: "/user-list",
+          element: <UserLIst />,
         },
       ],
     },

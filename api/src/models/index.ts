@@ -5,7 +5,7 @@ const dbOptions = {
   port: +process.env.DB_PORT!,
   host: process.env.DB_HOST,
   dialect: process.env.DB_CONNECTION as Dialect,
-  // timezone: "+6:30",
+  timezone: "+6:30",
   pool: {
     max: 15,
     min: 5,

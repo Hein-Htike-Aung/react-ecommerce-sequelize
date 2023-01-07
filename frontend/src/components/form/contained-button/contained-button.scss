@@ -1,0 +1,21 @@
+@import "../../../assets/index";
+
+.containedButton {
+  background-color: $primary-color;
+  color: #fff;
+  font-weight: 600;
+  font-size: 16px;
+  outline: none;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  border-radius: 3px;
+
+  &:hover {
+    background-color: rgb(0, 89, 178);
+  }
+}

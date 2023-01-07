@@ -1,0 +1,20 @@
+@import "../../../assets/index";
+
+.outlinedButton {
+  background: transparent;
+  color: $primary-color;
+  font-weight: 600;
+  font-size: 16px;
+  outline: none;
+  border: 0.5px solid $primary-color;
+  padding: 5px 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  border-radius: 3px;
+
+  &:hover {
+    background-color: rgba(0, 125, 252, 0.08);
+  }
+}

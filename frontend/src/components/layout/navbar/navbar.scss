@@ -4,9 +4,12 @@
   @include themify($themes) {
     .appbar {
       background-color: themed(bg);
+      opacity: 0.9;
       color: themed(textColor);
       z-index: 999;
       box-shadow: none;
+
+      @include border-bottom;
     }
 
     .navbarMenus {
@@ -15,6 +18,25 @@
       justify-content: flex-end;
       width: 100%;
       gap: 20px;
+
+      .notification {
+        position: relative;
+        margin-right: 20px;
+        span {
+          top: -5px;
+          right: -5px;
+          position: absolute;
+          color: #fff;
+          width: 20px;
+          height: 20px;
+          font-size: 12px;
+          border-radius: 25px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background-color: crimson;
+        }
+      }
 
       span {
         font-size: 16px;

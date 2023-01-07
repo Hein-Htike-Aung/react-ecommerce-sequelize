@@ -3,7 +3,7 @@ POST http://localhost:3001/api/v1/categories/create
 Content-Type: application/json
 
 {
-    "categoryName": "testwerdf05",
+    "categoryName": "test1",
     "parentCategoryId": 5,
     "description": "Boxing",
     "img": "https://res.cloudinary.com/techgater/image/upload/v1669198509/my-uploads/qr6vpmsi7que0uenbwkl.png"
@@ -21,7 +21,7 @@ Content-Type: application/json
 }
 
 ### delete category
-DELETE http://localhost:3001/api/v1/categories/2
+DELETE http://localhost:3001/api/v1/categories/delete/11
 
 ### by id
 GET http://localhost:3001/api/v1/categories/by_id/3

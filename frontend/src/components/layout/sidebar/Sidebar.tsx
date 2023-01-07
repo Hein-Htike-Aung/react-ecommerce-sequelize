@@ -9,54 +9,58 @@ import Divider from "@mui/material/Divider";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
-import ListItemIcon from "@mui/material/ListItemIcon";
-import ListItemText from "@mui/material/ListItemText";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
-import { useContext } from "react";
-import { Link } from "react-router-dom";
-import { AuthContext } from "../../../context/authContext";
+import { Link, NavLink } from "react-router-dom";
 import "./sidebar.scss";
 
 const Sidebar = () => {
-  const { logout } = useContext(AuthContext);
-
   const sideBarMenus = [
     { name: "Dashboard", icons: <TimelapseOutlinedIcon />, route: "/" },
-    { name: "Categories", icons: <WidgetsOutlinedIcon />, route: "/incomes" },
+    {
+      name: "Categories",
+      icons: <WidgetsOutlinedIcon />,
+      route: "/categories",
+    },
     {
       name: "Products",
       icons: <StoreMallDirectoryOutlinedIcon />,
-      route: "/expenses",
+      route: "/product-list",
     },
     {
       name: "Orders",
       icons: <ShoppingCartCheckoutOutlinedIcon />,
-      route: "/categories",
+      route: "/orders-list",
     },
-    { name: "Users", icons: <GroupOutlinedIcon />, route: "/categories" },
-    { name: "NewLetters", icons: <EmailOutlinedIcon />, route: "/categories" },
-    { name: "Settings", icons: <SettingsOutlinedIcon />, route: "/categories" },
+    { name: "Users", icons: <GroupOutlinedIcon />, route: "/user-list" },
+    {
+      name: "NewLetters",
+      icons: <EmailOutlinedIcon />,
+      route: "/newLetter-list",
+    },
+    { name: "Settings", icons: <SettingsOutlinedIcon />, route: "/settings" },
   ];
 
   return (
     <div className="sidebar">
       <Toolbar>
-        <Typography variant="h6" noWrap component="div">
+        <Typography variant="h6" component="div">
           <div className="logo"></div>
         </Typography>
       </Toolbar>
       <Divider />
       <List>
         {sideBarMenus.map((menu, idx) => (
-          <Link className="link" to={menu.route} key={idx}>
-            <ListItem disablePadding>
-              <ListItemButton>
-                <ListItemIcon>{menu.icons}</ListItemIcon>
-                <ListItemText primary={menu.name} />
-              </ListItemButton>
-            </ListItem>
-          </Link>
+          <NavLink to={menu.route} className="link menuLink" key={idx}>
+            <ListItemButton>
+              <ListItem disablePadding>
+                <div className="menu">
+                  <div className="menuIcon">{menu.icons}</div>
+                  <div className="menuText">{menu.name}</div>
+                </div>
+              </ListItem>
+            </ListItemButton>
+          </NavLink>
         ))}
       </List>
     </div>
