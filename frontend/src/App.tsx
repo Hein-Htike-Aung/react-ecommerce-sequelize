@@ -18,6 +18,8 @@ import ProductList from "./pages/product-list/ProductList";
 import Settings from "./pages/settings/Settings";
 import UserLIst from "./pages/users-list/UserLIst";
 import CategoryEdit from "./pages/category-edit/CategoryEdit";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const App = () => {
   const currentUser = true;
@@ -88,6 +90,7 @@ const App = () => {
 
   return (
     <ThemeProvider theme={Mui_Theme(themeMode)}>
+      <ToastContainer position="bottom-center" limit={1} />
       <div className={`theme-${themeMode ? "dark" : "light"}`}>
         <RouterProvider router={router} />
       </div>

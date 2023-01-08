@@ -3,6 +3,7 @@ import { get } from "lodash";
 import { Op } from "sequelize";
 import { ReqHandler } from "../../types";
 import Category from "../models/Category";
+import ParentCategory from "../models/ParentCategory";
 import errorResponse from "../utils/errorResponse";
 import getPaginationData from "../utils/getPaginationData";
 import handleError from "../utils/handleError";
@@ -143,6 +144,22 @@ export const getCategoriesByCategoryName: ReqHandler = async (
     });
 
     successResponse(res, 200, null, { result: rows, count });
+  } catch (error) {
+    handleError(res, error);
+  }
+};
+
+export const getParentCategories: ReqHandler = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const parentCategories = await ParentCategory.findAll({
+      order: [["created_at", "DESC"]],
+      raw: true,
+    });
+
+    successResponse(res, 200, null, parentCategories);
   } catch (error) {
     handleError(res, error);
   }

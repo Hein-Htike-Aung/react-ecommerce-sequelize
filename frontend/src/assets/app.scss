@@ -60,3 +60,26 @@ ul {
   border-radius: 10px;
   padding: 20px;
 }
+
+.select {
+  padding: 10px;
+  outline: none;
+  border: 1px solid lightgray;
+  width: 100%;
+  background-color: transparent;
+  cursor: pointer;
+
+  &:hover {
+    border: 1px solid gray;
+  }
+
+  &:focus {
+    border: 1px solid $primary-color;
+  }
+}
+
+.errorMsg {
+  color: crimson;
+  font-size: 14px;
+  font-weight: 300;
+}

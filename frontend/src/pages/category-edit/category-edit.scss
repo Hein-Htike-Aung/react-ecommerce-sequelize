@@ -11,15 +11,108 @@
     gap: 20px;
     justify-content: space-between;
 
+    .categoryEditForm {
+      display: flex;
+      gap: 30px;
+      width: 100%;
+
+      .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+
+        .categoryImg {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+        }
+
+        label {
+          font-size: 16px;
+          font-weight: 500;
+          color: gray;
+        }
+        input,
+        textarea,
+        select {
+          padding: 10px;
+          outline: none;
+          border: 1px solid lightgray;
+
+          &:hover {
+            border: 1px solid gray;
+          }
+
+          &:focus {
+            border: 1px solid $primary-color;
+          }
+        }
+
+        .inputError {
+          border: 1px solid crimson !important;
+        }
+
+        .fileError {
+          border: 1px dotted crimson !important;
+        }
+
+        .textError {
+          color: red !important;
+        }
+      }
+    }
+
     .left {
       flex: 2;
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+      height: fit-content;
     }
 
     .right {
       flex: 1;
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 30px;
+
+      .rightWrapper {
+        display: flex;
+        gap: 30px;
+        flex-direction: column;
+
+        // .imgCard {
+        //   width: 100%;
+        //   height: 250px;
+        //   border: 1px dotted lightgray;
+        //   border-radius: 10px;
+        //   background-color: rgb(244, 246, 248);
+        //   cursor: pointer;
+        //   display: flex;
+        //   flex-direction: column;
+        //   align-items: center;
+        //   justify-content: center;
+        //   padding: 10px;
+
+        //   h3 {
+        //     font-weight: 500;
+        //     font-size: 18px;
+        //     color: gray;
+        //   }
+
+        //   .imgCover {
+        //     background: url("../../assets/img-cover.svg");
+        //     background-repeat: no-repeat;
+        //     width: 170px;
+        //     height: 170px;
+        //     object-fit: cover;
+        //   }
+
+        //   &:hover {
+        //     opacity: 0.72;
+        //   }
+        // }
+      }
     }
   }
 }

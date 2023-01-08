@@ -1,3 +1,4 @@
+import { CircularProgress } from "@mui/material";
 import React from "react";
 import "./contained-button.scss";
 
@@ -6,15 +7,21 @@ const ContainedButton: React.FC<{
   btnClick: React.MouseEventHandler<HTMLButtonElement>;
   width?: number;
   height?: number;
-}> = ({ title, btnClick, width, height }) => {
+  loading: boolean;
+}> = ({ title, btnClick, width, height, loading }) => {
   return (
     <div>
       <button
         style={{ width: `${width}rem`, height: `${height}rem` }}
         className="containedButton"
         onClick={btnClick}
+        disabled={loading}
       >
-        {title}
+        {loading ? (
+          <CircularProgress size={20} className="loadingIcon" />
+        ) : (
+          <>{title}</>
+        )}
       </button>
     </div>
   );

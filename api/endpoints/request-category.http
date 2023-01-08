@@ -34,3 +34,6 @@ GET http://localhost:3001/api/v1/categories/list?page=0&pageSize=10
 
 ### list
 GET http://localhost:3001/api/v1/categories/list
+
+### parent category list
+GET http://localhost:3001/api/v1/categories/parent_category_list

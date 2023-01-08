@@ -1,3 +1,4 @@
+import { getParentCategories } from './../controllers/CategoryController';
 import express from "express";
 import { createCategory, deleteCategory, getCategories, getCategoriesByCategoryName, getCategory, updateCategory } from "../controllers/CategoryController";
 import validateRequest from "../middlewares/validate_request";
@@ -38,6 +39,11 @@ router.get(
 router.get(
     "/list",
     getCategories
+);
+
+router.get(
+    "/parent_category_list",
+    getParentCategories 
 );
 
 export default router;
