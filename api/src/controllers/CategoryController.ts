@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
 import { get } from "lodash";
-import { Op } from "sequelize";
+import { DataTypes, Op, QueryTypes } from "sequelize";
 import { ReqHandler } from "../../types";
+import sequelize from "../models";
 import Category from "../models/Category";
 import ParentCategory from "../models/ParentCategory";
 import errorResponse from "../utils/errorResponse";
@@ -102,17 +103,30 @@ export const getCategories: ReqHandler = async (
     const { offset, limit, isPagination } = getPaginationData(req.query);
 
     if (isPagination) {
-      const { rows, count } = await Category.findAndCountAll({
-        offset,
-        limit,
-        order: [["created_at", "DESC"]],
+      const q = `select c.*, pc.parentCategoryName from category c
+                  inner join parent_category pc
+                  on c.parentCategoryId = pc.id
+                  order by created_at desc
+                  limit ? offset ?`;
+
+      const result = await sequelize.query(q, {
+        replacements: [limit, offset],
         raw: true,
+        type: QueryTypes.SELECT,
       });
-      successResponse(res, 200, null, { result: rows, count });
+
+      const count = await Category.count();
+
+      successResponse(res, 200, null, { result: result, count });
     } else {
-      const categories = await Category.findAll({
-        order: [["created_at", "DESC"]],
+      const q = `select c.*, pc.parentCategoryName from category c
+                  inner join parent_category pc
+                  on c.parentCategoryId = pc.id
+                  order by created_at desc`;
+
+      const categories = await sequelize.query(q, {
         raw: true,
+        type: QueryTypes.SELECT,
       });
 
       successResponse(res, 200, null, categories);

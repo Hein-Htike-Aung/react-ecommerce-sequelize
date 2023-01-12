@@ -39,7 +39,7 @@
     }
   }
 
-  .menuLink {
+  .menuLinkLight {
     display: inline-block;
     width: 100%;
 
@@ -47,6 +47,16 @@
       color: $primary-color;
       border-right: 2px solid $primary-color;
       background-color: #e3effc;
+    }
+  }
+
+  .menuLinkDark {
+    display: inline-block;
+    width: 100%;
+
+    &.active {
+      color: $primary-color;
+      border-right: 2px solid $primary-color;
     }
   }
 }

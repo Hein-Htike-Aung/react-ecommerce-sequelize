@@ -32,7 +32,7 @@ ParentCategory.init(
     tableName: "parent_category",
     sequelize,
     timestamps: true,
-    paranoid: true,
+    paranoid: false,
     createdAt: "created_at",
     updatedAt: "updated_at",
     deletedAt: "deleted_at",

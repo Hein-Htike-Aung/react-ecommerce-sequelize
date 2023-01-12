@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import ContainedButton from "../../components/form/contained-button/ContainedButton";
 import ContentTitle from "../../components/layout/content-title/ContentTitle";
 import { ParentCategory } from "../../models/parentCategory.model";
-import { axiosInstance } from "../../utils/axioInstance";
+import { axiosInstance } from "../../utils/axiosInstance";
 import { useForm } from "react-hook-form";
 import {
   getDownloadURL,

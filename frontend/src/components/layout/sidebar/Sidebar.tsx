@@ -11,10 +11,14 @@ import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
-import { Link, NavLink } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import "./sidebar.scss";
+import { useContext } from "react";
+import { ThemeContext } from "../../../context/themeContext";
 
 const Sidebar = () => {
+  const { themeMode } = useContext(ThemeContext);
+
   const sideBarMenus = [
     { name: "Dashboard", icons: <TimelapseOutlinedIcon />, route: "/" },
     {
@@ -51,7 +55,11 @@ const Sidebar = () => {
       <Divider />
       <List>
         {sideBarMenus.map((menu, idx) => (
-          <NavLink to={menu.route} className="link menuLink" key={idx}>
+          <NavLink
+            to={menu.route}
+            className={`link ${themeMode ? "menuLinkDark" : "menuLinkLight"}`}
+            key={idx}
+          >
             <ListItemButton>
               <ListItem disablePadding>
                 <div className="menu">

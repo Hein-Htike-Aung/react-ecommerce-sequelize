@@ -83,3 +83,23 @@ ul {
   font-size: 14px;
   font-weight: 300;
 }
+
+.tableIconsWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  .tableIcon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 25px;
+    cursor: pointer;
+
+    &:hover {
+      background-color: rgba(99, 115, 129, 0.08);
+    }
+  }
+}
