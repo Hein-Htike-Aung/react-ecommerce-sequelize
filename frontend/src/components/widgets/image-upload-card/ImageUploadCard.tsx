@@ -10,6 +10,7 @@ const ImageUploadCard: React.FC<{
   handleDrag: (e: any) => void;
   register: any;
   attrName: string;
+  img?: string;
 }> = ({
   register,
   setFile,
@@ -19,6 +20,7 @@ const ImageUploadCard: React.FC<{
   setDragActive,
   errors,
   attrName,
+  img,
 }) => {
   const handleDrop = (e: any) => {
     e.preventDefault();
@@ -40,20 +42,28 @@ const ImageUploadCard: React.FC<{
     <div>
       <label htmlFor="file">
         <div className={`imgCard ${errors.img && "fileError"}`}>
-          {file ? (
+          {img && !file ? (
             <>
-              <img
-                className="categoryImg"
-                src={URL.createObjectURL(file)}
-                alt=""
-              />
+              <img className="categoryImg" src={img} alt="" />
             </>
           ) : (
             <>
-              <h3 className={`${errors.img && "textError"}`}>
-                Drop or Select Image
-              </h3>
-              <div className="imgCover"></div>
+              {file ? (
+                <>
+                  <img
+                    className="categoryImg"
+                    src={URL.createObjectURL(file)}
+                    alt=""
+                  />
+                </>
+              ) : (
+                <>
+                  <h3 className={`${errors.img && "textError"}`}>
+                    Drop or Select Image
+                  </h3>
+                  <div className="imgCover"></div>
+                </>
+              )}
             </>
           )}
         </div>

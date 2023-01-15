@@ -18,6 +18,8 @@ import "./category-list.scss";
 import { Pagination } from "@mui/material";
 import ConfirmDialog from "../../components/widgets/confirm-dialog/ConfirmDialog";
 import { toast } from "react-toastify";
+import SearchIcon from "@mui/icons-material/Search";
+import TableSkeleton from "../../components/form/TableSkeleton";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -34,6 +36,7 @@ const CategoryList = () => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [categoriesCount, setCategoriesCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
+  const [fetching, setFetching] = useState(false);
 
   const [open, setOpen] = React.useState(false);
   const [targetCategory, setTargetCategory] = useState<Category>();
@@ -44,12 +47,14 @@ const CategoryList = () => {
   };
 
   const fetchAllCategories = async (currentPage: number) => {
+    setFetching(true);
     const res = await axiosInstance.get(
       `/categories/list?page=${currentPage - 1}&pageSize=10`
     );
 
     setCategories(res.data.data.result);
     setCategoriesCount(Math.round(res.data.data.count / 10));
+    setFetching(false);
   };
 
   useEffect(() => {
@@ -70,6 +75,19 @@ const CategoryList = () => {
     }
   };
 
+  const searchCategory = async (searchValue: string) => {
+    if (searchValue) {
+      const res = await axiosInstance.get(
+        `/categories/by_categoryName?categoryName=${searchValue}&page=${
+          currentPage - 1
+        }&pageSize=10`
+      );
+
+      setCategories(res.data.data.result);
+      setCategoriesCount(Math.round(res.data.data.count / 10));
+    } else fetchAllCategories(1);
+  };
+
   return (
     <div className="categoryList">
       <ContentTitle title="Categories">
@@ -79,52 +97,69 @@ const CategoryList = () => {
         />
       </ContentTitle>
       <div className="categoryListWrapper">
-        <TableContainer component={Paper} className="categoryTable">
-          <Table sx={{ minWidth: 700 }} aria-label="customized table">
-            <TableHead>
-              <TableRow>
-                <StyledTableCell>Category</StyledTableCell>
-                <StyledTableCell>Parent Category</StyledTableCell>
-                <StyledTableCell>Total Items</StyledTableCell>
-                <StyledTableCell>Created at</StyledTableCell>
-                <StyledTableCell align="right">Actions</StyledTableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {categories?.map((row, idx) => (
-                <TableRow
-                  key={idx}
-                  sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                >
-                  <TableCell>
-                    <div className="categoryNameRow">
-                      <img className="categoryImg" src={row.img} alt="" />{" "}
-                      {row.categoryName}
-                    </div>
-                  </TableCell>
-                  <TableCell>{row.parentCategoryName}</TableCell>
-                  <TableCell>{0}</TableCell>
-                  <TableCell>
-                    {new Date(row.created_at).toDateString()}
-                  </TableCell>
-                  <TableCell align="right">
-                    <div className="tableIconsWrapper">
-                      <div className="tableIcon">
-                        <CreateIcon />
-                      </div>
-                      <div
-                        className="tableIcon"
-                        onClick={() => openConfirmDialog(row)}
-                      >
-                        <DeleteOutlineIcon />
-                      </div>
-                    </div>
-                  </TableCell>
+        <div className="search">
+          <SearchIcon />
+          <input
+            type="text"
+            onChange={(e) => searchCategory(e.target.value)}
+            placeholder="Search"
+            className="searchInput"
+          />
+        </div>
+
+        {fetching ? (
+          <TableSkeleton />
+        ) : (
+          <TableContainer component={Paper} className="categoryTable">
+            <Table sx={{ minWidth: 700 }} aria-label="customized table">
+              <TableHead>
+                <TableRow>
+                  <StyledTableCell>Category</StyledTableCell>
+                  <StyledTableCell>Parent Category</StyledTableCell>
+                  <StyledTableCell>Total Items</StyledTableCell>
+                  <StyledTableCell>Created at</StyledTableCell>
+                  <StyledTableCell align="right">Actions</StyledTableCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+              </TableHead>
+              <TableBody>
+                {categories?.map((row, idx) => (
+                  <TableRow
+                    key={idx}
+                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                  >
+                    <TableCell>
+                      <div className="categoryNameRow">
+                        <img className="categoryImg" src={row.img} alt="" />{" "}
+                        {row.categoryName}
+                      </div>
+                    </TableCell>
+                    <TableCell>{row.parentCategoryName}</TableCell>
+                    <TableCell>{0}</TableCell>
+                    <TableCell>
+                      {new Date(row.created_at).toDateString()}
+                    </TableCell>
+                    <TableCell align="right">
+                      <div className="tableIconsWrapper">
+                        <div
+                          className="tableIcon"
+                          onClick={() => navigate(`/categories/edit/${row.id}`)}
+                        >
+                          <CreateIcon />
+                        </div>
+                        <div
+                          className="tableIcon"
+                          onClick={() => openConfirmDialog(row)}
+                        >
+                          <DeleteOutlineIcon />
+                        </div>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        )}
         <div className="paginationWrapper">
           <Pagination
             count={categoriesCount}

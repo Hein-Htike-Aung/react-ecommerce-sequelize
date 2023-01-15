@@ -1,20 +1,15 @@
 import React, { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { useNavigate, useParams } from "react-router-dom";
+import { toast } from "react-toastify";
 import ContainedButton from "../../components/form/contained-button/ContainedButton";
 import ContentTitle from "../../components/layout/content-title/ContentTitle";
+import ImageUploadCard from "../../components/widgets/image-upload-card/ImageUploadCard";
+import { Category } from "../../models/category.model";
 import { ParentCategory } from "../../models/parentCategory.model";
 import { axiosInstance } from "../../utils/axiosInstance";
-import { useForm } from "react-hook-form";
-import {
-  getDownloadURL,
-  getStorage,
-  ref,
-  uploadBytesResumable,
-} from "firebase/storage";
+import uploadImg from "../../utils/uploadImg";
 import "./category-edit.scss";
-import app from "../../utils/firebase-config";
-import { useNavigate } from "react-router-dom";
-import ImageUploadCard from "../../components/widgets/image-upload-card/ImageUploadCard";
-import { toast } from "react-toastify";
 
 type FormValues = {
   categoryName: string;
@@ -24,6 +19,10 @@ type FormValues = {
 };
 
 const CategoryEdit = () => {
+  const { id: categoryId } = useParams();
+
+  const [category, setCategory] = useState<Category>();
+
   const {
     handleSubmit,
     register,
@@ -40,10 +39,29 @@ const CategoryEdit = () => {
 
   const navigate = useNavigate();
 
+  const fetchCategory = async (id: number) => {
+    const res = await axiosInstance.get(`/categories/by_id/${id}`);
+
+    setCategory(res.data.data);
+  };
+
+  useEffect(() => {
+    if (categoryId !== "0") fetchCategory(Number(categoryId));
+  }, [categoryId]);
+
   useEffect(() => {
     if (parentCategories.length)
       setValue("parentCategoryId", parentCategories[0].id);
   }, [parentCategories, setValue]);
+
+  useEffect(() => {
+    if (category) {
+      setValue("categoryName", category.categoryName);
+      setValue("description", category.description);
+      setValue("parentCategoryId", category.parentCategoryId);
+      setValue("img", category.img);
+    }
+  }, [category, setValue]);
 
   useEffect(() => {
     const fetchParentCategories = async () => {
@@ -55,31 +73,53 @@ const CategoryEdit = () => {
     fetchParentCategories();
   }, []);
 
-  const submitHandler = (formValues: FormValues) => {
-    if (file) {
-      setLoading(true);
-      const storage = getStorage(app);
-      const fileName = new Date().getTime() + file.name;
-      const storageRef = ref(storage, fileName);
-      const uploadTask = uploadBytesResumable(storageRef, file);
-
-      uploadTask.on(
-        "state_changed",
-        (snapshot) => {
-          switch (snapshot.state) {
-            case "paused":
-              break;
-            case "running":
-              break;
-            default:
-              break;
-          }
-        },
-        (error) => console.error(error),
-        async () => {
+  const submitHandler = async (formValues: FormValues) => {
+    if (categoryId) {
+      // edit
+      if (file) {
+        setLoading(true);
+        uploadImg(file, async (downloadURL) => {
           try {
-            const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+            const res = await axiosInstance.patch(
+              `/categories/update/${categoryId}`,
+              {
+                ...formValues,
+                parentCategoryId: Number(formValues.parentCategoryId),
+                img: downloadURL,
+              }
+            );
 
+            setLoading(false);
+            res.data && navigate("/categories", { replace: true });
+          } catch (error: any) {
+            setLoading(false);
+            toast.error(error.response.data.message);
+          }
+        });
+      } else {
+        try {
+          setLoading(true);
+          const res = await axiosInstance.patch(
+            `/categories/update/${categoryId}`,
+            {
+              ...formValues,
+              parentCategoryId: Number(formValues.parentCategoryId),
+              img: category?.img,
+            }
+          );
+          setLoading(false);
+          res.data && navigate("/categories", { replace: true });
+        } catch (error: any) {
+          setLoading(false);
+          toast.error(error.response.data.message);
+        }
+      }
+    } else {
+      if (file) {
+        setLoading(true);
+
+        uploadImg(file, async (downloadURL) => {
+          try {
             const res = await axiosInstance.post(`/categories/create`, {
               ...formValues,
               parentCategoryId: Number(formValues.parentCategoryId),
@@ -92,9 +132,9 @@ const CategoryEdit = () => {
             setLoading(false);
             toast.error(error.response.data.message);
           }
-        }
-      );
-    } else setError("img", { message: "Cover photo is required" });
+        });
+      } else setError("img", { message: "Cover photo is required" });
+    }
   };
 
   const [dragActive, setDragActive] = React.useState(false);
@@ -111,7 +151,7 @@ const CategoryEdit = () => {
 
   return (
     <div className="categoryEdit">
-      <ContentTitle title="Categories | Add" />
+      <ContentTitle title={`Categories | ${categoryId ? "Edit" : "Add"}`} />
       <div className="categoryEditWrapper">
         <form
           onSubmit={handleSubmit(submitHandler)}
@@ -173,6 +213,7 @@ const CategoryEdit = () => {
                     register={register}
                     setDragActive={setDragActive}
                     setFile={setFile}
+                    img={category?.img}
                   />
                   {errors.img && (
                     <p className="errorMsg">{errors.img.message}</p>
@@ -180,8 +221,9 @@ const CategoryEdit = () => {
                 </div>
               </div>
             </div>
+
             <ContainedButton
-              title="Create Category"
+              title={`${categoryId ? "Edit Category" : "Add Category"}`}
               height={2.5}
               width={22.8}
               btnClick={() => {}}

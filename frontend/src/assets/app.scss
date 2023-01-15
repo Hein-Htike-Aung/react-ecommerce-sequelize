@@ -103,3 +103,59 @@ ul {
     }
   }
 }
+
+.search {
+  border: 1px solid lightgray;
+  padding: 7px 10px;
+  display: flex;
+  align-items: center;
+  width: 300px;
+  gap: 10px;
+  margin-bottom: 20px;
+
+  .searchInput {
+    background-color: transparent;
+    width: 100%;
+    border: none;
+    outline: none;
+  }
+}
+
+.inputError {
+  border: 1px solid crimson !important;
+}
+
+.fileError {
+  border: 1px dotted crimson !important;
+}
+
+.textError {
+  color: red !important;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  label {
+    font-size: 16px;
+    font-weight: 500;
+    color: gray;
+  }
+  input,
+  textarea,
+  select {
+    padding: 10px;
+    outline: none;
+    border: 1px solid lightgray;
+
+    &:hover {
+      border: 1px solid gray;
+    }
+
+    &:focus {
+      border: 1px solid $primary-color;
+    }
+  }
+}

@@ -20,6 +20,7 @@ import UserLIst from "./pages/users-list/UserLIst";
 import CategoryEdit from "./pages/category-edit/CategoryEdit";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import ProductEdit from "./pages/product-edit/ProductEdit";
 
 const App = () => {
   const currentUser = true;
@@ -75,6 +76,10 @@ const App = () => {
         {
           path: "/product-list",
           element: <ProductList />,
+        },
+        {
+          path: "/products/edit/:id",
+          element: <ProductEdit />,
         },
         {
           path: "/settings",

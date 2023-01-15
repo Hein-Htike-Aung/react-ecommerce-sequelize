@@ -25,6 +25,7 @@
     "react-dom": "^18.2.0",
     "react-drag-drop-files": "^2.3.8",
     "react-hook-form": "^7.41.5",
+    "react-quill": "^2.0.0",
     "react-router-dom": "^6.6.1",
     "react-scripts": "5.0.1",
     "react-svg-loader": "^3.0.3",

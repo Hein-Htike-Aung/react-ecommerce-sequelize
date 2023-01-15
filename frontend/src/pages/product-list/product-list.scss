@@ -1,0 +1,11 @@
+@import "../../assets/index";
+
+.productList {
+  .productListWrapper {
+    padding: 20px;
+
+    @include themify($themes) {
+      background-color: themed(bg);
+    }
+  }
+}

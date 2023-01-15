@@ -1,7 +1,7 @@
 @import "../../assets/index";
 
 .categoryList {
-  .categoryListWrapper {
+  .categoryListWrapper {  
     padding: 20px;
 
     @include themify($themes) {
