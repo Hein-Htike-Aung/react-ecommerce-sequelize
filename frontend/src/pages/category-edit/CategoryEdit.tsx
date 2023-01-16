@@ -19,7 +19,7 @@ type FormValues = {
 };
 
 const CategoryEdit = () => {
-  const { id: categoryId } = useParams();
+  let { id: categoryId } = useParams();
 
   const [category, setCategory] = useState<Category>();
 
@@ -223,7 +223,9 @@ const CategoryEdit = () => {
             </div>
 
             <ContainedButton
-              title={`${categoryId ? "Edit Category" : "Add Category"}`}
+              title={`${
+                categoryId !== "0" ? "Edit Category" : "Create Category"
+              }`}
               height={2.5}
               width={22.8}
               btnClick={() => {}}

@@ -7,7 +7,11 @@ import {
   InferCreationAttributes,
   Model,
 } from "sequelize";
+import ParentCategory from "./ParentCategory";
 
+export interface ParentCategoryWithCategories extends ParentCategory {
+  categories: Category[];
+}
 export class Category extends Model<
   InferAttributes<Category>,
   InferCreationAttributes<Category>

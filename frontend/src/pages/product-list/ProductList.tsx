@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import OutlinedButton from "../../components/form/outlined-button/OutlinedButton";
 import ContentTitle from "../../components/layout/content-title/ContentTitle";
 import SearchIcon from "@mui/icons-material/Search";
+import AddIcon from "@mui/icons-material/Add";
 import "./product-list.scss";
 
 const ProductList = () => {
@@ -13,10 +14,9 @@ const ProductList = () => {
   return (
     <div className="productList">
       <ContentTitle title="Products">
-        <OutlinedButton
-          btnText="Add Product"
-          btnClick={() => navigate("/products/edit/0")}
-        />
+        <OutlinedButton btnClick={() => navigate("/products/edit/0")}>
+          <AddIcon /> Add Product
+        </OutlinedButton>
       </ContentTitle>
 
       <div className="productListWrapper">

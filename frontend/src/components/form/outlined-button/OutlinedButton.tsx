@@ -1,16 +1,14 @@
 import React from "react";
 import "./outlined-button.scss";
-import AddIcon from "@mui/icons-material/Add";
 
 const OutlinedButton: React.FC<{
-  btnText: string;
+  children: React.ReactNode;
   btnClick: React.MouseEventHandler<HTMLButtonElement>;
-}> = ({ btnText, btnClick }) => {
+}> = ({ children, btnClick }) => {
   return (
     <div>
       <button className="outlinedButton" onClick={btnClick}>
-        <AddIcon />
-        {btnText}
+        {children}
       </button>
     </div>
   );

@@ -137,6 +137,7 @@ ul {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  width: 100%;
 
   label {
     font-size: 16px;
@@ -158,4 +159,9 @@ ul {
       border: 1px solid $primary-color;
     }
   }
+}
+
+.flex-end {
+  display: flex;
+  justify-content: end;
 }

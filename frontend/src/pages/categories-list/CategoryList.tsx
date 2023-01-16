@@ -19,6 +19,7 @@ import { Pagination } from "@mui/material";
 import ConfirmDialog from "../../components/widgets/confirm-dialog/ConfirmDialog";
 import { toast } from "react-toastify";
 import SearchIcon from "@mui/icons-material/Search";
+import AddIcon from "@mui/icons-material/Add";
 import TableSkeleton from "../../components/form/TableSkeleton";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -91,10 +92,9 @@ const CategoryList = () => {
   return (
     <div className="categoryList">
       <ContentTitle title="Categories">
-        <OutlinedButton
-          btnText="Add Category"
-          btnClick={() => navigate("/categories/edit/0")}
-        />
+        <OutlinedButton btnClick={() => navigate("/categories/edit/0")}>
+          <AddIcon /> Add Category
+        </OutlinedButton>
       </ContentTitle>
       <div className="categoryListWrapper">
         <div className="search">

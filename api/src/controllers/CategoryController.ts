@@ -1,10 +1,10 @@
+import { ParentCategory } from "./../models/ParentCategory";
 import { Request, Response } from "express";
 import { get } from "lodash";
-import { DataTypes, Op, QueryTypes } from "sequelize";
+import { Op, QueryTypes } from "sequelize";
 import { ReqHandler } from "../../types";
 import sequelize from "../models";
-import Category from "../models/Category";
-import ParentCategory from "../models/ParentCategory";
+import Category, { ParentCategoryWithCategories } from "../models/Category";
 import errorResponse from "../utils/errorResponse";
 import getPaginationData from "../utils/getPaginationData";
 import handleError from "../utils/handleError";
@@ -172,6 +172,19 @@ export const getParentCategories: ReqHandler = async (
       order: [["created_at", "DESC"]],
       raw: true,
     });
+
+    await Promise.all(
+      parentCategories.map(
+        async (pc: ParentCategoryWithCategories | ParentCategory) => {
+          const categories = await Category.findAll({
+            where: {
+              parentCategoryId: pc.id,
+            },
+          });
+          (pc as ParentCategoryWithCategories)["categories"] = categories;
+        }
+      )
+    );
 
     successResponse(res, 200, null, parentCategories);
   } catch (error) {
