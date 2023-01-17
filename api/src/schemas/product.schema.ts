@@ -1,4 +1,4 @@
-import { object, string, number, boolean } from "yup";
+import { object, string, number, boolean, array } from "yup";
 import { paginationPayload } from "./common.schema";
 
 const productId = {
@@ -14,15 +14,16 @@ const payload = {
     product_code: string().required(),
     product_sku: string().required(),
     regular_price: number().required(),
-    sale_price: number(),
+    sale_price: number().required(),
     tags: string().required(),
     sizes: string().required(),
     quantity: number().required(),
-    color: string().required(),
+    colors: string().required(),
     gender: string().required(),
     isFeatured: boolean(),
-    status: boolean(),
+    status: string(),
     description: string().required(),
+    productImages: array().min(1),
   }),
 };
 

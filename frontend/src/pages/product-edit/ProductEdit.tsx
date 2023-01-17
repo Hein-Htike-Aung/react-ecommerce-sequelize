@@ -17,12 +17,24 @@ import MultiChipSelect from "../../components/form/MultiChipSelect";
 import GroupingSelect from "../../components/form/GroupingSelect";
 import { axiosInstance } from "../../utils/axiosInstance";
 import { ParentCategory } from "../../models/parentCategory.model";
-import ImageUploadCard from "../../components/widgets/image-upload-card/ImageUploadCard";
 import OutlinedButton from "../../components/form/outlined-button/OutlinedButton";
 import ContainedButton from "../../components/form/contained-button/ContainedButton";
+import { toast } from "react-toastify";
+import uploadImg from "../../utils/uploadImg";
 
 const sizes = ["XS", "SM", "LG", "XL", "XXL", "Free"];
 const tags = ["New", "Sale", "Featured", "Top", "Best"];
+const colors = [
+  "aqua",
+  "black",
+  "blue",
+  "brown",
+  "gold",
+  "gray",
+  "green",
+  "white",
+  "yellow",
+];
 
 type FormValues = {
   categoryId: number;
@@ -31,38 +43,55 @@ type FormValues = {
   product_sku: string;
   regular_price: number;
   sale_price: number;
-  tags: string;
-  sizes: string;
   quantity: number;
-  color: string;
   gender: string;
   isFeatured: boolean;
   status: boolean;
-  description: string;
-  productImages: string[];
 };
 
 const ProductEdit = () => {
   const [dragActive, setDragActive] = useState(false);
-  const [file, setFile] = useState<any>(null);
+  const [files, setFiles] = useState<any>([]);
 
   const [parentCategories, setParentCategories] = useState<ParentCategory[]>();
 
-  const [sizeValue, setSizeValue] = useState<string[]>(["XS"]);
-  const [tagValue, setTagValue] = useState<string[]>(["New"]);
+  const [sizesValue, setSizesValue] = useState<string[]>(["XS"]);
+  const [tagsValue, setTagsValue] = useState<string[]>(["New"]);
+  const [colorsValue, setColorsValue] = useState<string[]>(["aqua"]);
 
-  const handleSizeChange = (event: SelectChangeEvent<typeof sizeValue>) => {
+  useEffect(() => {
+    const fetchParentCategories = async () => {
+      const res = await axiosInstance.get("/categories/parent_category_list");
+      setParentCategories(res.data.data);
+    };
+
+    fetchParentCategories();
+  }, []);
+
+  const handleSizeChange = (event: SelectChangeEvent<typeof sizesValue>) => {
     const {
       target: { value },
     } = event;
-    setSizeValue(typeof value === "string" ? value.split(",") : value);
+    setSizesValue(typeof value === "string" ? value.split(",") : value);
   };
 
-  const handleTagChange = (event: SelectChangeEvent<typeof tagValue>) => {
+  const handleTagChange = (event: SelectChangeEvent<typeof tagsValue>) => {
     const {
       target: { value },
     } = event;
-    setTagValue(typeof value === "string" ? value.split(",") : value);
+    setTagsValue(typeof value === "string" ? value.split(",") : value);
+  };
+
+  const handleColorChange = (color: string) => {
+    setColorsValue((prev) =>
+      prev.find((c) => color === c)
+        ? prev.filter((c) => c !== color)
+        : [...prev, color]
+    );
+
+    if (colorsValue.length) {
+      setFormErrors((prev) => ({ ...prev, colors: false }));
+    }
   };
 
   const { id: productId } = useParams();
@@ -78,17 +107,18 @@ const ProductEdit = () => {
     setError,
   } = useForm<FormValues>();
   const [description, setDescription] = useState("");
+  const [categoryId, setCategoryId] = useState();
+  const [isFeatured, setIsFeatured] = useState(true);
+  const [gender, setGender] = useState("Others");
+
+  const [formErrors, setFormErrors] = useState({
+    description: false,
+    images: false,
+    colors: false,
+    categoryId: false,
+  });
 
   const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    const fetchParentCategories = async () => {
-      const res = await axiosInstance.get("/categories/parent_category_list");
-      setParentCategories(res.data.data);
-    };
-
-    fetchParentCategories();
-  }, []);
 
   const handleDrag = (e: any) => {
     e.preventDefault();
@@ -100,12 +130,102 @@ const ProductEdit = () => {
     }
   };
 
+  const handleDrop = (e: any) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      setFiles((prev: any) => [...prev, e.dataTransfer.files[0]]);
+      setFormErrors((prev) => ({ ...prev, images: false }));
+    }
+  };
+
+  const handleChange = (e: any) => {
+    e.preventDefault();
+    if (e.target.files && e.target.files[0]) {
+      setFiles((prev: any) => [...prev, e.target.files[0]]);
+      setFormErrors((prev) => ({ ...prev, images: false }));
+    }
+  };
+
+  const submitHandler = async (formValues: FormValues) => {
+    // check validations
+    if (!description) {
+      setFormErrors((prev) => ({ ...prev, description: true }));
+      return;
+    } else setFormErrors((prev) => ({ ...prev, description: false }));
+    if (!files.length) {
+      setFormErrors((prev) => ({ ...prev, images: true }));
+      return;
+    } else setFormErrors((prev) => ({ ...prev, images: false }));
+    if (!colorsValue.length) {
+      setFormErrors((prev) => ({ ...prev, colors: true }));
+      return;
+    } else setFormErrors((prev) => ({ ...prev, colors: false }));
+    if (!categoryId) {
+      setFormErrors((prev) => ({ ...prev, categoryId: true }));
+      return;
+    } else setFormErrors((prev) => ({ ...prev, categoryId: false }));
+
+    setLoading(true);
+    const productImages: string[] = [];
+
+    files.forEach((file: any, idx: number) =>
+      uploadImg(file, async (downloadURL) => {
+        productImages.push(downloadURL);
+        console.log({ idx, length: files.length - 1 });
+        // All Images are complete uploading
+        if (idx === files.length - 1) {
+          try {
+            console.log(productImages);
+
+            const res = await axiosInstance.post(`/products/create`, {
+              ...formValues,
+              regular_price: Number(formValues.regular_price),
+              sale_price: Number(formValues.sale_price),
+              quantity: Number(formValues.quantity),
+              categoryId: Number(categoryId),
+              description,
+              isFeatured,
+              gender,
+              tags: tagsValue.join(),
+              sizes: sizesValue.join(),
+              colors: colorsValue.join(),
+              productImages,
+            });
+
+            res.status === 201 && navigate("/product-list");
+            setLoading(false);
+          } catch (error: any) {
+            console.log(error);
+            setLoading(false);
+            toast.error(error.response.data.message);
+          }
+        }
+      })
+    );
+  };
+
+  const removeImage = (fileIdx: number) => {
+    setFiles((prev: any) =>
+      prev.filter((_: any, idx: number) => idx !== fileIdx)
+    );
+  };
+
+  const removeAllImages = () => {
+    setFiles([]);
+  };
+
   return (
     <div className="productEdit">
       <ContentTitle title={`Product | ${productId ? "Edit" : "Add"}`} />
 
       <div className="productEditWrapper">
-        <form className="productEditForm" onDragEnter={handleDrag}>
+        <form
+          className="productEditForm"
+          onSubmit={handleSubmit(submitHandler)}
+          onDragEnter={handleDrag}
+        >
           <div className="left card">
             <div className="form-group">
               <label>Product Name</label>
@@ -113,7 +233,7 @@ const ProductEdit = () => {
                 type="text"
                 className={`${errors.productName && "inputError"}`}
                 {...register("productName", {
-                  required: "Prduct name is required",
+                  required: "Product name is required",
                 })}
               />
               {errors.productName && (
@@ -128,19 +248,33 @@ const ProductEdit = () => {
                 onChange={setDescription}
                 style={{ height: 200 }}
               />
+              {formErrors.description && (
+                <p style={{ marginTop: 40 }} className="errorMsg">
+                  Description is required
+                </p>
+              )}
             </div>
-            <div style={{ marginTop: 40 }} className="form-group-row">
+            <div
+              style={{ marginTop: `${formErrors.description ? -20 : 40}px` }}
+              className="form-group-row"
+            >
               <div className="form-group">
                 <label>Sizes</label>
                 <MultiChipSelect
                   handleSizeChange={handleSizeChange}
-                  value={sizeValue}
+                  value={sizesValue}
                   values={sizes}
                 />
               </div>
               <div className="form-group">
                 <label>Category</label>
-                <GroupingSelect>
+                <GroupingSelect
+                  onChange={(e: any) => {
+                    setCategoryId(e.target.value);
+                    setFormErrors((prev) => ({ ...prev, categoryId: false }));
+                  }}
+                >
+                  <option value={""}>Select</option>
                   {parentCategories?.map((pc) => (
                     <optgroup key={pc.id} label={pc.parentCategoryName}>
                       {pc.categories.map((c) => (
@@ -151,40 +285,99 @@ const ProductEdit = () => {
                     </optgroup>
                   ))}
                 </GroupingSelect>
+                {formErrors.categoryId && (
+                  <p className="errorMsg">Category is required</p>
+                )}
               </div>
             </div>
             <div className="form-group-row">
               <div className="form-group">
                 <label>Status</label>
-                <select name="" id="" className="select">
-                  <option value="">Sale</option>
-                  <option value="">New</option>
-                  <option value="">Regular</option>
-                  <option value="">Disable</option>
+                <select
+                  {...register("status", {
+                    required: "Status is required",
+                  })}
+                  className="select"
+                >
+                  <option value="">Select</option>
+                  <option value="Sale">Sale</option>
+                  <option value="New">New</option>
+                  <option value="Regular">Regular</option>
+                  <option value="Disable">Disable</option>
                 </select>
+                {errors.status && (
+                  <p className="errorMsg">{errors.status.message}</p>
+                )}
               </div>
               <div className="form-group">
                 <label>Tags</label>
                 <MultiChipSelect
                   handleSizeChange={handleTagChange}
-                  value={tagValue}
+                  value={tagsValue}
                   values={tags}
                 />
               </div>
             </div>
             <div className="form-group">
               <label>Product Images</label>
-              <ImageUploadCard
-                attrName="img"
-                dragActive={dragActive}
-                errors={errors}
-                file={file}
-                handleDrag={handleDrag}
-                register={register}
-                setDragActive={setDragActive}
-                setFile={setFile}
-                img={""}
-              />
+              <div className="multiImagesUploadCard">
+                <label htmlFor="file">
+                  <div className={`imgCard`}>
+                    <h3>Drop or Select Image</h3>
+                    <div className="imgCover"></div>
+                  </div>
+                </label>
+                {formErrors.images && (
+                  <p className="errorMsg">Product image is required</p>
+                )}
+                <input
+                  id="file"
+                  type="file"
+                  hidden={true}
+                  accept="image/*"
+                  onChange={handleChange}
+                  onDragEnter={handleDrop}
+                />
+                {files.length ? (
+                  <div className="productImagesContainer">
+                    {files.map((file: any, idx: number) => (
+                      <div key={idx} className="productImgWrapper">
+                        <img
+                          className="productImg"
+                          src={URL.createObjectURL(file)}
+                          alt=""
+                        />
+                        <div
+                          className="deleteIconWrapper"
+                          onClick={() => removeImage(idx)}
+                        >
+                          <span className="deleteIcon">-</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <></>
+                )}
+                {files.length ? (
+                  <div className="flex-end">
+                    <OutlinedButton btnClick={removeAllImages}>
+                      Remove All
+                    </OutlinedButton>
+                  </div>
+                ) : (
+                  <></>
+                )}
+                {dragActive && (
+                  <div
+                    id="drag-file-element" // must provide
+                    onDragEnter={handleDrag}
+                    onDragLeave={handleDrag}
+                    onDragOver={handleDrag}
+                    onDrop={handleDrop}
+                  ></div>
+                )}
+              </div>
             </div>
           </div>
           <div className="right">
@@ -223,6 +416,7 @@ const ProductEdit = () => {
                     defaultValue="Others"
                     name="radio-buttons-group"
                     row={true}
+                    onChange={(e: any) => setGender(e.target.value)}
                   >
                     <FormControlLabel
                       value="Men"
@@ -262,43 +456,28 @@ const ProductEdit = () => {
                 <div className="form-group">
                   <label>Add Colors</label>
                   <div className="colors">
-                    <div className="colorRadio">
-                      <div className="colorBlock aqua" />
-                      <span>Aqua</span>
-                    </div>
-                    <div className="colorRadio">
-                      <div className="colorBlock black"></div>
-                      <span>Black</span>
-                    </div>
-                    <div className="colorRadio">
-                      <div className="colorBlock blue"></div>
-                      <span>Blue</span>
-                    </div>
-                    <div className="colorRadio">
-                      <div className="colorBlock brown"></div>
-                      <span>Brown</span>
-                    </div>
-                    <div className="colorRadio">
-                      <div className="colorBlock gold"></div>
-                      <span>Gold</span>
-                    </div>
-                    <div className="colorRadio">
-                      <div className="colorBlock gray"></div>
-                      <span>Gray</span>
-                    </div>
-                    <div className="colorRadio">
-                      <div className="colorBlock green"></div>
-                      <span>Green</span>
-                    </div>
-                    <div className="colorRadio">
-                      <div className="colorBlock white"></div>
-                      <span>White</span>
-                    </div>
-                    <div className="colorRadio">
-                      <div className="colorBlock yellow"></div>
-                      <span>Yellow</span>
-                    </div>
+                    {colors.map((color) => (
+                      <div
+                        key={color}
+                        className="colorRadio"
+                        onClick={() => handleColorChange(color)}
+                      >
+                        <div className="colorBlockWrapper">
+                          <div
+                            className={`colorBlock ${color} ${
+                              colorsValue.includes(color) ? "active" : ""
+                            }`}
+                          />
+                        </div>
+                        <span>
+                          {color.charAt(0).toUpperCase() + color.slice(1)}
+                        </span>
+                      </div>
+                    ))}
                   </div>
+                  {formErrors.colors && (
+                    <p className="errorMsg">Color is required</p>
+                  )}
                 </div>
                 <div className="flex-end">
                   <OutlinedButton btnClick={() => {}}>Reset</OutlinedButton>
@@ -338,7 +517,12 @@ const ProductEdit = () => {
                 </div>
                 <div className="form-group">
                   <FormControlLabel
-                    control={<Switch defaultChecked />}
+                    control={
+                      <Switch
+                        onChange={(e: any) => setIsFeatured(e.target.checked)}
+                        defaultChecked
+                      />
+                    }
                     label="Featured Product"
                   />
                 </div>

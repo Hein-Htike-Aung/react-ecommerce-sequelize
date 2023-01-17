@@ -27,41 +27,99 @@
           display: flex;
           align-items: center;
           gap: 5px;
-          margin: 5px 0;
 
-          .colorBlock {
+          span {
+            cursor: pointer;
+          }
+
+          .colorBlockWrapper {
+            height: 40px;
+            width: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+
+            &:hover {
+              background-color: rgba(0, 125, 252, 0.08);
+            }
+
+            .colorBlock {
+              width: 20px;
+              height: 20px;
+              border-radius: 50%;
+              border: 1px solid lightgray;
+
+              &.active {
+                border: 2px solid #007dfc;
+              }
+            }
+
+            .aqua {
+              background-color: aqua;
+            }
+            .black {
+              background-color: black;
+            }
+            .blue {
+              background-color: blue;
+            }
+            .brown {
+              background-color: brown;
+            }
+            .gold {
+              background-color: gold;
+            }
+            .gray {
+              background-color: gray;
+            }
+            .green {
+              background-color: green;
+            }
+            .white {
+              background-color: white;
+            }
+            .yellow {
+              background-color: yellow;
+            }
+          }
+        }
+      }
+
+      .productImagesContainer {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 30px;
+        margin-top: 20px;
+
+        .productImgWrapper {
+          position: relative;
+
+          .productImg {
+            width: 100px;
+            height: 100px;
+            border-radius: 25px;
+            object-fit: cover;
+          }
+
+          .deleteIconWrapper {
+            position: absolute;
+            top: 0;
+            right: 0;
             width: 20px;
             height: 20px;
-            border-radius: 50%;
-            border: 1px solid lightgray;
-            // border: 2px solid #007dfc;
-          }
-          .aqua {
-            background-color: aqua;
-          }
-          .black {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
             background-color: black;
-          }
-          .blue {
-            background-color: blue;
-          }
-          .brown {
-            background-color: brown;
-          }
-          .gold {
-            background-color: gold;
-          }
-          .gray {
-            background-color: gray;
-          }
-          .green {
-            background-color: green;
-          }
-          .white {
-            background-color: white;
-          }
-          .yellow {
-            background-color: yellow;
+            border-radius: 50%;
+            color: white;
+
+            .deleteIcon {
+              color: white;
+            }
           }
         }
       }

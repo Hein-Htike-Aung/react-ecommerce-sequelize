@@ -25,7 +25,7 @@ export const createProduct: ReqHandler = async (
       tags,
       sizes,
       quantity,
-      color,
+      colors,
       gender,
       isFeatured,
       status,
@@ -51,7 +51,7 @@ export const createProduct: ReqHandler = async (
       tags,
       sizes,
       quantity,
-      color,
+      colors,
       gender,
       isFeatured,
       status,
@@ -59,12 +59,12 @@ export const createProduct: ReqHandler = async (
     });
 
     await Promise.all(
-      productImages.map(async (img: string) => {
+      productImages?.map(async (img: string) => {
         await ProductImage.create({ productId, img });
       })
     );
 
-    successResponse(res, 200, "Product has been created");
+    successResponse(res, 201, "Product has been created");
   } catch (error) {
     handleError(res, error);
   }

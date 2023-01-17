@@ -22,7 +22,7 @@ export class Product extends Model<
   declare tags: string;
   declare sizes: string;
   declare quantity: number;
-  declare color: string;
+  declare colors: string;
   declare gender: string;
   declare isFeatured: CreationOptional<boolean>;
   declare status: CreationOptional<string>;
@@ -84,7 +84,7 @@ Product.init(
         min: 1,
       },
     },
-    color: {
+    colors: {
       type: DataTypes.STRING,
       allowNull: false,
     },

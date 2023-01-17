@@ -29,7 +29,7 @@ export const createCategory: ReqHandler = async (
       img,
     });
 
-    successResponse(res, 200, "Category has been created");
+    successResponse(res, 201, "Category has been created");
   } catch (error) {
     handleError(res, error);
   }

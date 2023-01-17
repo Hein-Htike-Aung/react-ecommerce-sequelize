@@ -74,7 +74,7 @@ const CategoryEdit = () => {
   }, []);
 
   const submitHandler = async (formValues: FormValues) => {
-    if (categoryId) {
+    if (categoryId !== "0") {
       // edit
       if (file) {
         setLoading(true);
@@ -127,7 +127,7 @@ const CategoryEdit = () => {
             });
 
             setLoading(false);
-            res.data && navigate("/categories", { replace: true });
+            res.status === 201 && navigate("/categories", { replace: true });
           } catch (error: any) {
             setLoading(false);
             toast.error(error.response.data.message);
