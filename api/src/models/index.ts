@@ -1,6 +1,14 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { Dialect, Sequelize } from "sequelize";
+import { DataTypes, Dialect } from "sequelize";
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const Sequelize = require("sequelize");
+import fs from "fs";
+import path from "path";
+const basename = path.basename(__filename);
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let db: any;
 const dbOptions = {
   port: +process.env.DB_PORT!,
   host: process.env.DB_HOST,
@@ -22,15 +30,23 @@ const sequelize = new Sequelize(
   dbOptions
 );
 
-(async () => {
-  try {
-    // create table automatically
-    await sequelize.authenticate();
-    await sequelize.sync();
-    console.log("Connection has been established successfully.");
-  } catch (error) {
-    console.error("Unable to connect to the database:", error);
-  }
-})();
+// fs.readdirSync(__dirname)
+//   .filter((file: string) => {
+//     return (
+//       file.indexOf(".") !== 0 && file !== basename && file.slice(-3) === ".ts"
+//     );
+//   })
+//   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+//   .forEach((file: any) => {
+//     // eslint-disable-next-line @typescript-eslint/no-var-requires
+//     const model = require(path.join(__dirname, file))(Sequelize.sequelize, DataTypes);
+//     db[model.name] = model;
+//   });
 
-export default sequelize;
+// Object.keys(db).forEach((modelName) => {
+//   if (db[modelName].associate) {
+//     db[modelName].associate(db);
+//   }
+// });
+
+export default db;

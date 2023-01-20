@@ -1,5 +1,3 @@
-import sequelize from "./index";
-
 import {
   CreationOptional,
   DataTypes,
@@ -7,6 +5,11 @@ import {
   InferCreationAttributes,
   Model,
 } from "sequelize";
+import model_config from ".";
+
+export interface ProductWithImages extends Product {
+  productImages: string[];
+}
 
 export class Product extends Model<
   InferAttributes<Product>,
@@ -109,7 +112,7 @@ Product.init(
   },
   {
     tableName: "product",
-    sequelize,
+    sequelize: model_config.sequelize,
     timestamps: true,
     paranoid: false,
     createdAt: "created_at",

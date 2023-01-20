@@ -4,10 +4,9 @@ import OutlinedButton from "../../components/form/outlined-button/OutlinedButton
 import ContentTitle from "../../components/layout/content-title/ContentTitle";
 import { Category } from "../../models/category.model";
 import { axiosInstance } from "../../utils/axiosInstance";
-import { styled } from "@mui/material/styles";
 import TableBody from "@mui/material/TableBody";
 import Table from "@mui/material/Table";
-import TableCell, { tableCellClasses } from "@mui/material/TableCell";
+import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
@@ -21,16 +20,7 @@ import { toast } from "react-toastify";
 import SearchIcon from "@mui/icons-material/Search";
 import AddIcon from "@mui/icons-material/Add";
 import TableSkeleton from "../../components/form/TableSkeleton";
-
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-  [`&.${tableCellClasses.head}`]: {
-    backgroundColor: "#007dfc",
-    color: theme.palette.common.white,
-  },
-  [`&.${tableCellClasses.body}`]: {
-    fontSize: 14,
-  },
-}));
+import { StyledTableCell } from "../../components/form/StyledTableCell";
 
 const CategoryList = () => {
   const navigate = useNavigate();
@@ -38,15 +28,15 @@ const CategoryList = () => {
   const [categoriesCount, setCategoriesCount] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [fetching, setFetching] = useState(false);
-
   const [open, setOpen] = React.useState(false);
   const [targetCategory, setTargetCategory] = useState<Category>();
 
-  const openConfirmDialog = (item: Category) => {
-    setOpen(true);
-    setTargetCategory(item);
-  };
+  // useEffect
+  useEffect(() => {
+    fetchAllCategories(currentPage);
+  }, [currentPage]);
 
+  // axios functions
   const fetchAllCategories = async (currentPage: number) => {
     setFetching(true);
     const res = await axiosInstance.get(
@@ -56,24 +46,6 @@ const CategoryList = () => {
     setCategories(res.data.data.result);
     setCategoriesCount(Math.round(res.data.data.count / 10));
     setFetching(false);
-  };
-
-  useEffect(() => {
-    fetchAllCategories(currentPage);
-  }, [currentPage]);
-
-  const confirmDelete = async () => {
-    if (targetCategory) {
-      const res = await axiosInstance.delete(
-        `/categories/delete/${targetCategory.id}`
-      );
-
-      if (res.status === 202) {
-        toast.success("Category deleted");
-        fetchAllCategories(1);
-        setCurrentPage(1);
-      }
-    }
   };
 
   const searchCategory = async (searchValue: string) => {
@@ -87,6 +59,26 @@ const CategoryList = () => {
       setCategories(res.data.data.result);
       setCategoriesCount(Math.round(res.data.data.count / 10));
     } else fetchAllCategories(1);
+  };
+
+  // handle change
+  const openConfirmDialog = (item: Category) => {
+    setOpen(true);
+    setTargetCategory(item);
+  };
+
+  const confirmDelete = async () => {
+    if (targetCategory) {
+      const res = await axiosInstance.delete(
+        `/categories/delete/${targetCategory.id}`
+      );
+
+      if (res.status === 202) {
+        toast.success("Category deleted");
+        fetchAllCategories(1);
+        setCurrentPage(1);
+      }
+    }
   };
 
   return (

@@ -5,6 +5,7 @@ export interface Product {
   product_code: string;
   product_sku: string;
   regular_price: number;
+  sale_price: number;
   tags: string;
   sizes: string;
   quantity: number;

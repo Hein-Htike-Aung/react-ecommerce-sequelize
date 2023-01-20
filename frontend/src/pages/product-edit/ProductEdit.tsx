@@ -50,15 +50,37 @@ type FormValues = {
 };
 
 const ProductEdit = () => {
+  const { id: productId } = useParams();
+  const navigate = useNavigate();
+
   const [dragActive, setDragActive] = useState(false);
   const [files, setFiles] = useState<any>([]);
-
   const [parentCategories, setParentCategories] = useState<ParentCategory[]>();
-
   const [sizesValue, setSizesValue] = useState<string[]>(["XS"]);
   const [tagsValue, setTagsValue] = useState<string[]>(["New"]);
   const [colorsValue, setColorsValue] = useState<string[]>(["aqua"]);
+  const [product, setProduct] = useState<Product>();
+  const [categoryId, setCategoryId] = useState();
+  const [isFeatured, setIsFeatured] = useState(true);
+  const [gender, setGender] = useState("Others");
+  const [formErrors, setFormErrors] = useState({
+    description: false,
+    images: false,
+    colors: false,
+    categoryId: false,
+  });
+  const [loading, setLoading] = useState(false);
+  const [description, setDescription] = useState("");
+  
+  const {
+    handleSubmit,
+    register,
+    formState: { errors },
+    setValue,
+    setError,
+  } = useForm<FormValues>();
 
+  // useEffect
   useEffect(() => {
     const fetchParentCategories = async () => {
       const res = await axiosInstance.get("/categories/parent_category_list");
@@ -68,6 +90,7 @@ const ProductEdit = () => {
     fetchParentCategories();
   }, []);
 
+  // handle change
   const handleSizeChange = (event: SelectChangeEvent<typeof sizesValue>) => {
     const {
       target: { value },
@@ -93,32 +116,6 @@ const ProductEdit = () => {
       setFormErrors((prev) => ({ ...prev, colors: false }));
     }
   };
-
-  const { id: productId } = useParams();
-  const navigate = useNavigate();
-
-  const [product, setProduct] = useState<Product>();
-
-  const {
-    handleSubmit,
-    register,
-    formState: { errors },
-    setValue,
-    setError,
-  } = useForm<FormValues>();
-  const [description, setDescription] = useState("");
-  const [categoryId, setCategoryId] = useState();
-  const [isFeatured, setIsFeatured] = useState(true);
-  const [gender, setGender] = useState("Others");
-
-  const [formErrors, setFormErrors] = useState({
-    description: false,
-    images: false,
-    colors: false,
-    categoryId: false,
-  });
-
-  const [loading, setLoading] = useState(false);
 
   const handleDrag = (e: any) => {
     e.preventDefault();
@@ -148,6 +145,17 @@ const ProductEdit = () => {
     }
   };
 
+  const removeImage = (fileIdx: number) => {
+    setFiles((prev: any) =>
+      prev.filter((_: any, idx: number) => idx !== fileIdx)
+    );
+  };
+
+  const removeAllImages = () => {
+    setFiles([]);
+  };
+
+  // Form submit
   const submitHandler = async (formValues: FormValues) => {
     // check validations
     if (!description) {
@@ -204,16 +212,6 @@ const ProductEdit = () => {
         }
       })
     );
-  };
-
-  const removeImage = (fileIdx: number) => {
-    setFiles((prev: any) =>
-      prev.filter((_: any, idx: number) => idx !== fileIdx)
-    );
-  };
-
-  const removeAllImages = () => {
-    setFiles([]);
   };
 
   return (

@@ -1,5 +1,3 @@
-import sequelize from "./index";
-
 import {
   CreationOptional,
   DataTypes,
@@ -7,6 +5,7 @@ import {
   InferCreationAttributes,
   Model,
 } from "sequelize";
+import model_config from ".";
 
 export class Subscriber extends Model<
   InferAttributes<Subscriber>,
@@ -31,7 +30,7 @@ Subscriber.init(
   },
   {
     tableName: "subscriber",
-    sequelize,
+    sequelize: model_config.sequelize,
     timestamps: true,
     paranoid: false,
     createdAt: "created_at",

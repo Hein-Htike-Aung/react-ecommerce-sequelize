@@ -1,5 +1,3 @@
-import sequelize from "./index";
-
 import {
   CreationOptional,
   DataTypes,
@@ -7,6 +5,8 @@ import {
   InferCreationAttributes,
   Model,
 } from "sequelize";
+import model_config from ".";
+
 export class ParentCategory extends Model<
   InferAttributes<ParentCategory>,
   InferCreationAttributes<ParentCategory>
@@ -29,7 +29,7 @@ ParentCategory.init(
   },
   {
     tableName: "parent_category",
-    sequelize,
+    sequelize: model_config.sequelize,
     timestamps: true,
     paranoid: false,
     createdAt: "created_at",

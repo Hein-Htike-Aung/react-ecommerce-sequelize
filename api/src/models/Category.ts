@@ -1,5 +1,4 @@
-import sequelize from "./index";
-
+import model_config from ".";
 import {
   CreationOptional,
   DataTypes,
@@ -53,7 +52,7 @@ Category.init(
   },
   {
     tableName: "category",
-    sequelize,
+    sequelize: model_config.sequelize,
     timestamps: true,
     paranoid: false,
     createdAt: "created_at",

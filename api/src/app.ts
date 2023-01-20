@@ -13,16 +13,6 @@ import SubscriberRouter from "./routes/subscriber.routes";
 import UserRouter from "./routes/user.routes";
 import NewLetterRoute from "./routes/newLetter.routes";
 
-// import Category from "./models/Category";
-// import NewLetter from "./models/NewLetter";
-// import OrderItem from "./models/OrderItem";
-// import Orders from "./models/Orders";
-// import ParentCategory from "./models/ParentCategory";
-// import Product from "./models/Product";
-// import ProductImage from "./models/ProductImage";
-// import Subscriber from "./models/Subscriber";
-// import User from "./models/User";
-
 const app = express();
 
 app.use(session({ resave: true, secret: "123456", saveUninitialized: true }));

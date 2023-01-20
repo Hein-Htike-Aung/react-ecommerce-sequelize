@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { differenceWith, get, isEqual } from "lodash";
 import { Op } from "sequelize";
 import { ReqHandler } from "../../types";
-import Product from "../models/Product";
+import Product, { ProductWithImages } from "../models/Product";
 import ProductImage from "../models/ProductImage";
 import errorResponse from "../utils/errorResponse";
 import getPaginationData from "../utils/getPaginationData";
@@ -196,14 +196,38 @@ export const getProducts: ReqHandler = async (req: Request, res: Response) => {
         raw: true,
       });
 
+      await Promise.all(
+        rows.map(async (product: ProductWithImages | Product) => {
+          const productImages = await ProductImage.findAll({
+            where: { productId: product.id },
+          });
+
+          (product as ProductWithImages)["productImages"] = productImages.map(
+            (pm) => pm.img
+          );
+        })
+      );
+
       successResponse(res, 200, null, { result: rows, count });
     } else {
-      const products = await Product.findAll({
+      const result = await Product.findAll({
         order: [["created_at", "DESC"]],
         raw: true,
       });
 
-      successResponse(res, 200, null, products);
+      await Promise.all(
+        result.map(async (product: ProductWithImages | Product) => {
+          const productImages = await ProductImage.findAll({
+            where: { productId: product.id },
+          });
+
+          (product as ProductWithImages)["productImages"] = productImages.map(
+            (pm) => pm.img
+          );
+        })
+      );
+
+      successResponse(res, 200, null, result);
     }
   } catch (error) {
     handleError(res, error);
@@ -230,6 +254,18 @@ export const getProductByProductName: ReqHandler = async (
       order: [["created_at", "DESC"]],
       raw: true,
     });
+
+    await Promise.all(
+      rows.map(async (product: ProductWithImages | Product) => {
+        const productImages = await ProductImage.findAll({
+          where: { productId: product.id },
+        });
+
+        (product as ProductWithImages)["productImages"] = productImages.map(
+          (pm) => pm.img
+        );
+      })
+    );
 
     successResponse(res, 200, null, { result: rows, count });
   } catch (error) {
