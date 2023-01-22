@@ -135,6 +135,34 @@ export const updateProduct: ReqHandler = async (
   }
 };
 
+export const toggle_isFeatured: ReqHandler = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const id = get(req.params, "productId");
+    const { isFeatured } = req.body;
+
+    const product = await Product.findByPk(id);
+
+    if (!product) return errorResponse(res, 404, "Product not found");
+
+    await Product.update(
+      {
+        isFeatured,
+      },
+      {
+        where: {
+          id,
+        },
+      }
+    );
+    successResponse(res, 202, "Product is_featured status has been updated");
+  } catch (error) {
+    handleError(res, error);
+  }
+};
+
 export const deleteProduct: ReqHandler = async (
   req: Request,
   res: Response
@@ -202,9 +230,7 @@ export const getProducts: ReqHandler = async (req: Request, res: Response) => {
             where: { productId: product.id },
           });
 
-          (product as ProductWithImages)["productImages"] = productImages.map(
-            (pm) => pm.img
-          );
+          (product as ProductWithImages)["productImages"] = productImages;
         })
       );
 
@@ -221,9 +247,7 @@ export const getProducts: ReqHandler = async (req: Request, res: Response) => {
             where: { productId: product.id },
           });
 
-          (product as ProductWithImages)["productImages"] = productImages.map(
-            (pm) => pm.img
-          );
+          (product as ProductWithImages)["productImages"] = productImages;
         })
       );
 
@@ -261,9 +285,7 @@ export const getProductByProductName: ReqHandler = async (
           where: { productId: product.id },
         });
 
-        (product as ProductWithImages)["productImages"] = productImages.map(
-          (pm) => pm.img
-        );
+        (product as ProductWithImages)["productImages"] = productImages;
       })
     );
 

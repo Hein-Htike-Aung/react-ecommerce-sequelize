@@ -5,13 +5,15 @@ import Select from "@mui/material/Select";
 const GroupingSelect: React.FC<{
   children: React.ReactNode;
   onChange: (e: any) => void;
-}> = ({ children, onChange }) => {
+  value: string;
+}> = ({ children, onChange, value }) => {
   return (
     <FormControl sx={{ width: "100%" }}>
       <Select
         native
         size="small"
         onChange={onChange}
+        value={value}
         defaultValue=""
         id="grouped-native-select"
         sx={{

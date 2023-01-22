@@ -26,6 +26,7 @@ import { StyledTableCell } from "../../components/form/StyledTableCell";
 import CreateIcon from "@mui/icons-material/Create";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import numberWithComma from "../../utils/numberWithComma";
+import { truncate } from "lodash";
 
 const ProductList = () => {
   const navigate = useNavigate();
@@ -72,6 +73,7 @@ const ProductList = () => {
     setTargetProduct(item);
   };
 
+  // functions
   const confirmDelete = async () => {
     if (targetProduct) {
       const res = await axiosInstance.delete(
@@ -86,7 +88,18 @@ const ProductList = () => {
     }
   };
 
-  console.log(products);
+  const toggleIsFeatured = async (id: number, isFeatured: boolean) => {
+    const res = await axiosInstance.patch(
+      `/products/update_is_featured/${id}`,
+      { isFeatured }
+    );
+
+    if (res.status === 202) {
+      toast.success("Status updated");
+      fetchAllProducts(1);
+      setCurrentPage(1);
+    }
+  };
 
   return (
     <div className="productList">
@@ -133,10 +146,10 @@ const ProductList = () => {
                       <div className="productNameRow">
                         <img
                           className="productImg"
-                          src={row.productImages[0]}
+                          src={row.productImages[0].img}
                           alt=""
                         />{" "}
-                        {row.productName}
+                        {truncate(row.productName)}
                       </div>
                     </TableCell>
                     <TableCell>
@@ -151,8 +164,10 @@ const ProductList = () => {
                       <FormControlLabel
                         control={
                           <Switch
-                            onChange={(e: any) => {}}
-                            checked={row.isFeatured}
+                            onChange={() =>
+                              toggleIsFeatured(row.id, !row.isFeatured)
+                            }
+                            checked={row.isFeatured ? true : false}
                           />
                         }
                         label=""
@@ -162,7 +177,7 @@ const ProductList = () => {
                       <div className="tableIconsWrapper">
                         <div
                           className="tableIcon"
-                          onClick={() => navigate(`/categories/edit/${row.id}`)}
+                          onClick={() => navigate(`/products/edit/${row.id}`)}
                         >
                           <CreateIcon />
                         </div>
@@ -194,7 +209,7 @@ const ProductList = () => {
       </div>
       {/* Dialog */}
       <ConfirmDialog
-        content="Are you sure you want to delete this Category?"
+        content="Are you sure you want to delete this Product?"
         open={open}
         setOpen={setOpen}
         agree={confirmDelete}

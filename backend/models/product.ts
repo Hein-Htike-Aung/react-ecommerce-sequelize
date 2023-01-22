@@ -8,9 +8,10 @@ import {
   Model,
 } from "sequelize";
 import { sequelize } from ".";
+import ProductImage from "./productimage";
 
 export interface ProductWithImages extends Product {
-  productImages: string[];
+  productImages: ProductImage[];
 }
 
 class Product extends Model<

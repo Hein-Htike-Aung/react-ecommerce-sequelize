@@ -20,9 +20,15 @@ type FormValues = {
 
 const CategoryEdit = () => {
   let { id: categoryId } = useParams();
+  const navigate = useNavigate();
 
   const [category, setCategory] = useState<Category>();
-
+  const [file, setFile] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
+  const [dragActive, setDragActive] = useState(false);
+  const [parentCategories, setParentCategories] = useState<ParentCategory[]>(
+    []
+  );
   const {
     handleSubmit,
     register,
@@ -30,21 +36,15 @@ const CategoryEdit = () => {
     setValue,
     setError,
   } = useForm<FormValues>();
-  const [file, setFile] = useState<any>(null);
-  const [parentCategories, setParentCategories] = useState<ParentCategory[]>(
-    []
-  );
 
-  const [loading, setLoading] = useState(false);
-
-  const navigate = useNavigate();
-
+  // functions
   const fetchCategory = async (id: number) => {
     const res = await axiosInstance.get(`/categories/by_id/${id}`);
 
     setCategory(res.data.data);
   };
 
+  // useEffect
   useEffect(() => {
     if (categoryId !== "0") fetchCategory(Number(categoryId));
   }, [categoryId]);
@@ -73,6 +73,7 @@ const CategoryEdit = () => {
     fetchParentCategories();
   }, []);
 
+  // form submit
   const submitHandler = async (formValues: FormValues) => {
     if (categoryId !== "0") {
       // edit
@@ -115,6 +116,7 @@ const CategoryEdit = () => {
         }
       }
     } else {
+      // add new
       if (file) {
         setLoading(true);
 
@@ -137,8 +139,7 @@ const CategoryEdit = () => {
     }
   };
 
-  const [dragActive, setDragActive] = React.useState(false);
-
+  // handle change
   const handleDrag = (e: any) => {
     e.preventDefault();
     e.stopPropagation();

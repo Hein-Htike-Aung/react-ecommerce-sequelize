@@ -4,7 +4,7 @@ Content-Type: application/json
 
 {
     "categoryName": "test1",
-    "parentCategoryId": 5,
+    "parentCategoryId": 1,
     "description": "Boxing",
     "img": "https://res.cloudinary.com/techgater/image/upload/v1669198509/my-uploads/qr6vpmsi7que0uenbwkl.png"
 }

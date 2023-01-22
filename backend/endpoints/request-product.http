@@ -22,7 +22,7 @@ Content-Type: application/json
         "https://res.cloudinary.com/techgater/image/upload/v1669555821/my-uploads/t7nusmko4m6y3tt7ufuk.jpg"
     ]
 }
-
+    
 ### update product
 PATCH  http://localhost:3001/api/v1/products/update/4
 Content-Type: application/json

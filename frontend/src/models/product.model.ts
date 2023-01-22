@@ -9,12 +9,20 @@ export interface Product {
   tags: string;
   sizes: string;
   quantity: number;
-  color: string;
+  colors: string;
   gender: string;
   isFeatured: boolean;
   status: boolean;
   description: string;
-  productImages: string[];
+  productImages: ProductImage[];
+  created_at: Date;
+  updated_at: Date;
+}
+
+export interface ProductImage {
+  id: number;
+  productId: number;
+  img: string;
   created_at: Date;
   updated_at: Date;
 }

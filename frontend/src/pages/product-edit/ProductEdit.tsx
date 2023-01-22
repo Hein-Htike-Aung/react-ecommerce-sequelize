@@ -37,14 +37,12 @@ const colors = [
 ];
 
 type FormValues = {
-  categoryId: number;
   productName: string;
   product_code: string;
   product_sku: string;
   regular_price: number;
   sale_price: number;
   quantity: number;
-  gender: string;
   isFeatured: boolean;
   status: boolean;
 };
@@ -53,14 +51,14 @@ const ProductEdit = () => {
   const { id: productId } = useParams();
   const navigate = useNavigate();
 
+  const [product, setProduct] = useState<Product>();
   const [dragActive, setDragActive] = useState(false);
   const [files, setFiles] = useState<any>([]);
   const [parentCategories, setParentCategories] = useState<ParentCategory[]>();
   const [sizesValue, setSizesValue] = useState<string[]>(["XS"]);
   const [tagsValue, setTagsValue] = useState<string[]>(["New"]);
   const [colorsValue, setColorsValue] = useState<string[]>(["aqua"]);
-  const [product, setProduct] = useState<Product>();
-  const [categoryId, setCategoryId] = useState();
+  const [categoryId, setCategoryId] = useState<string>();
   const [isFeatured, setIsFeatured] = useState(true);
   const [gender, setGender] = useState("Others");
   const [formErrors, setFormErrors] = useState({
@@ -71,7 +69,10 @@ const ProductEdit = () => {
   });
   const [loading, setLoading] = useState(false);
   const [description, setDescription] = useState("");
-  
+  const [existingProductImages, setExistingProductImages] = useState<string[]>(
+    []
+  );
+
   const {
     handleSubmit,
     register,
@@ -80,7 +81,18 @@ const ProductEdit = () => {
     setError,
   } = useForm<FormValues>();
 
+  // functions
+  const fetchProduct = async (id: number) => {
+    const res = await axiosInstance.get(`/products/by_id/${id}`);
+
+    setProduct(res.data.data);
+  };
+
   // useEffect
+  useEffect(() => {
+    if (productId !== "0") fetchProduct(Number(productId));
+  }, [productId]);
+
   useEffect(() => {
     const fetchParentCategories = async () => {
       const res = await axiosInstance.get("/categories/parent_category_list");
@@ -89,6 +101,28 @@ const ProductEdit = () => {
 
     fetchParentCategories();
   }, []);
+
+  useEffect(() => {
+    if (product) {
+      setValue("productName", product.productName);
+      setValue("product_code", product.product_code);
+      setValue("product_sku", product.product_sku);
+      setValue("regular_price", product.regular_price);
+      setValue("sale_price", product.sale_price);
+      setValue("quantity", product.quantity);
+      setValue("isFeatured", product.isFeatured);
+      setValue("status", product.status);
+
+      setGender(product.gender);
+      setIsFeatured(product.isFeatured);
+      setDescription(product.description);
+      setColorsValue(product.colors.split(","));
+      setCategoryId(product.categoryId.toString());
+      setTagsValue(product.tags.split(","));
+      setSizesValue(product.sizes.split(","));
+      setExistingProductImages(product.productImages.map((pi) => pi.img));
+    }
+  }, [product, setValue]);
 
   // handle change
   const handleSizeChange = (event: SelectChangeEvent<typeof sizesValue>) => {
@@ -151,8 +185,13 @@ const ProductEdit = () => {
     );
   };
 
+  const removeExistingImage = (img: string) => {
+    setExistingProductImages((prev) => prev.filter((prev) => prev !== img));
+  };
+
   const removeAllImages = () => {
     setFiles([]);
+    setExistingProductImages([]);
   };
 
   // Form submit
@@ -162,7 +201,10 @@ const ProductEdit = () => {
       setFormErrors((prev) => ({ ...prev, description: true }));
       return;
     } else setFormErrors((prev) => ({ ...prev, description: false }));
-    if (!files.length) {
+    if (
+      (!files.length && productId === "0") ||
+      (productId !== "0" && !existingProductImages.length && !files.length)
+    ) {
       setFormErrors((prev) => ({ ...prev, images: true }));
       return;
     } else setFormErrors((prev) => ({ ...prev, images: false }));
@@ -175,19 +217,56 @@ const ProductEdit = () => {
       return;
     } else setFormErrors((prev) => ({ ...prev, categoryId: false }));
 
-    setLoading(true);
-    const productImages: string[] = [];
+    if (productId !== "0") {
+      // edit
+      if (files.length) {
+        setLoading(true);
+        const newProductImages: string[] = [];
 
-    files.forEach((file: any, idx: number) =>
-      uploadImg(file, async (downloadURL) => {
-        productImages.push(downloadURL);
-        console.log({ idx, length: files.length - 1 });
-        // All Images are complete uploading
-        if (idx === files.length - 1) {
-          try {
-            console.log(productImages);
+        files.forEach((file: any, idx: number) =>
+          uploadImg(file, async (downloadURL) => {
+            newProductImages.push(downloadURL);
+            // All Images are complete uploading
+            if (idx === files.length - 1) {
+              try {
+                const res = await axiosInstance.patch(
+                  `/products/update/${productId}`,
+                  {
+                    ...formValues,
+                    regular_price: Number(formValues.regular_price),
+                    sale_price: Number(formValues.sale_price),
+                    quantity: Number(formValues.quantity),
+                    categoryId: Number(categoryId),
+                    description,
+                    isFeatured,
+                    gender,
+                    tags: tagsValue.join(),
+                    sizes: sizesValue.join(),
+                    colors: colorsValue.join(),
+                    productImages: [
+                      ...newProductImages,
+                      ...existingProductImages,
+                    ],
+                  }
+                );
 
-            const res = await axiosInstance.post(`/products/create`, {
+                res.status === 202 && navigate("/products");
+                setLoading(false);
+              } catch (error: any) {
+                setLoading(false);
+                toast.error(error.response.data.message);
+              }
+            }
+          })
+        );
+      } else {
+        // without file
+        setLoading(true);
+
+        try {
+          const res = await axiosInstance.patch(
+            `/products/update/${productId}`,
+            {
               ...formValues,
               regular_price: Number(formValues.regular_price),
               sale_price: Number(formValues.sale_price),
@@ -199,19 +278,53 @@ const ProductEdit = () => {
               tags: tagsValue.join(),
               sizes: sizesValue.join(),
               colors: colorsValue.join(),
-              productImages,
-            });
+              productImages: existingProductImages,
+            }
+          );
 
-            res.status === 201 && navigate("/product-list");
-            setLoading(false);
-          } catch (error: any) {
-            console.log(error);
-            setLoading(false);
-            toast.error(error.response.data.message);
-          }
+          res.status === 202 && navigate("/products");
+          setLoading(false);
+        } catch (error: any) {
+          setLoading(false);
+          toast.error(error.response.data.message);
         }
-      })
-    );
+      }
+    } else {
+      // add New
+      setLoading(true);
+      const productImages: string[] = [];
+
+      files.forEach((file: any, idx: number) =>
+        uploadImg(file, async (downloadURL) => {
+          productImages.push(downloadURL);
+          // All Images are complete uploading
+          if (idx === files.length - 1) {
+            try {
+              const res = await axiosInstance.post(`/products/create`, {
+                ...formValues,
+                regular_price: Number(formValues.regular_price),
+                sale_price: Number(formValues.sale_price),
+                quantity: Number(formValues.quantity),
+                categoryId: Number(categoryId),
+                description,
+                isFeatured,
+                gender,
+                tags: tagsValue.join(),
+                sizes: sizesValue.join(),
+                colors: colorsValue.join(),
+                productImages,
+              });
+
+              res.status === 201 && navigate("/products");
+              setLoading(false);
+            } catch (error: any) {
+              setLoading(false);
+              toast.error(error.response.data.message);
+            }
+          }
+        })
+      );
+    }
   };
 
   return (
@@ -267,6 +380,7 @@ const ProductEdit = () => {
               <div className="form-group">
                 <label>Category</label>
                 <GroupingSelect
+                  value={categoryId!}
                   onChange={(e: any) => {
                     setCategoryId(e.target.value);
                     setFormErrors((prev) => ({ ...prev, categoryId: false }));
@@ -336,6 +450,23 @@ const ProductEdit = () => {
                   onChange={handleChange}
                   onDragEnter={handleDrop}
                 />
+                {existingProductImages?.length ? (
+                  <div className="productImagesContainer">
+                    {existingProductImages.map((img, idx) => (
+                      <div key={idx} className="productImgWrapper">
+                        <img className="productImg" src={img} alt="" />
+                        <div
+                          className="deleteIconWrapper"
+                          onClick={() => removeExistingImage(img)}
+                        >
+                          <span className="deleteIcon">-</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <></>
+                )}
                 {files.length ? (
                   <div className="productImagesContainer">
                     {files.map((file: any, idx: number) => (
@@ -518,7 +649,7 @@ const ProductEdit = () => {
                     control={
                       <Switch
                         onChange={(e: any) => setIsFeatured(e.target.checked)}
-                        defaultChecked
+                        value={isFeatured}
                       />
                     }
                     label="Featured Product"

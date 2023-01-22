@@ -1,3 +1,4 @@
+import { toggle_isFeatured } from './../controllers/ProductController';
 import express from "express";
 import { createProduct, deleteProduct, getProduct, getProductByProductName, getProducts, updateProduct } from "../controllers/ProductController";
 import validateRequest from "../middlewares/validate_request";
@@ -15,6 +16,12 @@ router.patch(
     "/update/:productId",
     [validateRequest(productIdParam)],
     updateProduct
+);
+
+router.patch(
+    "/update_is_featured/:productId",
+    [validateRequest(productIdParam)],
+    toggle_isFeatured
 );
 
 router.delete(

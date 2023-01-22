@@ -2,13 +2,12 @@ import { Request, Response } from "express";
 import { get } from "lodash";
 import { Op, QueryTypes } from "sequelize";
 import { ReqHandler } from "../types";
-import sequelize from "../models";
 import errorResponse from "../utils/errorResponse";
 import getPaginationData from "../utils/getPaginationData";
 import handleError from "../utils/handleError";
 import isDuplicate from "../utils/isDuplicate";
 import successResponse from "../utils/successResponse";
-import db from "../models";
+import { sequelize } from "../models";
 import Category, { ParentCategoryWithCategories } from "../models/category";
 import ParentCategory from "../models/parentcategory";
 
@@ -23,7 +22,7 @@ export const createCategory: ReqHandler = async (
 
     if (category) return errorResponse(res, 403, "Category already exists");
 
-    await db.Category.create({
+    await Category.create({
       categoryName,
       parentCategoryId,
       description,
@@ -130,9 +129,10 @@ export const getCategories: ReqHandler = async (
         type: QueryTypes.SELECT,
       });
 
-      successResponse(res, 200, null, categories);
+      successResponse(res, 200, null, categories || []);
     }
   } catch (error) {
+    console.error(error);
     handleError(res, error);
   }
 };

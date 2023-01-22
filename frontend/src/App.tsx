@@ -74,7 +74,7 @@ const App = () => {
           element: <OrderList />,
         },
         {
-          path: "/product-list",
+          path: "/products",
           element: <ProductList />,
         },
         {

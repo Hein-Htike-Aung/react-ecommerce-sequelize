@@ -29,7 +29,7 @@ const Sidebar = () => {
     {
       name: "Products",
       icons: <StoreMallDirectoryOutlinedIcon />,
-      route: "/product-list",
+      route: "/products",
     },
     {
       name: "Orders",
