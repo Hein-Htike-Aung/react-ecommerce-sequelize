@@ -1,0 +1,10 @@
+@import "../../assets/index";
+
+.settings {
+  .settingsListWrapper {
+    min-height: calc(100vh - 130px);
+    @include themify($themes) {
+      background-color: themed(bg);
+    }
+  }
+}

@@ -1,8 +1,57 @@
 import React from "react";
+import ContentTitle from "../../components/layout/content-title/ContentTitle";
 import "./settings.scss";
+import StyledTabs, {
+  TabPanel,
+} from "../../components/layout/styled_tabs/StyledTabs";
+import UserList from "../../components/widgets/user_list/UserList";
+import AddUser from "../../components/widgets/add_user/AddUser";
 
 const Settings = () => {
-  return <div>Settings</div>;
+  const [tabValue, setTabValue] = React.useState(0);
+
+  // handle Change
+  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+    setTabValue(newValue);
+  };
+
+  return (
+    <div className="settings">
+      <ContentTitle title="Settings" />
+
+      <div className="settingsListWrapper">
+        <StyledTabs
+          value={tabValue}
+          handleChange={handleTabChange}
+          tabs={[
+            "Profile Settings",
+            "Roles",
+            "Add Role",
+            "Notifications",
+            "Change Password",
+          ]}
+        >
+          <TabPanel value={tabValue} index={0}>
+            {/* Profile Settings */}
+          </TabPanel>
+          <TabPanel value={tabValue} index={1}>
+            {/* Roles */}
+            <UserList />
+          </TabPanel>
+          <TabPanel value={tabValue} index={2}>
+            {/* Add Role */}
+            <AddUser />
+          </TabPanel>
+          <TabPanel value={tabValue} index={3}>
+            {/* Notifications */}
+          </TabPanel>
+          <TabPanel value={tabValue} index={4}>
+            {/* Change Password */}
+          </TabPanel>
+        </StyledTabs>
+      </div>
+    </div>
+  );
 };
 
 export default Settings;

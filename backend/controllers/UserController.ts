@@ -33,7 +33,7 @@ export const createUser: ReqHandler = async (req: Request, res: Response) => {
       role,
     });
 
-    successResponse(res, 200, "User has been created");
+    successResponse(res, 201, "User has been created");
   } catch (error) {
     handleError(res, error);
   }
@@ -70,13 +70,13 @@ export const getUsers: ReqHandler = async (req: Request, res: Response) => {
 
       successResponse(res, 200, null, { result: rows, count });
     } else {
-      const users = await User.findAll({
+      const { rows, count } = await User.findAndCountAll({
         attributes: { exclude: ["password"] },
         order: [["created_at", "DESC"]],
         raw: true,
       });
 
-      successResponse(res, 200, null, users);
+      successResponse(res, 200, null, { result: rows, count });
     }
   } catch (error) {
     handleError(res, error);

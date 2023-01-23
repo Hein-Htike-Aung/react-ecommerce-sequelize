@@ -1,4 +1,2 @@
-models/*.ts
-migrations/*.js
-config/*.js
 seeders/*.js
+migrations/*.js

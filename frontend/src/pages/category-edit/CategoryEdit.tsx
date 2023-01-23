@@ -164,7 +164,7 @@ const CategoryEdit = () => {
               <label>Name</label>
               <input
                 type="text"
-                className={`${errors.categoryName && "inputError"}`}
+                className={`input ${errors.categoryName && "inputError"}`}
                 {...register("categoryName", {
                   required: "Category name is required",
                 })}

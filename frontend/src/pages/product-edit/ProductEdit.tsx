@@ -342,7 +342,7 @@ const ProductEdit = () => {
               <label>Product Name</label>
               <input
                 type="text"
-                className={`${errors.productName && "inputError"}`}
+                className={`input ${errors.productName && "inputError"}`}
                 {...register("productName", {
                   required: "Product name is required",
                 })}
@@ -516,7 +516,7 @@ const ProductEdit = () => {
                   <label>Product Code</label>
                   <input
                     type="text"
-                    className={`${errors.productName && "inputError"}`}
+                    className={`input ${errors.productName && "inputError"}`}
                     {...register("product_code", {
                       required: "Product code is required",
                     })}
@@ -529,7 +529,7 @@ const ProductEdit = () => {
                   <label>Product SKU</label>
                   <input
                     type="text"
-                    className={`${errors.product_sku && "inputError"}`}
+                    className={`input ${errors.product_sku && "inputError"}`}
                     {...register("product_sku", {
                       required: "Product SKU is required",
                     })}
@@ -573,7 +573,7 @@ const ProductEdit = () => {
                   <label>Available</label>
                   <input
                     type="number"
-                    className={`${errors.quantity && "inputError"}`}
+                    className={`input ${errors.quantity && "inputError"}`}
                     {...register("quantity", {
                       required: "Quantity is required",
                     })}
@@ -621,7 +621,7 @@ const ProductEdit = () => {
                   <input
                     type="number"
                     placeholder="$ 0.00"
-                    className={`${errors.regular_price && "inputError"}`}
+                    className={`input ${errors.regular_price && "inputError"}`}
                     {...register("regular_price", {
                       required: "Regular price is required",
                     })}
@@ -635,7 +635,7 @@ const ProductEdit = () => {
                   <input
                     type="number"
                     placeholder="$ 0.00"
-                    className={`${errors.sale_price && "inputError"}`}
+                    className={`input ${errors.sale_price && "inputError"}`}
                     {...register("sale_price", {
                       required: "Sale price is required",
                     })}

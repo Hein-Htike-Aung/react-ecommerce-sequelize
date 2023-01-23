@@ -144,9 +144,9 @@ ul {
     font-weight: 500;
     color: gray;
   }
-  input,
-  textarea,
-  select {
+  .input,
+  .textarea,
+  .select {
     padding: 10px;
     outline: none;
     border: 1px solid lightgray;
@@ -159,6 +159,16 @@ ul {
       border: 1px solid $primary-color;
     }
   }
+}
+.MuiInputBase-root {
+  height: 44px;
+}
+
+.form-group-row {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row !important;
+  gap: 30px;
 }
 
 .flex-end {

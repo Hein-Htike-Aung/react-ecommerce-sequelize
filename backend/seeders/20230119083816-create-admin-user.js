@@ -1,3 +1,5 @@
+/* eslint-disable no-undef */
+/* eslint-disable @typescript-eslint/no-var-requires */
 "use strict";
 const bcrypt = require("bcryptjs");
 
@@ -5,12 +7,25 @@ const bcrypt = require("bcryptjs");
 module.exports = {
   async up(queryInterface, Sequelize) {
     const salt = await bcrypt.genSalt(+process.env.SALT);
+    const ownerPassword = bcrypt.hashSync("owner123!@#", salt);
     const adminPassword = bcrypt.hashSync("admin123!@#", salt);
     const managerPassword = bcrypt.hashSync("manager123!@#", salt);
     const editorPassword = bcrypt.hashSync("editor123!@#", salt);
     await queryInterface.bulkInsert(
       "user",
       [
+        {
+          fullName: "OwnerUser",
+          email: "owneruser@gmail.com",
+          password: ownerPassword,
+          phone: "09234234243",
+          status: false,
+          img: "https://images.pexels.com/photos/1391498/pexels-photo-1391498.jpeg?auto=compress&cs=tinysrgb&w=1200",
+          gender: "Male",
+          role: "Owner",
+          created_at: "2023-01-01 06:44:42",
+          updated_at: "2023-01-01 06:44:42",
+        },
         {
           fullName: "AdminUser",
           email: "adminuser@gmail.com",

@@ -1,7 +1,8 @@
 @import "../../assets/index";
 
 .productList {
-  .productListWrapper {  
+  .productListWrapper {
+    min-height: calc(100vh - 130px);
     padding: 20px;
 
     @include themify($themes) {

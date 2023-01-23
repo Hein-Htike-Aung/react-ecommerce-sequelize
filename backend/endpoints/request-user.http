@@ -9,7 +9,7 @@ Content-Type: application/json
     "phone": "0934234234",
     "gender": "Female",
     "role": "Editor"
-}
+}   
 
 ### update user
 PATCH http://localhost:3001/api/v1/users/update/4
