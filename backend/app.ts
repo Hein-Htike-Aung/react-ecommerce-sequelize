@@ -15,6 +15,18 @@ import NewLetterRoute from "./routes/newLetter.routes";
 
 const app = express();
 
+// const whitelist = [process.env.WLIST];
+// const corsOptions = {
+//   origin: (origin: any, callback: any) => {
+//     if (!origin || whitelist.indexOf(origin) !== -1) {
+//       callback(null, true);
+//     } else {
+//       callback(new Error("Not allowed by CORS"));
+//     }
+//   },
+//   credentials: true,
+// };
+
 app.use(session({ resave: true, secret: "123456", saveUninitialized: true }));
 
 app.use(morgan("dev"));
