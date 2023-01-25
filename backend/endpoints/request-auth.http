@@ -18,3 +18,6 @@ Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhd
     "newPassword": "hein123!@#",
     "confirmPassword": "hein123!@#"
 }
+
+### 
+GET http://localhost:3001/photos

@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-const http2 = require("node:http2");
+// const http2 = require("node:http2");
 // import http2 from "node:http2";
 import cluster from "node:cluster";
 import * as _ from "node:os";
 import process from "node:process";
-import fs from "node:fs";
+// import fs from "node:fs";
 
 import app from "./app";
 import db from "./models";
@@ -38,6 +38,7 @@ if (cluster.isPrimary) {
       // await await db.sequelize.sync({ alter: true });
       await await db.sequelize.sync();
 
+      // await client.connect();
       app.listen(port, () => {
         logger.info(`Listening: http://localhost:${port}`);
       });

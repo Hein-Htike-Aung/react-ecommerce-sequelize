@@ -10,6 +10,13 @@ import successResponse from "../utils/successResponse";
 import { sequelize } from "../models";
 import Category, { ParentCategoryWithCategories } from "../models/category";
 import ParentCategory from "../models/parentcategory";
+import {
+  delete_categoryListCache,
+  getCategoryListCache,
+  get_categoryCache,
+  push_categoryListCache,
+  update_categoryListCache,
+} from "../cache/category.cache";
 
 export const createCategory: ReqHandler = async (
   req: Request,
@@ -22,14 +29,17 @@ export const createCategory: ReqHandler = async (
 
     if (category) return errorResponse(res, 403, "Category already exists");
 
-    await Category.create({
+    const newCategory = await Category.create({
       categoryName,
       parentCategoryId,
       description,
       img,
     });
 
-    successResponse(res, 201, "Category has been created");
+    if (newCategory) {
+      await push_categoryListCache(newCategory);
+      successResponse(res, 201, "Category has been created");
+    } else errorResponse(res, 500, null);
   } catch (error) {
     handleError(res, error);
   }
@@ -44,7 +54,15 @@ export const updateCategory: ReqHandler = async (
 
     const { categoryName } = req.body;
 
-    const category = await Category.findByPk(id);
+    const category = await get_categoryCache(id, async () => {
+      const category = await Category.findByPk(id);
+
+      if (category === null) return null;
+
+      console.log(category);
+
+      return category;
+    });
 
     if (!category) return errorResponse(res, 404, "Category not found");
 
@@ -56,6 +74,12 @@ export const updateCategory: ReqHandler = async (
       return errorResponse(res, 403, "Category already exists");
 
     await Category.update({ ...req.body }, { where: { id } });
+
+    const updatedCategory = await Category.findByPk(id);
+
+    if (!updatedCategory) return errorResponse(res, 404, "Category not found");
+
+    await update_categoryListCache(updatedCategory);
 
     successResponse(res, 202, "Category has been updated");
   } catch (error) {
@@ -69,11 +93,21 @@ export const deleteCategory: ReqHandler = async (
 ) => {
   try {
     const id = get(req.params, "categoryId");
-    const category = await Category.findByPk(id);
+    const category = await get_categoryCache(id, async () => {
+      const category = await Category.findByPk(id);
+
+      if (category === null) return null;
+
+      console.log(category);
+
+      return category;
+    });
 
     if (!category) return errorResponse(res, 404, "Category not found");
 
     await Category.destroy({ where: { id } });
+
+    await delete_categoryListCache(+id);
 
     successResponse(res, 202, "Category has been deleted");
   } catch (error) {
@@ -85,11 +119,38 @@ export const getCategory: ReqHandler = async (req: Request, res: Response) => {
   try {
     const id = get(req.params, "categoryId");
 
-    const category = await Category.findByPk(id);
+    const category = await get_categoryCache(id, async () => {
+      const category = await Category.findByPk(id);
 
-    if (!category) return errorResponse(res, 404, "Category not found");
+      if (category === null) return null;
 
-    successResponse(res, 200, null, category);
+      console.log(category);
+
+      return category;
+    });
+
+    if (category !== null) successResponse(res, 200, null, category);
+    else errorResponse(res, 404, "Category not found");
+  } catch (error) {
+    handleError(res, error);
+  }
+};
+
+export const getCategoriesPlain: ReqHandler = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const categories = await getCategoryListCache(async () => {
+      const categories = await Category.findAll({ raw: true });
+
+      if (!categories.length) return null;
+
+      return categories;
+    });
+
+    if (categories.length) successResponse(res, 200, null, categories);
+    else errorResponse(res, 404, "Category not found");
   } catch (error) {
     handleError(res, error);
   }
@@ -151,7 +212,7 @@ export const getCategoriesByCategoryName: ReqHandler = async (
       limit,
       where: {
         categoryName: {
-          [Op.like]: `${categoryName}%`,
+          [Op.like]: `${categoryName || ""}%`,
         },
       },
       order: [["created_at", "DESC"]],

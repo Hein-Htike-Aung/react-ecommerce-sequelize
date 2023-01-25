@@ -3,37 +3,40 @@ POST http://localhost:3001/api/v1/categories/create
 Content-Type: application/json
 
 {
-    "categoryName": "test1",
+    "categoryName": "redis 4",
     "parentCategoryId": 1,
     "description": "Boxing",
     "img": "https://res.cloudinary.com/techgater/image/upload/v1669198509/my-uploads/qr6vpmsi7que0uenbwkl.png"
 }
 
 ### update category
-PATCH http://localhost:3001/api/v1/categories/update/4
+PATCH http://localhost:3001/api/v1/categories/update/13
 Content-Type: application/json
 
 {
-    "categoryName": "updated 1",
+    "categoryName": "normal",
     "parentCategoryId": 6,
     "description": "Mobiles",
     "img": "https://res.cloudinary.com/techgater/image/upload/v1669198823/my-uploads/ixx3ym9ezdrizeaxepqg.webp"
 }
 
 ### delete category
-DELETE http://localhost:3001/api/v1/categories/delete/11
+DELETE http://localhost:3001/api/v1/categories/delete/18
 
 ### by id
-GET http://localhost:3001/api/v1/categories/by_id/3
+GET http://localhost:3001/api/v1/categories/by_id/4
 
 ### by category name
-GET http://localhost:3001/api/v1/categories/by_categoryName?categoryName=mo&page=0&pageSize=10
+GET http://localhost:3001/api/v1/categories/by_categoryName?categoryName=dsf&page=0&pageSize=10
 
 ### list with pagination
 GET http://localhost:3001/api/v1/categories/list?page=0&pageSize=10
 
 ### list
 GET http://localhost:3001/api/v1/categories/list
+
+### list
+GET http://localhost:3001/api/v1/categories/list_plain
 
 ### parent category list
 GET http://localhost:3001/api/v1/categories/parent_category_list

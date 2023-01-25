@@ -12,6 +12,8 @@ import AuthRouter from "./routes/auth.routes";
 import SubscriberRouter from "./routes/subscriber.routes";
 import UserRouter from "./routes/user.routes";
 import NewLetterRoute from "./routes/newLetter.routes";
+import axios from "axios";
+import restoreCache from "./utils/restoreCahce";
 
 const app = express();
 
@@ -41,6 +43,25 @@ app.use("/api/v1/auth", AuthRouter);
 app.use("/api/v1/users", UserRouter);
 app.use("/api/v1/subscribers", SubscriberRouter);
 app.use("/api/v1/newLetters", NewLetterRoute);
+
+// interface IPhoto {
+//   albumId: number;
+//   id: number;
+//   title: string;
+//   url: string;
+//   thumbnailUrl: string;
+// }
+
+// app.get("/", async (req: any, res: any) => {
+//   const data = await restoreCache<IPhoto[], IPhoto | null>("photos", async () => {
+//     const { data } = await axios.get(
+//       `https://jsonplaceholder.typicode.com/photos`
+//     );
+//     return data as IPhoto[];
+//   });
+
+//   res.json(data);
+// });
 
 app.use(notFound);
 app.use(errorHandler);
