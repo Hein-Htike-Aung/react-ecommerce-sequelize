@@ -7,6 +7,7 @@ import { ReqHandler } from "../types";
 import { omit } from "lodash";
 import handleError from "../utils/handleError";
 import User from "../models/user";
+import { getUserById } from "../services/user.service";
 
 export const userLogin: ReqHandler = async (req: Request, res: Response) => {
   try {
@@ -57,7 +58,7 @@ export const changeUserPassword: ReqHandler = async (
 
     const { userId } = req.user;
 
-    const user = await User.findByPk(userId, { raw: true });
+    const user = await getUserById(+userId);
 
     if (!user) return errorResponse(res, 404, "User not found");
 

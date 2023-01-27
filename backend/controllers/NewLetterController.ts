@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { get } from "lodash";
 import NewLetter from "../models/newletter";
+import { getNewLetterById } from "../services/newLetter.service";
 import { ReqHandler } from "../types";
 import errorResponse from "../utils/errorResponse";
 import getPaginationData from "../utils/getPaginationData";
@@ -26,7 +27,7 @@ export const updateNewLetter: ReqHandler = async (
   try {
     const id = get(req.params, "newLetterId");
 
-    const newLetter = await NewLetter.findByPk(id);
+    const newLetter = await getNewLetterById(+id);
 
     if (!newLetter) return errorResponse(res, 404, "New letter not found");
 
@@ -45,7 +46,7 @@ export const deletedNewLetter: ReqHandler = async (
   try {
     const id = get(req.params, "newLetterId");
 
-    const newLetter = await NewLetter.findByPk(id);
+    const newLetter = await getNewLetterById(+id);
 
     if (!newLetter) return errorResponse(res, 404, "New letter not found");
 
@@ -61,7 +62,7 @@ export const getNewLetter: ReqHandler = async (req: Request, res: Response) => {
   try {
     const id = get(req.params, "newLetterId");
 
-    const newLetter = await NewLetter.findByPk(id);
+    const newLetter = await getNewLetterById(+id);
 
     if (!newLetter) return errorResponse(res, 404, "New letter not found");
 

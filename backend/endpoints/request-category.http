@@ -3,25 +3,25 @@ POST http://localhost:3001/api/v1/categories/create
 Content-Type: application/json
 
 {
-    "categoryName": "redis 4",
+    "categoryName": "redis 11",
     "parentCategoryId": 1,
     "description": "Boxing",
     "img": "https://res.cloudinary.com/techgater/image/upload/v1669198509/my-uploads/qr6vpmsi7que0uenbwkl.png"
 }
 
 ### update category
-PATCH http://localhost:3001/api/v1/categories/update/13
+PATCH http://localhost:3001/api/v1/categories/update/26
 Content-Type: application/json
 
 {
-    "categoryName": "normal",
+    "categoryName": "normal1123",
     "parentCategoryId": 6,
     "description": "Mobiles",
     "img": "https://res.cloudinary.com/techgater/image/upload/v1669198823/my-uploads/ixx3ym9ezdrizeaxepqg.webp"
 }
 
 ### delete category
-DELETE http://localhost:3001/api/v1/categories/delete/18
+DELETE http://localhost:3001/api/v1/categories/delete/26
 
 ### by id
 GET http://localhost:3001/api/v1/categories/by_id/4

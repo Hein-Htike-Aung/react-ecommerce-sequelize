@@ -5,7 +5,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "tsnd --respawn cluster.ts"
+    "dev": "tsnd --respawn cluster.ts",
+    "build": "npx tsc"
   },
   "keywords": [],
   "author": "",

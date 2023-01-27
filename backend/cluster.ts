@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
 // const http2 = require("node:http2");
 // import http2 from "node:http2";
 import cluster from "node:cluster";

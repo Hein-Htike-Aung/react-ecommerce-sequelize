@@ -13,10 +13,10 @@ import ParentCategory from "../models/parentcategory";
 import {
   delete_categoryListCache,
   getCategoryListCache,
-  get_categoryCache,
   push_categoryListCache,
   update_categoryListCache,
 } from "../cache/category.cache";
+import { getCategoryById } from "../services/category.service";
 
 export const createCategory: ReqHandler = async (
   req: Request,
@@ -54,15 +54,7 @@ export const updateCategory: ReqHandler = async (
 
     const { categoryName } = req.body;
 
-    const category = await get_categoryCache(id, async () => {
-      const category = await Category.findByPk(id);
-
-      if (category === null) return null;
-
-      console.log(category);
-
-      return category;
-    });
+    const category = await getCategoryById(+id);
 
     if (!category) return errorResponse(res, 404, "Category not found");
 
@@ -93,15 +85,7 @@ export const deleteCategory: ReqHandler = async (
 ) => {
   try {
     const id = get(req.params, "categoryId");
-    const category = await get_categoryCache(id, async () => {
-      const category = await Category.findByPk(id);
-
-      if (category === null) return null;
-
-      console.log(category);
-
-      return category;
-    });
+    const category = await getCategoryById(+id);
 
     if (!category) return errorResponse(res, 404, "Category not found");
 
@@ -119,15 +103,7 @@ export const getCategory: ReqHandler = async (req: Request, res: Response) => {
   try {
     const id = get(req.params, "categoryId");
 
-    const category = await get_categoryCache(id, async () => {
-      const category = await Category.findByPk(id);
-
-      if (category === null) return null;
-
-      console.log(category);
-
-      return category;
-    });
+    const category = await getCategoryById(+id);
 
     if (category !== null) successResponse(res, 200, null, category);
     else errorResponse(res, 404, "Category not found");
@@ -193,7 +169,6 @@ export const getCategories: ReqHandler = async (
       successResponse(res, 200, null, categories || []);
     }
   } catch (error) {
-    console.error(error);
     handleError(res, error);
   }
 };

@@ -12,7 +12,6 @@ const restoreCache = async <T, V>(
       if (data !== "null" && typeof data === "string")
         return resolve(JSON.parse(data));
 
-      console.log("freshing");
       const freshData = await freshDataFn();
       redis.set(
         key,
