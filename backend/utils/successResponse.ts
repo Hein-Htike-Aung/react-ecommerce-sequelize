@@ -1,4 +1,5 @@
 import { Response } from "express";
+import cleanObj from "./cleanObj";
 
 const successResponse = (
   res: Response,
@@ -6,11 +7,13 @@ const successResponse = (
   message: string | null,
   data = {}
 ) => {
-  res.status(status).json({
-    status: status || 200,
-    message: message || "Retrieved successful",
-    data,
-  });
+  res.status(status).json(
+    cleanObj({
+      status: status || 200,
+      message: message || "Retrieved successful",
+      data,
+    })
+  );
 };
 
 export default successResponse;

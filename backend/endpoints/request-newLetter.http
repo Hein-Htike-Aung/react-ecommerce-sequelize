@@ -3,24 +3,25 @@ POST http://localhost:3001/api/v1/newLetters/create
 Content-Type: application/json
 
 {
-    "title": "new title 3",
-    "description": "new desc"
+    "title": "new title 4",
+    "description": "new desc",
+    "link": "https://www.youtube.com/watch?v=1PPHS3pYpN4"
 }
 
 ### update new letter
-PATCH http://localhost:3001/api/v1/newLetters/update/1
+PATCH http://localhost:3001/api/v1/newLetters/update/4
 Content-Type: application/json
 
 {
-    "title": "updated title",
+    "title": "updated title 4",
     "description": "new desc"
 }
 
 ### delete new letter
-DELETE http://localhost:3001/api/v1/newLetters/delete/3
+DELETE http://localhost:3001/api/v1/newLetters/delete/4
 
 ### get new letter by id
 GET http://localhost:3001/api/v1/newLetters/by_id/2
 
 ### list
-GET http://localhost:3001/api/v1/newLetters/list?page=0&pageSize=10
+GET http://localhost:3001/api/v1/newLetters/list

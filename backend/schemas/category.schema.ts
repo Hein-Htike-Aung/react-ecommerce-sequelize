@@ -1,5 +1,4 @@
 import { object, string, number } from "yup";
-import { paginationPayload } from "./common.schema";
 
 const categoryId = {
   params: object({
@@ -21,10 +20,3 @@ export const createCategorySchema = object({ ...payload });
 export const updateCategorySchema = object({ ...categoryId, ...payload });
 
 export const categoryIdParam = object({ ...categoryId });
-
-export const categoryNameQueryParam = object({
-  query: object({
-    categoryName: string().required(),
-    ...paginationPayload,
-  }),
-});

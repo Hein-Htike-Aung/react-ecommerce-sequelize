@@ -1,7 +1,6 @@
 import express from "express";
 import { createNewLetter, deletedNewLetter, getNewLetter, getNewLetters, updateNewLetter } from "../controllers/NewLetterController";
 import validateRequest from "../middlewares/validate_request";
-import { paginationQuery } from "../schemas/common.schema";
 import { createNewLetterSchema, newLetterIdParam, updateNewLetterSchema } from "../schemas/newLetter.schema";
 
 const router = express.Router();
@@ -32,7 +31,6 @@ router.get(
 
 router.get(
     "/list",
-    [validateRequest(paginationQuery)],
     getNewLetters
 );
 

@@ -1,4 +1,4 @@
-"use strict";
+("use strict");
 import {
   CreationOptional,
   DataTypes,
@@ -7,10 +7,21 @@ import {
   Model,
 } from "sequelize";
 import { sequelize } from ".";
-import ParentCategory from "./parentcategory";
+import { IParentCategory } from "./parentcategory";
 
-export interface ParentCategoryWithCategories extends ParentCategory {
+export interface ParentCategoryWithCategories extends IParentCategory {
   categories: Category[];
+}
+export interface CategoryWithParentCategory extends ICategory {
+  parentCategoryName: string;
+}
+
+export interface ICategory {
+  id: number;
+  categoryName: string;
+  parentCategoryId: number;
+  description: string;
+  img: string;
 }
 
 class Category extends Model<

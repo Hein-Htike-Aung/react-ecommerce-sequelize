@@ -12,3 +12,6 @@ export const getNewLetterById = async (id: number) => {
 
   return newLetter;
 };
+
+export const findAllNewLetter = async () =>
+  await NewLetter.findAll({ order: [["created_at", "DESC"]], raw: true });

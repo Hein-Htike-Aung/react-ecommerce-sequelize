@@ -1,8 +1,8 @@
-import { getCategoriesPlain, getParentCategories } from './../controllers/CategoryController';
+import { getParentCategories } from './../controllers/CategoryController';
 import express from "express";
-import { createCategory, deleteCategory, getCategories, getCategoriesByCategoryName, getCategory, updateCategory } from "../controllers/CategoryController";
+import { createCategory, deleteCategory, getCategories, getCategory, updateCategory } from "../controllers/CategoryController";
 import validateRequest from "../middlewares/validate_request";
-import { categoryIdParam, categoryNameQueryParam, createCategorySchema, updateCategorySchema } from "../schemas/category.schema";
+import { categoryIdParam, createCategorySchema, updateCategorySchema } from "../schemas/category.schema";
 
 const router = express.Router();
 
@@ -31,19 +31,8 @@ router.get(
 );
 
 router.get(
-    "/by_categoryName",
-    [validateRequest(categoryNameQueryParam)],
-    getCategoriesByCategoryName
-);
-
-router.get(
     "/list",
     getCategories
-);
-
-router.get(
-    "/list_plain",
-    getCategoriesPlain
 );
 
 router.get(

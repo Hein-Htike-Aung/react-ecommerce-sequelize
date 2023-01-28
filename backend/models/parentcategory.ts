@@ -9,6 +9,13 @@ import {
 } from "sequelize";
 import { sequelize } from ".";
 
+export interface IParentCategory {
+  id: number;
+  parentCategoryName: string;
+  created_at: Date;
+  updated_at: Date;
+}
+
 class ParentCategory extends Model<
   InferAttributes<ParentCategory>,
   InferCreationAttributes<ParentCategory>

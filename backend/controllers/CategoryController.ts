@@ -1,22 +1,27 @@
 import { Request, Response } from "express";
 import { get } from "lodash";
-import { Op, QueryTypes } from "sequelize";
-import { ReqHandler } from "../types";
-import errorResponse from "../utils/errorResponse";
-import getPaginationData from "../utils/getPaginationData";
-import handleError from "../utils/handleError";
-import isDuplicate from "../utils/isDuplicate";
-import successResponse from "../utils/successResponse";
-import { sequelize } from "../models";
-import Category, { ParentCategoryWithCategories } from "../models/category";
-import ParentCategory from "../models/parentcategory";
 import {
   delete_categoryListCache,
   getCategoryListCache,
-  push_categoryListCache,
-  update_categoryListCache,
+  setCategoryCache,
+  updateCategoryCache,
 } from "../cache/category.cache";
-import { getCategoryById } from "../services/category.service";
+import Category, {
+  CategoryWithParentCategory,
+  ParentCategoryWithCategories,
+} from "../models/category";
+import ParentCategory from "../models/parentcategory";
+import {
+  getAllCategory,
+  getCategoryById,
+  getCategoryById_using_cache,
+  parentCategoryById_using_cache,
+} from "../services/category.service";
+import { ReqHandler } from "../types";
+import errorResponse from "../utils/errorResponse";
+import handleError from "../utils/handleError";
+import isDuplicate from "../utils/isDuplicate";
+import successResponse from "../utils/successResponse";
 
 export const createCategory: ReqHandler = async (
   req: Request,
@@ -26,8 +31,13 @@ export const createCategory: ReqHandler = async (
     const { categoryName, parentCategoryId, description, img } = req.body;
 
     const category = await Category.findOne({ where: { categoryName } });
-
     if (category) return errorResponse(res, 403, "Category already exists");
+
+    const parentCategory = await parentCategoryById_using_cache(
+      parentCategoryId
+    );
+    if (!parentCategory)
+      return errorResponse(res, 404, "Parent Category not found");
 
     const newCategory = await Category.create({
       categoryName,
@@ -37,8 +47,12 @@ export const createCategory: ReqHandler = async (
     });
 
     if (newCategory) {
-      await push_categoryListCache(newCategory);
-      successResponse(res, 201, "Category has been created");
+      await setCategoryCache({
+        ...newCategory.get({ plain: true }),
+        parentCategoryName: parentCategory.parentCategoryName,
+      } as CategoryWithParentCategory);
+
+      successResponse(res, 200, "Category has been created");
     } else errorResponse(res, 500, null);
   } catch (error) {
     handleError(res, error);
@@ -52,11 +66,16 @@ export const updateCategory: ReqHandler = async (
   try {
     const id = get(req.params, "categoryId");
 
-    const { categoryName } = req.body;
+    const { categoryName, parentCategoryId } = req.body;
 
-    const category = await getCategoryById(+id);
-
+    const category = await getCategoryById_using_cache(+id);
     if (!category) return errorResponse(res, 404, "Category not found");
+
+    const parentCategory = await parentCategoryById_using_cache(
+      parentCategoryId
+    );
+    if (!parentCategory)
+      return errorResponse(res, 404, "Parent Category not found");
 
     const existingCategory = await Category.findOne({
       where: { categoryName },
@@ -67,11 +86,11 @@ export const updateCategory: ReqHandler = async (
 
     await Category.update({ ...req.body }, { where: { id } });
 
-    const updatedCategory = await Category.findByPk(id);
+    const updatedCategory = await getCategoryById(+id);
 
-    if (!updatedCategory) return errorResponse(res, 404, "Category not found");
-
-    await update_categoryListCache(updatedCategory);
+    await updateCategoryCache({
+      ...updatedCategory,
+    } as CategoryWithParentCategory);
 
     successResponse(res, 202, "Category has been updated");
   } catch (error) {
@@ -85,8 +104,8 @@ export const deleteCategory: ReqHandler = async (
 ) => {
   try {
     const id = get(req.params, "categoryId");
-    const category = await getCategoryById(+id);
 
+    const category = await getCategoryById_using_cache(+id);
     if (!category) return errorResponse(res, 404, "Category not found");
 
     await Category.destroy({ where: { id } });
@@ -99,33 +118,14 @@ export const deleteCategory: ReqHandler = async (
   }
 };
 
+// not necessary
 export const getCategory: ReqHandler = async (req: Request, res: Response) => {
   try {
     const id = get(req.params, "categoryId");
 
-    const category = await getCategoryById(+id);
+    const category = await getCategoryById_using_cache(+id);
 
     if (category !== null) successResponse(res, 200, null, category);
-    else errorResponse(res, 404, "Category not found");
-  } catch (error) {
-    handleError(res, error);
-  }
-};
-
-export const getCategoriesPlain: ReqHandler = async (
-  req: Request,
-  res: Response
-) => {
-  try {
-    const categories = await getCategoryListCache(async () => {
-      const categories = await Category.findAll({ raw: true });
-
-      if (!categories.length) return null;
-
-      return categories;
-    });
-
-    if (categories.length) successResponse(res, 200, null, categories);
     else errorResponse(res, 404, "Category not found");
   } catch (error) {
     handleError(res, error);
@@ -137,64 +137,9 @@ export const getCategories: ReqHandler = async (
   res: Response
 ) => {
   try {
-    const { offset, limit, isPagination } = getPaginationData(req.query);
+    const categories = await getCategoryListCache(async () => getAllCategory());
 
-    if (isPagination) {
-      const q = `select c.*, pc.parentCategoryName from category c
-                  inner join parent_category pc
-                  on c.parentCategoryId = pc.id
-                  order by created_at desc
-                  limit ? offset ?`;
-
-      const result = await sequelize.query(q, {
-        replacements: [limit, offset],
-        raw: true,
-        type: QueryTypes.SELECT,
-      });
-
-      const count = await Category.count();
-
-      successResponse(res, 200, null, { result: result, count });
-    } else {
-      const q = `select c.*, pc.parentCategoryName from category c
-                  inner join parent_category pc
-                  on c.parentCategoryId = pc.id
-                  order by created_at desc`;
-
-      const categories = await sequelize.query(q, {
-        raw: true,
-        type: QueryTypes.SELECT,
-      });
-
-      successResponse(res, 200, null, categories || []);
-    }
-  } catch (error) {
-    handleError(res, error);
-  }
-};
-
-export const getCategoriesByCategoryName: ReqHandler = async (
-  req: Request,
-  res: Response
-) => {
-  try {
-    const categoryName = get(req.query, "categoryName");
-
-    const { offset, limit } = getPaginationData(req.query);
-
-    const { count, rows } = await Category.findAndCountAll({
-      offset,
-      limit,
-      where: {
-        categoryName: {
-          [Op.like]: `${categoryName || ""}%`,
-        },
-      },
-      order: [["created_at", "DESC"]],
-      raw: true,
-    });
-
-    successResponse(res, 200, null, { result: rows, count });
+    successResponse(res, 200, null, categories);
   } catch (error) {
     handleError(res, error);
   }

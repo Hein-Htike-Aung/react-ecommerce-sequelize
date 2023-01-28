@@ -1,10 +1,16 @@
+import { findAllNewLetter } from './../services/newLetter.service';
 import { Request, Response } from "express";
 import { get } from "lodash";
+import {
+  deleteNewLetterCache,
+  getNewLetterListCache,
+  setNewLetterCache,
+  updateNewLetterCache,
+} from "../cache/newLetter.cache";
 import NewLetter from "../models/newletter";
 import { getNewLetterById } from "../services/newLetter.service";
 import { ReqHandler } from "../types";
 import errorResponse from "../utils/errorResponse";
-import getPaginationData from "../utils/getPaginationData";
 import handleError from "../utils/handleError";
 import successResponse from "../utils/successResponse";
 
@@ -13,8 +19,13 @@ export const createNewLetter: ReqHandler = async (
   res: Response
 ) => {
   try {
-    await NewLetter.create({ ...req.body });
-    successResponse(res, 201, "New Letter has been created");
+    const newLetter = await NewLetter.create({ ...req.body });
+
+    if (newLetter) {
+      await setNewLetterCache(newLetter);
+
+      successResponse(res, 201, "New Letter has been created");
+    }
   } catch (error) {
     handleError(res, error);
   }
@@ -31,7 +42,16 @@ export const updateNewLetter: ReqHandler = async (
 
     if (!newLetter) return errorResponse(res, 404, "New letter not found");
 
-    await NewLetter.update({ ...req.body }, { where: { id } });
+    await newLetter.update({ ...req.body }, { where: { id } });
+
+    const updatedNewLetter = await NewLetter.findByPk(id, { raw: true });
+
+    console.log(updatedNewLetter);
+
+    if (!updatedNewLetter)
+      return errorResponse(res, 404, "New letter not found");
+
+    await updateNewLetterCache(updatedNewLetter);
 
     successResponse(res, 202, "New letter has been updated");
   } catch (error) {
@@ -51,6 +71,8 @@ export const deletedNewLetter: ReqHandler = async (
     if (!newLetter) return errorResponse(res, 404, "New letter not found");
 
     await NewLetter.destroy({ where: { id } });
+
+    await deleteNewLetterCache(+id);
 
     successResponse(res, 202, "New letter has been deleted");
   } catch (error) {
@@ -77,16 +99,11 @@ export const getNewLetters: ReqHandler = async (
   res: Response
 ) => {
   try {
-    const { offset, limit } = getPaginationData(req.query);
+    const newLetters = await getNewLetterListCache(
+      async () => await findAllNewLetter()
+    );
 
-    const { rows, count } = await NewLetter.findAndCountAll({
-      offset,
-      limit,
-      order: [["created_at", "DESC"]],
-      raw: true,
-    });
-
-    successResponse(res, 200, null, { result: rows, count });
+    successResponse(res, 200, null, newLetters);
   } catch (error) {
     handleError(res, error);
   }
