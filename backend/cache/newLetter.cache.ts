@@ -1,68 +1,66 @@
 import NewLetter from "../models/newletter";
-import { findAllNewLetter } from "../services/newLetter.service";
+import NewLetterService from "../services/newLetter.service";
 import getCache from "../utils/getCache";
-import restoreCache from "../utils/restoreCahce";
+import restoreCache from "../utils/restoreCache";
 import { setCache } from "../utils/setCache";
 
-export const setNewLetterCache = async (newLetter: NewLetter) => {
-  let existingNewLetterCache = await getCache<NewLetter[]>("newLetters");
+class NewLetterCache {
+  // set new letter
+  static setNewLetter = async (newLetter: NewLetter) => {
+    let existingNewLetterCache = await getCache<NewLetter[]>("newLetters");
 
-  if (!existingNewLetterCache.length) {
-    existingNewLetterCache = await restoreNewLetterListCache();
-  }
-
-  setCache("newLetters", [newLetter, ...existingNewLetterCache]);
-};
-
-export const updateNewLetterCache = async (newLetter: NewLetter) => {
-  let existingNewLetterCache = await getCache<NewLetter[]>("newLetters");
-
-  if (!existingNewLetterCache.length) {
-    existingNewLetterCache = await restoreNewLetterListCache();
-  }
-
-  existingNewLetterCache = existingNewLetterCache.map((l) =>
-    l.id === newLetter.id ? newLetter : l
-  );
-
-  setCache("newLetters", existingNewLetterCache);
-};
-
-export const deleteNewLetterCache = async (id: number) => {
-  let existingNewLetterCache = await getCache<NewLetter[]>("newLetters");
-
-  if (!existingNewLetterCache.length) {
-    existingNewLetterCache = await restoreNewLetterListCache();
-  }
-
-  existingNewLetterCache = existingNewLetterCache.filter((l) => l.id !== id);
-
-  setCache("newLetters", existingNewLetterCache);
-};
-
-export const restoreNewLetterListCache = async () => {
-  return (await restoreCache<NewLetter[], NewLetter[] | null>(
-    `newLetters`,
-    async () => await findAllNewLetter()
-  )) as NewLetter[];
-};
-
-export const get_newLetterCache = async (
-  id: number,
-  freshDataFn: () => Promise<null | NewLetter>
-) => {
-  return (await restoreCache(`newLetter:${id}`, async () => {
-    return freshDataFn();
-  })) as NewLetter;
-};
-
-export const getNewLetterListCache = async (
-  freshDataFn: () => Promise<null | NewLetter[]>
-) => {
-  return (await restoreCache<NewLetter[], NewLetter[] | null>(
-    `newLetters`,
-    async () => {
-      return freshDataFn();
+    if (!existingNewLetterCache.length) {
+      existingNewLetterCache = await this.restoreNewLetterList();
     }
-  )) as NewLetter[];
-};
+
+    setCache("newLetters", [newLetter, ...existingNewLetterCache]);
+  };
+
+  // update new letter
+  static updateNewLetter = async (newLetter: NewLetter) => {
+    let existingNewLetterCache = await getCache<NewLetter[]>("newLetters");
+
+    if (!existingNewLetterCache.length) {
+      existingNewLetterCache = await this.restoreNewLetterList();
+    }
+
+    existingNewLetterCache = existingNewLetterCache.map((l) =>
+      l.id === newLetter.id ? newLetter : l
+    );
+
+    setCache("newLetters", existingNewLetterCache);
+  };
+
+  // delete new letter
+  static deleteNewLetter = async (id: number) => {
+    let existingNewLetterCache = await getCache<NewLetter[]>("newLetters");
+
+    if (!existingNewLetterCache.length) {
+      existingNewLetterCache = await this.restoreNewLetterList();
+    }
+
+    existingNewLetterCache = existingNewLetterCache.filter((l) => l.id !== id);
+
+    setCache("newLetters", existingNewLetterCache);
+  };
+
+  // get new letter
+  static getNewLetter = async (
+    id: number,
+    freshDataFn: () => Promise<null | NewLetter>
+  ) => {
+    return (await restoreCache(`newLetter:${id}`, async () =>
+      freshDataFn()
+    )) as NewLetter;
+  };
+
+  // restore new letter list
+  static restoreNewLetterList = async () => {
+    return (await restoreCache<NewLetter[], NewLetter[] | null>(
+      `newLetters`,
+      async () => await NewLetterService.getAllNewLetterQuery()
+    )) as NewLetter[];
+  };
+}
+
+export default NewLetterCache;

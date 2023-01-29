@@ -2,12 +2,12 @@ import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import errorResponse from "../utils/errorResponse";
 import successResponse from "../utils/successResponse";
-import { get } from "lodash";
-import getPaginationData from "../utils/getPaginationData";
+import { get, omit } from "lodash";
 import { ReqHandler } from "../types";
-import { Op } from "sequelize";
 import handleError from "../utils/handleError";
 import User from "../models/user";
+import UserCache from "../cache/user.cache";
+import UserService from "../services/user.service";
 
 export const createUser: ReqHandler = async (req: Request, res: Response) => {
   try {
@@ -24,7 +24,7 @@ export const createUser: ReqHandler = async (req: Request, res: Response) => {
     );
     const hashedPassword = bcrypt.hashSync(password, salt);
 
-    await User.create({
+    const newUser = await User.create({
       fullName,
       email,
       password: hashedPassword,
@@ -32,6 +32,8 @@ export const createUser: ReqHandler = async (req: Request, res: Response) => {
       gender,
       role,
     });
+
+    await UserCache.setUser(newUser);
 
     successResponse(res, 201, "User has been created");
   } catch (error) {
@@ -43,11 +45,17 @@ export const updateUser: ReqHandler = async (req: Request, res: Response) => {
   try {
     const id = get(req.params, "userId");
 
-    const user = await User.findByPk(id);
+    const user = await UserService.getUser(+id);
 
     if (!user) return errorResponse(res, 404, "User not found");
 
     await User.update({ ...req.body }, { where: { id } });
+
+    const updatedUser = await User.findByPk(id);
+
+    if (!updatedUser) return errorResponse(res, 404, "User not found");
+
+    await UserCache.updateUser(updatedUser);
 
     successResponse(res, 201, "Account has been updated");
   } catch (error) {
@@ -57,27 +65,14 @@ export const updateUser: ReqHandler = async (req: Request, res: Response) => {
 
 export const getUsers: ReqHandler = async (req: Request, res: Response) => {
   try {
-    const { offset, limit, isPagination } = getPaginationData(req.query);
+    const users = await UserCache.restoreUserList();
 
-    if (isPagination) {
-      const { rows, count } = await User.findAndCountAll({
-        offset,
-        limit,
-        attributes: { exclude: ["password"] },
-        order: [["created_at", "DESC"]],
-        raw: true,
-      });
-
-      successResponse(res, 200, null, { result: rows, count });
-    } else {
-      const { rows, count } = await User.findAndCountAll({
-        attributes: { exclude: ["password"] },
-        order: [["created_at", "DESC"]],
-        raw: true,
-      });
-
-      successResponse(res, 200, null, { result: rows, count });
-    }
+    successResponse(
+      res,
+      200,
+      null,
+      users.map((user) => omit(user, "password"))
+    );
   } catch (error) {
     handleError(res, error);
   }
@@ -87,11 +82,11 @@ export const getUser = async (req: Request, res: Response) => {
   try {
     const id = get(req.params, "userId");
 
-    const user = await User.findByPk(id);
+    const user = await UserService.getUser(+id);
 
     if (!user) return errorResponse(res, 404, "User not found");
 
-    successResponse(res, 200, null, user);
+    successResponse(res, 200, null, omit(user, "password"));
   } catch (error) {
     handleError(res, error);
   }
@@ -103,47 +98,54 @@ export const toggleUserStatus: ReqHandler = async (
 ) => {
   try {
     const id = get(req.params, "userId");
+    const { status } = req.body;
 
-    const user = await User.findByPk(id);
+    const user = await UserService.getUser(+id);
 
     if (!user) return errorResponse(res, 404, "User not found");
 
-    await User.update({ status: !user.status }, { where: { id } });
+    await User.update({ status }, { where: { id } });
 
     successResponse(
       res,
       200,
-      `User has been ${user.status ? "Inactive" : "Active"}`
+      `User has been ${status ? "Inactive" : "Active"}`
     );
+
+    const updatedUser = await User.findByPk(id);
+
+    if (!updatedUser) return errorResponse(res, 404, "User not found");
+
+    await UserCache.updateUser(updatedUser);
   } catch (error) {
     handleError(res, error);
   }
 };
 
-export const getUsersByName: ReqHandler = async (
-  req: Request,
-  res: Response
-) => {
-  try {
-    const fullName = get(req.query, "fullName");
+// export const getUsersByName: ReqHandler = async (
+//   req: Request,
+//   res: Response
+// ) => {
+//   try {
+//     const fullName = get(req.query, "fullName");
 
-    const { offset, limit } = getPaginationData(req.query);
+//     const { offset, limit } = getPaginationData(req.query);
 
-    const { count, rows } = await User.findAndCountAll({
-      offset,
-      limit,
-      attributes: { exclude: ["password"] },
-      where: {
-        fullName: {
-          [Op.like]: `${fullName}%`,
-        },
-      },
-      order: [["created_at", "DESC"]],
-      raw: true,
-    });
+//     const { count, rows } = await User.findAndCountAll({
+//       offset,
+//       limit,
+//       attributes: { exclude: ["password"] },
+//       where: {
+//         fullName: {
+//           [Op.like]: `${fullName}%`,
+//         },
+//       },
+//       order: [["created_at", "DESC"]],
+//       raw: true,
+//     });
 
-    successResponse(res, 200, null, { result: rows, count });
-  } catch (error) {
-    handleError(res, error);
-  }
-};
+//     successResponse(res, 200, null, { result: rows, count });
+//   } catch (error) {
+//     handleError(res, error);
+//   }
+// };

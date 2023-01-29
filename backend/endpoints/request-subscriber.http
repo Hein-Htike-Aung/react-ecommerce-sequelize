@@ -1,10 +1,16 @@
 ### subscribe
 POST http://localhost:3001/api/v1/subscribers/subscribe
-Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImlhdCI6MTY3MjkwOTEyNiwiZXhwIjoxNjcyOTMwNzI2fQ.NrqITQEbM-4Gt0L_EUYiyguJVi8cLoxl2_HFnDYB-U0
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTY3NDk4ODgyMSwiZXhwIjoxNjc1MDEwNDIxfQ.VW_UnGgzlC_cPBSn1OwhJcFTs37GsrhXvDKT7NR6L1o
+Content-Type: application/json
+
+{
+    "email": "adminuser@gmail.com"
+}
 
 ### unsubscribe
-POST http://localhost:3001/api/v1/subscribers/unsubscribe
-Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjMsImlhdCI6MTY3MjkwODkxNCwiZXhwIjoxNjcyOTMwNTE0fQ.KF-U-OfLEzN8nte0G0o7oUTy7aWiSzk_LsOvCQmDuiw
+POST http://localhost:3001/api/v1/subscribers/unsubscribe/3
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTY3NDk4ODgyMSwiZXhwIjoxNjc1MDEwNDIxfQ.VW_UnGgzlC_cPBSn1OwhJcFTs37GsrhXvDKT7NR6L1o
+
 
 ### list
 GET http://localhost:3001/api/v1/subscribers/list?page=0&pageSize=10

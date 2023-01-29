@@ -1,8 +1,10 @@
 import { Request, Response } from "express";
 import { differenceWith, get, isEqual } from "lodash";
 import { Op } from "sequelize";
+import ProductCache from "../cache/product.cache";
 import Product, { ProductWithImages } from "../models/product";
 import ProductImage from "../models/productimage";
+import ProductService from "../services/product.service";
 import { ReqHandler } from "../types";
 import errorResponse from "../utils/errorResponse";
 import getPaginationData from "../utils/getPaginationData";
@@ -78,7 +80,7 @@ export const updateProduct: ReqHandler = async (
     const id = get(req.params, "productId");
     const { productName, product_code, product_sku, productImages } = req.body;
 
-    const product = await Product.findByPk(id);
+    const product = await ProductService.getProduct(+id);
 
     if (!product) return errorResponse(res, 404, "Product not found");
 
@@ -129,6 +131,13 @@ export const updateProduct: ReqHandler = async (
       })
     );
 
+    // update product cache
+    const updatedProduct = await Product.findByPk(id);
+
+    if (!updatedProduct) return errorResponse(res, 404, "Product not found");
+
+    await ProductCache.updateProduct(updatedProduct);
+
     successResponse(res, 202, "Product has been updated");
   } catch (error) {
     handleError(res, error);
@@ -143,7 +152,7 @@ export const toggle_isFeatured: ReqHandler = async (
     const id = get(req.params, "productId");
     const { isFeatured } = req.body;
 
-    const product = await Product.findByPk(id);
+    const product = await ProductService.getProduct(+id);
 
     if (!product) return errorResponse(res, 404, "Product not found");
 
@@ -157,6 +166,14 @@ export const toggle_isFeatured: ReqHandler = async (
         },
       }
     );
+
+    // update product cache
+    const updatedProduct = await Product.findByPk(id);
+
+    if (!updatedProduct) return errorResponse(res, 404, "Product not found");
+
+    await ProductCache.updateProduct(updatedProduct);
+
     successResponse(res, 202, "Product is_featured status has been updated");
   } catch (error) {
     handleError(res, error);
@@ -170,7 +187,7 @@ export const deleteProduct: ReqHandler = async (
   try {
     const id = get(req.params, "productId");
 
-    const product = await Product.findByPk(id);
+    const product = await ProductService.getProduct(+id);
 
     if (!product) return errorResponse(res, 404, "Product not found");
 
@@ -187,6 +204,8 @@ export const deleteProduct: ReqHandler = async (
       })
     );
 
+    ProductCache.removeProduct(+id);
+
     successResponse(res, 202, "Product has been deleted");
   } catch (error) {
     handleError(res, error);
@@ -197,7 +216,7 @@ export const getProduct: ReqHandler = async (req: Request, res: Response) => {
   try {
     const id = get(req.params, "productId");
 
-    const product = await Product.findByPk(id, { raw: true });
+    const product = await ProductService.getProduct(+id);
 
     if (!product) return errorResponse(res, 404, "Product not found");
 

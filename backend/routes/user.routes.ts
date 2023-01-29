@@ -1,7 +1,7 @@
 import express from "express";
-import { createUser, getUsers, getUsersByName, toggleUserStatus, updateUser } from "../controllers/UserController";
+import { createUser, getUsers, toggleUserStatus, updateUser } from "../controllers/UserController";
 import validateRequest from "../middlewares/validate_request";
-import { createUserSchema, fullNameQueryParam, updateUserSchema, userIdParam } from "../schemas/user.schema";
+import { createUserSchema, updateUserSchema, userIdParam } from "../schemas/user.schema";
 
 const router = express.Router();
 
@@ -28,10 +28,10 @@ router.post(
     toggleUserStatus
 );
 
-router.get(
-    "/by_fullName",
-    [validateRequest(fullNameQueryParam)],
-    getUsersByName
-);
+// router.get(
+//     "/by_fullName",
+//     [validateRequest(fullNameQueryParam)],
+//     getUsersByName
+// );
 
 export default router;

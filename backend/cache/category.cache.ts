@@ -1,96 +1,98 @@
 import { CategoryWithParentCategory } from "../models/category";
 import ParentCategory from "../models/parentcategory";
-import { getAllCategory } from "../services/category.service";
+import CategoryService from "../services/category.service";
 import getCache from "../utils/getCache";
-import restoreCache from "../utils/restoreCahce";
+import restoreCache from "../utils/restoreCache";
 import { setCache } from "../utils/setCache";
 
-export const setCategoryCache = async (
-  category: CategoryWithParentCategory
-) => {
-  let existingCategoriesCache = await getCache<CategoryWithParentCategory[]>(
-    "categories"
-  );
+class CategoryCache {
+  // set category
+  static setCategory = async (category: CategoryWithParentCategory) => {
+    let existingCategoriesCache = await getCache<CategoryWithParentCategory[]>(
+      "categories"
+    );
 
-  if (!existingCategoriesCache.length) {
-    existingCategoriesCache = await restoreCategoryListCache();
-  }
-
-  setCache("categories", [category, ...existingCategoriesCache]);
-};
-
-export const updateCategoryCache = async (
-  category: CategoryWithParentCategory
-) => {
-  let existingCategoriesCache = await getCache<CategoryWithParentCategory[]>(
-    "categories"
-  );
-
-  if (!existingCategoriesCache.length) {
-    existingCategoriesCache = await restoreCategoryListCache();
-  }
-
-  existingCategoriesCache = existingCategoriesCache.map((c) =>
-    c.id === category.id ? category : c
-  );
-
-  setCache("categories", existingCategoriesCache);
-};
-
-export const delete_categoryListCache = async (id: number) => {
-  let existingCategoriesCache = await getCache<CategoryWithParentCategory[]>(
-    "categories"
-  );
-
-  if (!existingCategoriesCache.length) {
-    existingCategoriesCache = await restoreCategoryListCache();
-  }
-
-  existingCategoriesCache = existingCategoriesCache.filter((c) => c.id !== id);
-
-  setCache("categories", existingCategoriesCache);
-};
-
-export const getParentCategoryByIdCache = async (
-  id: number,
-  freshDataFn: () => Promise<null | ParentCategory>
-) => {
-  return (await restoreCache<ParentCategory, ParentCategory | null>(
-    `parentCategory:${id}`,
-    async () => {
-      return freshDataFn();
+    if (!existingCategoriesCache.length) {
+      existingCategoriesCache = await this.restoreCategoryList();
     }
-  )) as ParentCategory | null;
-};
 
-export const get_categoryCache = async (
-  id: number,
-  freshDataFn: () => Promise<null | CategoryWithParentCategory>
-) => {
-  return (await restoreCache<
-    CategoryWithParentCategory,
-    CategoryWithParentCategory | null
-  >(`category:${id}`, async () => {
-    return freshDataFn();
-  })) as CategoryWithParentCategory | null;
-};
+    setCache("categories", [category, ...existingCategoriesCache]);
+  };
 
-export const getCategoryListCache = async (
-  freshDataFn: () => Promise<null | CategoryWithParentCategory[]>
-) => {
-  return (await restoreCache<
-    CategoryWithParentCategory[],
-    CategoryWithParentCategory[] | null
-  >(`categories`, async () => {
-    return freshDataFn();
-  })) as CategoryWithParentCategory[];
-};
+  // update category
+  static updateCategory = async (category: CategoryWithParentCategory) => {
+    let existingCategoriesCache = await getCache<CategoryWithParentCategory[]>(
+      "categories"
+    );
 
-export const restoreCategoryListCache = async () => {
-  return (await restoreCache<
-    CategoryWithParentCategory[],
-    CategoryWithParentCategory[] | null
-  >(`categories`, async () => {
-    return getAllCategory();
-  })) as CategoryWithParentCategory[];
-};
+    if (!existingCategoriesCache.length) {
+      existingCategoriesCache = await this.restoreCategoryList();
+    }
+
+    existingCategoriesCache = existingCategoriesCache.map((c) =>
+      c.id === category.id ? category : c
+    );
+
+    setCache("categories", existingCategoriesCache);
+  };
+
+  // delete category
+  static deleteCategory = async (id: number) => {
+    let existingCategoriesCache = await getCache<CategoryWithParentCategory[]>(
+      "categories"
+    );
+
+    if (!existingCategoriesCache.length) {
+      existingCategoriesCache = await this.restoreCategoryList();
+    }
+
+    existingCategoriesCache = existingCategoriesCache.filter(
+      (c) => c.id !== id
+    );
+
+    setCache("categories", existingCategoriesCache);
+  };
+
+  // get parent category
+  static getParentCategory = async (
+    id: number,
+    freshDataFn: () => Promise<null | ParentCategory>
+  ) => {
+    return (await restoreCache<ParentCategory, ParentCategory | null>(
+      `parentCategory:${id}`,
+      async () => freshDataFn()
+    )) as ParentCategory | null;
+  };
+
+  // get category
+  static getCategory = async (
+    id: number,
+    freshDataFn: () => Promise<null | CategoryWithParentCategory>
+  ) => {
+    return (await restoreCache<
+      CategoryWithParentCategory,
+      CategoryWithParentCategory | null
+    >(`category:${id}`, async () =>
+      freshDataFn()
+    )) as CategoryWithParentCategory | null;
+  };
+
+  // restore category list
+  static restoreCategoryList = async () => {
+    return (await restoreCache<
+      CategoryWithParentCategory[],
+      CategoryWithParentCategory[] | null
+    >(`categories`, async () =>
+      CategoryService.getAllCategoryQuery()
+    )) as CategoryWithParentCategory[];
+  };
+
+  // restore parent category list
+  static restoreParentCategoryList = async () => {
+    return (await restoreCache(`parentCategories`, async () =>
+      CategoryService.getParentCategoriesQuery()
+    )) as ParentCategory[];
+  };
+}
+
+export default CategoryCache;

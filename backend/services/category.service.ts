@@ -1,53 +1,68 @@
 import { QueryTypes } from "sequelize";
-import {
-  getParentCategoryByIdCache,
-  get_categoryCache,
-} from "../cache/category.cache";
+import CategoryCache from "../cache/category.cache";
 import { sequelize } from "../models";
 import ParentCategory from "../models/parentcategory";
 
-export const parentCategoryById_using_cache = async (id: number) => {
-  const parentCategory = await getParentCategoryByIdCache(id, async () => {
-    const parentCategory = await ParentCategory.findByPk(id);
+class CategoryService {
+  // get parent category
+  static getParentCategory = async (id: number) => {
+    const parentCategory = await CategoryCache.getParentCategory(
+      id,
+      async () => {
+        const parentCategory = await ParentCategory.findByPk(id);
 
-    if (!parentCategory) return null;
+        if (!parentCategory) return null;
+
+        return parentCategory;
+      }
+    );
 
     return parentCategory;
-  });
+  };
 
-  return parentCategory;
-};
+  // get category
+  static getCategory = async (id: number) => {
+    return await CategoryCache.getCategory(id, () => this.getCategoryQuery(id));
+  };
 
-export const getCategoryById_using_cache = async (id: number) => {
-  return await get_categoryCache(id, async () => getCategoryById(id));
-};
+  // get parent category query
+  static getParentCategoriesQuery = async () =>
+    await ParentCategory.findAll({
+      order: [["created_at", "DESC"]],
+      raw: true,
+    });
 
-export const getCategoryById = async (id: number) => {
-  const q = `select c.*, pc.parentCategoryName from category c
-  inner join parent_category pc
-  on c.parentCategoryId = pc.id
-  where c.id = ?`;
+  // get category query
+  static getCategoryQuery = async (id: number) => {
+    const q = `select c.*, pc.parentCategoryName from category c
+    inner join parent_category pc
+    on c.parentCategoryId = pc.id
+    where c.id = ?`;
 
-  const [category] = await sequelize.query(q, {
-    replacements: [id],
-    raw: true,
-    type: QueryTypes.SELECT,
-  });
+    const [category] = await sequelize.query(q, {
+      replacements: [id],
+      raw: true,
+      type: QueryTypes.SELECT,
+    });
 
-  return category;
-};
+    return category;
+  };
 
-export const getAllCategory = async () => {
-  const q = `select c.*, pc.parentCategoryName from category c
-                  inner join parent_category pc
-                  on c.parentCategoryId = pc.id
-                  order by c.created_at desc`;
+  // get all category query
+  static getAllCategoryQuery = async () => {
+    const q = `select c.*, pc.parentCategoryName from category c
+                    inner join parent_category pc
+                    on c.parentCategoryId = pc.id
+                    order by c.created_at desc`;
 
-  const categories = await sequelize.query(q, {
-    raw: true,
-    type: QueryTypes.SELECT,
-  });
+    const categories = await sequelize.query(q, {
+      raw: true,
+      type: QueryTypes.SELECT,
+    });
 
-  if (categories.length) return categories;
-  return [];
-};
+    if (categories.length) return categories;
+    return [];
+  };
+}
+
+export default CategoryService;

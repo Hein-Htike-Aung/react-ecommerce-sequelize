@@ -7,7 +7,8 @@ import { ReqHandler } from "../types";
 import { omit } from "lodash";
 import handleError from "../utils/handleError";
 import User from "../models/user";
-import { getUserById } from "../services/user.service";
+import UserService from "../services/user.service";
+import UserCache from "../cache/user.cache";
 
 export const userLogin: ReqHandler = async (req: Request, res: Response) => {
   try {
@@ -58,11 +59,11 @@ export const changeUserPassword: ReqHandler = async (
 
     const { userId } = req.user;
 
-    const user = await getUserById(+userId);
+    const loggedInUser = await UserService.getUser(+userId);
 
-    if (!user) return errorResponse(res, 404, "User not found");
+    if (!loggedInUser) return errorResponse(res, 404, "User not found");
 
-    if (!bcrypt.compareSync(oldPassword, user.password)) {
+    if (!bcrypt.compareSync(oldPassword, loggedInUser.password)) {
       return errorResponse(res, 403, "Unauthorized");
     }
 
@@ -72,6 +73,12 @@ export const changeUserPassword: ReqHandler = async (
     const hashedPassword = bcrypt.hashSync(newPassword, salt);
 
     await User.update({ password: hashedPassword }, { where: { id: userId } });
+
+    const updatedUser = await User.findByPk(userId);
+
+    if (!updatedUser) return errorResponse(res, 404, "User not found");
+
+    await UserCache.updateUser(updatedUser);
 
     successResponse(res, 202, "Password has been updated");
   } catch (error) {

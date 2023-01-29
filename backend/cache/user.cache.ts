@@ -1,11 +1,53 @@
+import { setCache } from "./../utils/setCache";
 import User from "../models/user";
-import restoreCache from "../utils/restoreCahce";
+import UserService from "../services/user.service";
+import getCache from "../utils/getCache";
+import restoreCache from "../utils/restoreCache";
 
-export const get_userCache = async (
-  id: number,
-  freshDataFn: () => Promise<null | User>
-) => {
-  return (await restoreCache(`user:${id}`, async () => {
-    return freshDataFn();
-  })) as User | null;
-};
+class UserCache {
+  // set user
+  static setUser = async (user: User) => {
+    let existingUsersCache = await getCache<User[]>("users");
+
+    if (!existingUsersCache.length) {
+      existingUsersCache = await this.restoreUserList();
+    }
+
+    setCache("users", [user, ...existingUsersCache]);
+  };
+
+  // update user
+  static updateUser = async (user: User) => {
+    let existingUsersCache = await getCache<User[]>("users");
+
+    if (!existingUsersCache.length) {
+      existingUsersCache = await this.restoreUserList();
+    }
+
+    existingUsersCache = existingUsersCache.map((u) =>
+      u.id === user.id ? user : u
+    );
+
+    setCache("users", existingUsersCache);
+  };
+
+  // get user
+  static getUser = async (
+    id: number,
+    freshDataFn: () => Promise<null | User>
+  ) => {
+    return (await restoreCache(`user:${id}`, async () =>
+      freshDataFn()
+    )) as User | null;
+  };
+
+  // restore user list
+  static restoreUserList = async () => {
+    return (await restoreCache(
+      `users`,
+      async () => await UserService.getAllUserQuery()
+    )) as User[];
+  };
+}
+
+export default UserCache;

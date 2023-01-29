@@ -4,20 +4,20 @@ Content-Type: application/json
 
 {
     "fullName": "test",
-    "email": "test@gmail.com",
-    "password": "admin123!@#",
+    "email": "test9@gmail.com",
+    "password": "test123!@#",
     "phone": "0934234234",
     "gender": "Female",
     "role": "Editor"
 }   
 
 ### update user
-PATCH http://localhost:3001/api/v1/users/update/4
+PATCH http://localhost:3001/api/v1/users/update/14
 Content-Type: application/json
 
 {
-    "fullName": "test",
-    "email": "test@gmail.com",
+    "fullName": "updated test",
+    "email": "updatedtest9@gmail.com",
     "password": "admin123!@#",
     "img": "https://images.pexels.com/photos/14487514/pexels-photo-14487514.jpeg?auto=compress&cs=tinysrgb&w=1200&lazy=load",
     "phone": "0934234234",
@@ -28,13 +28,10 @@ Content-Type: application/json
 ### list
 GET http://localhost:3001/api/v1/users/list
 
-
-### list with pagination
-GET http://localhost:3001/api/v1/users/list?page=0&pageSize=10
-
-
 ### toggle status
-POST http://localhost:3001/api/v1/users/toggle_status/4
+POST http://localhost:3001/api/v1/users/toggle_status/14
+Content-Type: application/json
 
-### by fullname
-GET http://localhost:3001/api/v1/users/by_fullName?fullName=He&page=0&pageSize=10
+{
+    "status": true
+}

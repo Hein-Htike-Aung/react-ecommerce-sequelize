@@ -13,7 +13,7 @@ router.post(
 );
 
 router.post(
-    "/unsubscribe",
+    "/unsubscribe/:subscriberId",
     [jwt_auth],
     deleteSubscribe
 );

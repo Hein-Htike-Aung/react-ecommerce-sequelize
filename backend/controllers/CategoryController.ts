@@ -1,22 +1,12 @@
 import { Request, Response } from "express";
 import { get } from "lodash";
-import {
-  delete_categoryListCache,
-  getCategoryListCache,
-  setCategoryCache,
-  updateCategoryCache,
-} from "../cache/category.cache";
+import CategoryCache from "../cache/category.cache";
 import Category, {
   CategoryWithParentCategory,
   ParentCategoryWithCategories,
 } from "../models/category";
 import ParentCategory from "../models/parentcategory";
-import {
-  getAllCategory,
-  getCategoryById,
-  getCategoryById_using_cache,
-  parentCategoryById_using_cache,
-} from "../services/category.service";
+import CategoryService from "../services/category.service";
 import { ReqHandler } from "../types";
 import errorResponse from "../utils/errorResponse";
 import handleError from "../utils/handleError";
@@ -33,9 +23,10 @@ export const createCategory: ReqHandler = async (
     const category = await Category.findOne({ where: { categoryName } });
     if (category) return errorResponse(res, 403, "Category already exists");
 
-    const parentCategory = await parentCategoryById_using_cache(
+    const parentCategory = await CategoryService.getParentCategory(
       parentCategoryId
     );
+
     if (!parentCategory)
       return errorResponse(res, 404, "Parent Category not found");
 
@@ -47,7 +38,7 @@ export const createCategory: ReqHandler = async (
     });
 
     if (newCategory) {
-      await setCategoryCache({
+      await CategoryCache.setCategory({
         ...newCategory.get({ plain: true }),
         parentCategoryName: parentCategory.parentCategoryName,
       } as CategoryWithParentCategory);
@@ -68,12 +59,13 @@ export const updateCategory: ReqHandler = async (
 
     const { categoryName, parentCategoryId } = req.body;
 
-    const category = await getCategoryById_using_cache(+id);
+    const category = await CategoryService.getCategory(+id);
     if (!category) return errorResponse(res, 404, "Category not found");
 
-    const parentCategory = await parentCategoryById_using_cache(
+    const parentCategory = await CategoryService.getParentCategory(
       parentCategoryId
     );
+
     if (!parentCategory)
       return errorResponse(res, 404, "Parent Category not found");
 
@@ -86,9 +78,9 @@ export const updateCategory: ReqHandler = async (
 
     await Category.update({ ...req.body }, { where: { id } });
 
-    const updatedCategory = await getCategoryById(+id);
+    const updatedCategory = await CategoryService.getCategoryQuery(+id);
 
-    await updateCategoryCache({
+    await CategoryCache.updateCategory({
       ...updatedCategory,
     } as CategoryWithParentCategory);
 
@@ -105,12 +97,12 @@ export const deleteCategory: ReqHandler = async (
   try {
     const id = get(req.params, "categoryId");
 
-    const category = await getCategoryById_using_cache(+id);
+    const category = await CategoryService.getCategory(+id);
     if (!category) return errorResponse(res, 404, "Category not found");
 
     await Category.destroy({ where: { id } });
 
-    await delete_categoryListCache(+id);
+    await CategoryCache.deleteCategory(+id);
 
     successResponse(res, 202, "Category has been deleted");
   } catch (error) {
@@ -123,7 +115,7 @@ export const getCategory: ReqHandler = async (req: Request, res: Response) => {
   try {
     const id = get(req.params, "categoryId");
 
-    const category = await getCategoryById_using_cache(+id);
+    const category = await CategoryService.getCategory(+id);
 
     if (category !== null) successResponse(res, 200, null, category);
     else errorResponse(res, 404, "Category not found");
@@ -137,7 +129,7 @@ export const getCategories: ReqHandler = async (
   res: Response
 ) => {
   try {
-    const categories = await getCategoryListCache(async () => getAllCategory());
+    const categories = await CategoryCache.restoreCategoryList();
 
     successResponse(res, 200, null, categories);
   } catch (error) {
@@ -150,10 +142,7 @@ export const getParentCategories: ReqHandler = async (
   res: Response
 ) => {
   try {
-    const parentCategories = await ParentCategory.findAll({
-      order: [["created_at", "DESC"]],
-      raw: true,
-    });
+    const parentCategories = await CategoryCache.restoreParentCategoryList();
 
     await Promise.all(
       parentCategories.map(

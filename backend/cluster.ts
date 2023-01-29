@@ -6,7 +6,6 @@ import process from "node:process";
 // import fs from "node:fs";
 
 import app from "./app";
-import db from "./models";
 import logger from "./utils/logger";
 
 const numCPUs = _.cpus();
@@ -35,7 +34,6 @@ if (cluster.isPrimary) {
   (async () => {
     try {
       // await await db.sequelize.sync({ alter: true });
-      await await db.sequelize.sync();
 
       // await client.connect();
       app.listen(port, () => {

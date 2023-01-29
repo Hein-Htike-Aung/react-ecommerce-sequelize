@@ -4,9 +4,9 @@ Content-Type: application/json
 
 {
     "categoryId": 1,
-    "productName": "nike",
-    "product_code": "P=2d223",
-    "product_sku": "few2ccvvg",
+    "productName": "addidas 011",
+    "product_code": "P-5645623",
+    "product_sku": "p-583423",
     "regular_price": 10,
     "sale_price": 32,
     "tags": "New, Sale, Featured",
@@ -18,20 +18,19 @@ Content-Type: application/json
     "status": "Sale",
     "description": "Sneaker",
     "productImages": [
-        "https://res.cloudinary.com/techgater/image/upload/v1671813004/my-uploads/xipxx419xyp4zdpoqlfm.png",
-        "https://res.cloudinary.com/techgater/image/upload/v1669555821/my-uploads/t7nusmko4m6y3tt7ufuk.jpg"
+        "https://images.pexels.com/photos/5525050/pexels-photo-5525050.jpeg?auto=compress&cs=tinysrgb&w=1200&lazy=load"
     ]
 }
     
 ### update product
-PATCH  http://localhost:3001/api/v1/products/update/4
+PATCH  http://localhost:3001/api/v1/products/update/1
 Content-Type: application/json
 
 {
     "categoryId": 1,
-    "productName": "nike",
-    "product_code": "P=2d223",
-    "product_sku": "few2ccvvg",
+    "productName": "updated nike 321",
+    "product_code": "P=2d223423434",
+    "product_sku": "few2ccvvg34232344",
     "regular_price": 10,
     "sale_price": 19,
     "tags": "New, Sale, Featured",
@@ -43,11 +42,18 @@ Content-Type: application/json
     "status": true,
     "description": "Sneaker",
     "productImages": [
-        "https://res.cloudinary.com/techgater/image/upload/v1669532034/my-uploads/o7npjubwq1jwaofqbcs6.webp",
-        "https://res.cloudinary.com/techgater/image/upload/v1669555821/my-uploads/t7nusmko4m6y3tt7ufuk.jpg"
+        "https://images.pexels.com/photos/14854394/pexels-photo-14854394.jpeg?auto=compress&cs=tinysrgb&w=1200&lazy=load"
     ]
 }
 
+
+### update product 
+PATCH http://localhost:3001/api/v1/products/update_is_featured/1
+Content-Type: application/json
+
+{
+    "isFeatured": false
+}
 
 ### delete product
 DELETE http://localhost:3001/api/v1/products/delete/2

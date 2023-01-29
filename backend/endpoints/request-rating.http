@@ -1,0 +1,13 @@
+
+### rate product
+POST http://localhost:3001/api/v1/rating/rate_product
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjQsImlhdCI6MTY3NTAwMjY5MCwiZXhwIjoxNjc1MDI0MjkwfQ.POqyod7WYLI6Sfury7irl6VOkhr4PUxvCcu_MsS4QNE
+
+{
+    "productId": 1,
+    "rating": 2
+}
+
+### get rate for product
+GET http://localhost:3001/api/v1/rating/get_rate/1

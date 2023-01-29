@@ -13,7 +13,7 @@ class Subscriber extends Model<
   InferCreationAttributes<Subscriber>
 > {
   declare id: CreationOptional<number>;
-  declare userId: number;
+  declare email: string;
 }
 
 Subscriber.init(
@@ -23,8 +23,8 @@ Subscriber.init(
       type: DataTypes.INTEGER,
       autoIncrement: true,
     },
-    userId: {
-      type: DataTypes.INTEGER,
+    email: {
+      type: DataTypes.STRING,
       allowNull: false,
       unique: true,
     },
