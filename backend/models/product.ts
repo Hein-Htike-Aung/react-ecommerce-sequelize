@@ -14,6 +14,10 @@ export interface ProductWithImages extends Product {
   productImages: ProductImage[];
 }
 
+export interface ProductWithRate extends Product {
+  rate: number;
+}
+
 class Product extends Model<
   InferAttributes<Product>,
   InferCreationAttributes<Product>

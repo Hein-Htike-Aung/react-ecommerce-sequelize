@@ -243,15 +243,8 @@ export const getProducts: ReqHandler = async (req: Request, res: Response) => {
         raw: true,
       });
 
-      await Promise.all(
-        rows.map(async (product: ProductWithImages | Product) => {
-          const productImages = await ProductImage.findAll({
-            where: { productId: product.id },
-          });
-
-          (product as ProductWithImages)["productImages"] = productImages;
-        })
-      );
+      await ProductService.getProductRate(rows);
+      await ProductService.getProductImages(rows);
 
       successResponse(res, 200, null, { result: rows, count });
     } else {
@@ -260,15 +253,8 @@ export const getProducts: ReqHandler = async (req: Request, res: Response) => {
         raw: true,
       });
 
-      await Promise.all(
-        result.map(async (product: ProductWithImages | Product) => {
-          const productImages = await ProductImage.findAll({
-            where: { productId: product.id },
-          });
-
-          (product as ProductWithImages)["productImages"] = productImages;
-        })
-      );
+      await ProductService.getProductImages(result);
+      await ProductService.getProductRate(result);
 
       successResponse(res, 200, null, result);
     }

@@ -1,9 +1,8 @@
-import { QueryTypes } from "sequelize";
 import { Request, Response } from "express";
 import { get } from "lodash";
-import { sequelize } from "../models";
 import Rating from "../models/rating";
 import ProductService from "../services/product.service";
+import RatingService from "../services/rating.service";
 import { ReqHandler } from "../types";
 import errorResponse from "../utils/errorResponse";
 import handleError from "../utils/handleError";
@@ -40,14 +39,9 @@ export const getRatingForProduct: ReqHandler = async (
   try {
     const productId = get(req.params, "productId");
 
-    const q = `select avg(r.rating) as rate from rating r where r.productId = ?`;
+    const rate = await RatingService.getRatingForProduct(+productId);
 
-    const [avg] = await sequelize.query(q, {
-      replacements: [productId],
-      type: QueryTypes.SELECT,
-    });
-
-    successResponse(res, 200, null, avg);
+    successResponse(res, 200, null, rate);
   } catch (error) {
     handleError(res, error);
   }

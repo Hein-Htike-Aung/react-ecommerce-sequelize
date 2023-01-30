@@ -45,6 +45,8 @@ export interface ParsedQs {
   [key: string]: string | number | ParsedQs | string[] | ParsedQs[] | undefined;
 }
 
+export type queryParam = string | ParsedQs | string[] | ParsedQs[] | undefined;
+
 export type ReqHandler = RequestHandler<ParamsDictionary, ParsedQs>;
 
 export type CountQRes = { count: number }[];

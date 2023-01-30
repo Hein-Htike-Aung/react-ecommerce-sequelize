@@ -1,20 +1,29 @@
 import { Request, Response } from "express";
+import { QueryTypes } from "sequelize";
 import { v4 as uuidv4 } from "uuid";
-import handleError from "../utils/handleError";
-import { formattedCurrentDate } from "../utils/date";
-import successResponse from "../utils/successResponse";
+import { sequelize } from "../models";
+import OrderItem from "../models/orderitem";
+import Orders from "../models/orders";
 import Product from "../models/product";
+import OrdersService from "../services/orders.service";
+import { ReqHandler } from "../types";
+import { formattedCurrentDate } from "../utils/date";
 import errorResponse from "../utils/errorResponse";
 import getPaginationData from "../utils/getPaginationData";
-import Orders from "../models/orders";
-import OrderItem from "../models/orderitem";
+import handleError from "../utils/handleError";
+import successResponse from "../utils/successResponse";
 
 interface IOrderItem {
   productId: number;
   quantity: number;
 }
 
-export const createOrder = async (req: Request, res: Response) => {
+export interface IOrderList extends Orders {
+  price: number;
+  totalQuantity: number;
+}
+
+export const createOrder: ReqHandler = async (req: Request, res: Response) => {
   try {
     const {
       customer_name,
@@ -67,9 +76,73 @@ export const createOrder = async (req: Request, res: Response) => {
   }
 };
 
-export const ordersList = async (req: Request, res: Response) => {
+export const ordersListForAdmin: ReqHandler = async (
+  req: Request,
+  res: Response
+) => {
   try {
     const { offset, limit } = getPaginationData(req.query);
+
+    const { rows, count } = await Orders.findAndCountAll({
+      offset,
+      limit,
+      raw: true,
+    });
+
+    await Promise.all(
+      rows.map(async (o: IOrderList | Orders) => {
+        const q = `select sum(p.sale_price * oi.quantity) as itemPrice, sum(oi.quantity) as totalQuantity 
+                from order_item oi
+                inner join product p
+                on p.id = oi.productId
+                where oi.orderId = ?
+                group by oi.orderId`;
+
+        const [{ itemPrice, totalQuantity }] = await sequelize.query(q, {
+          replacements: [o.id],
+          raw: true,
+          type: QueryTypes.SELECT,
+        });
+
+        (o as IOrderList)["price"] = itemPrice;
+        (o as IOrderList)["totalQuantity"] = totalQuantity;
+      })
+    );
+
+    successResponse(res, 200, null, { result: rows, count });
+  } catch (error) {
+    handleError(res, error);
+  }
+};
+
+export const ordersListForAdmin_filter: ReqHandler = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const { offset, limit } = getPaginationData(req.query);
+    const { customer_name, order_date_from, order_date_to } = req.query;
+
+    if (order_date_from && order_date_to) {
+      const data =
+        await OrdersService.ordersListForAdmin_filter_customer_name_and_order_date(
+          customer_name,
+          order_date_from,
+          order_date_to,
+          limit,
+          offset
+        );
+
+      successResponse(res, 200, null, data);
+    } else {
+      const data = await OrdersService.orderListForAdmin_filter_customer_name(
+        customer_name,
+        limit,
+        offset
+      );
+
+      successResponse(res, 200, null, data);
+    }
   } catch (error) {
     handleError(res, error);
   }

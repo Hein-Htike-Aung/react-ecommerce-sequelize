@@ -13,8 +13,7 @@ import SubscriberRouter from "./routes/subscriber.routes";
 import UserRouter from "./routes/user.routes";
 import NewLetterRoute from "./routes/newLetter.routes";
 import RatingRoute from "./routes/rating.routes";
-import axios from "axios";
-import restoreCache from "./utils/restoreCache";
+import OrdersRoute from "./routes/orders.routes";
 
 const app = express();
 
@@ -45,6 +44,7 @@ app.use("/api/v1/users", UserRouter);
 app.use("/api/v1/subscribers", SubscriberRouter);
 app.use("/api/v1/newLetters", NewLetterRoute);
 app.use("/api/v1/rating", RatingRoute);
+app.use("/api/v1/orders", OrdersRoute);
 
 // interface IPhoto {
 //   albumId: number;

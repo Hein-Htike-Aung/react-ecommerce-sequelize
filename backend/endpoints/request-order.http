@@ -1,0 +1,30 @@
+### PLACE ORDER
+POST http://localhost:3001/api/v1/orders/place_order
+Content-Type: application/json
+
+{
+    "orderId": "4823098490238032",
+    "customer_name": "Aung",
+    "customer_phone": "0934324234",
+    "customer_email": "aung@gmail.com",
+    "shipping_address": "Yangon",
+    "paymentMethod": "COD",
+    "status": "Pending",
+    "orderItems": [
+        {
+          "productId": 1,
+          "quantity": 3
+        },
+        {
+          "productId": 3,
+          "quantity": 8
+        }
+    ]
+}
+
+### GET ORDERS FOR ADMIN
+GET http://localhost:3001/api/v1/orders/for_admin?page=0&pageSize=10
+
+
+### GET ORDERS FOR ADMIN FILTER
+GET http://localhost:3001/api/v1/orders/for_admin_filter?customer_name=Hein&order_date_from=2023-01-30&order_date_to=2023-02-16&page=0&pageSize=10
