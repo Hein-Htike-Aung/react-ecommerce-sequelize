@@ -65,7 +65,7 @@ class OrdersService {
     return { rows, count };
   };
 
-  private static map_order_list = async (orders: Orders[]) => {
+  static map_order_list = async (orders: Orders[]) => {
     await Promise.all(
       orders.map(async (o: IOrderList | Orders) => {
         const q = `select sum(p.sale_price * oi.quantity) as itemPrice, sum(oi.quantity) as totalQuantity 

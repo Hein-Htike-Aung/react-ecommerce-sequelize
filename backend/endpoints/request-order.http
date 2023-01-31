@@ -22,9 +22,20 @@ Content-Type: application/json
     ]
 }
 
+### UPDATE ORDER STATUS
+PATCH http://localhost:3001/api/v1/orders/update_order_status/2
+Content-Type: application/json
+
+{
+  "status": "Deliverred"
+}
+
 ### GET ORDERS FOR ADMIN
 GET http://localhost:3001/api/v1/orders/for_admin?page=0&pageSize=10
 
 
 ### GET ORDERS FOR ADMIN FILTER
 GET http://localhost:3001/api/v1/orders/for_admin_filter?customer_name=Hein&order_date_from=2023-01-30&order_date_to=2023-02-16&page=0&pageSize=10
+
+### GET ORDER
+GET http://localhost:3001/api/v1/orders/by_id/1

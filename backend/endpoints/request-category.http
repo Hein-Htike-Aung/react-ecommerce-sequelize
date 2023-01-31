@@ -3,8 +3,8 @@ POST http://localhost:3001/api/v1/categories/create
 Content-Type: application/json
 
 {
-    "categoryName": "redis 16",
-    "parentCategoryId": 1,
+    "categoryName": "Grove",
+    "parentCategoryId": 7,
     "description": "Boxing",
     "img": "https://res.cloudinary.com/techgater/image/upload/v1669198509/my-uploads/qr6vpmsi7que0uenbwkl.png"
 }

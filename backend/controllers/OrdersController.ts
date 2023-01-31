@@ -1,10 +1,12 @@
 import { Request, Response } from "express";
+import { get } from "lodash";
 import { QueryTypes } from "sequelize";
 import { v4 as uuidv4 } from "uuid";
 import { sequelize } from "../models";
 import OrderItem from "../models/orderitem";
 import Orders from "../models/orders";
 import Product from "../models/product";
+import ProductImage from "../models/productimage";
 import OrdersService from "../services/orders.service";
 import { ReqHandler } from "../types";
 import { formattedCurrentDate } from "../utils/date";
@@ -16,6 +18,10 @@ import successResponse from "../utils/successResponse";
 interface IOrderItem {
   productId: number;
   quantity: number;
+}
+
+interface IOrderItemWithProductImages extends OrderItem {
+  productImages: ProductImage[];
 }
 
 export interface IOrderList extends Orders {
@@ -76,6 +82,76 @@ export const createOrder: ReqHandler = async (req: Request, res: Response) => {
   }
 };
 
+export const updateOrderStatus: ReqHandler = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const orderId = get(req.params, "orderId");
+    const { status } = req.body;
+
+    const orders = await Orders.findByPk(orderId);
+
+    if (!orders) return errorResponse(res, 404, "Order not found");
+
+    await Orders.update(
+      {
+        status,
+      },
+      {
+        where: {
+          id: orderId,
+        },
+      }
+    );
+
+    successResponse(res, 200, "Order status has been updated");
+  } catch (error) {
+    handleError(res, error);
+  }
+};
+
+export const getOrder: ReqHandler = async (req: Request, res: Response) => {
+  try {
+    const orderId = get(req.params, "orderId");
+
+    const orders = await Orders.findByPk(orderId);
+
+    if (!orders) return errorResponse(res, 404, "Order not found");
+
+    const q_order_items = `select oi.*, p.productName, c.categoryName
+                            from order_item oi
+                            inner join orders o
+                            on o.id = oi.orderId 
+                            inner join product p
+                            on p.id = oi.productId
+                            inner join category c
+                            on c.id = p.categoryId
+                            where o.id = ?`;
+
+    const orderItems = await sequelize.query(q_order_items, {
+      replacements: [orderId],
+      raw: true,
+      type: QueryTypes.SELECT,
+    });
+
+    await Promise.all(
+      orderItems.map(async (oi: OrderItem | IOrderItemWithProductImages) => {
+        const productImages = await ProductImage.findAll({
+          where: { productId: oi.productId },
+          raw: true,
+        });
+        (oi as IOrderItemWithProductImages)["productImages"] = productImages;
+      })
+    );
+
+    successResponse(res, 200, null, { orders, orderItems });
+  } catch (error) {
+    console.log(error);
+    handleError(res, error);
+  }
+};
+
 export const ordersListForAdmin: ReqHandler = async (
   req: Request,
   res: Response
@@ -89,25 +165,7 @@ export const ordersListForAdmin: ReqHandler = async (
       raw: true,
     });
 
-    await Promise.all(
-      rows.map(async (o: IOrderList | Orders) => {
-        const q = `select sum(p.sale_price * oi.quantity) as itemPrice, sum(oi.quantity) as totalQuantity 
-                from order_item oi
-                inner join product p
-                on p.id = oi.productId
-                where oi.orderId = ?
-                group by oi.orderId`;
-
-        const [{ itemPrice, totalQuantity }] = await sequelize.query(q, {
-          replacements: [o.id],
-          raw: true,
-          type: QueryTypes.SELECT,
-        });
-
-        (o as IOrderList)["price"] = itemPrice;
-        (o as IOrderList)["totalQuantity"] = totalQuantity;
-      })
-    );
+    await OrdersService.map_order_list(rows);
 
     successResponse(res, 200, null, { result: rows, count });
   } catch (error) {
