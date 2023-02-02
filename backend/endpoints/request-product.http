@@ -3,8 +3,8 @@ POST http://localhost:3001/api/v1/products/create
 Content-Type: application/json
 
 {
-    "categoryId": 1,
-    "productName": "addidas 011",
+    "categoryId": 2,
+    "productName": "addidas7",
     "product_code": "P-5645623",
     "product_sku": "p-583423",
     "regular_price": 10,
@@ -18,7 +18,7 @@ Content-Type: application/json
     "status": "Sale",
     "description": "Sneaker",
     "productImages": [
-        "https://images.pexels.com/photos/5525050/pexels-photo-5525050.jpeg?auto=compress&cs=tinysrgb&w=1200&lazy=load"
+        "https://images.pexels.com/photos/15045045/pexels-photo-15045045.jpeg?auto=compress&cs=tinysrgb&w=1200&lazy=load"
     ]
 }
     

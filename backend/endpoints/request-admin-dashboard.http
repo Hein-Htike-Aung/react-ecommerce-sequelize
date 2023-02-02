@@ -1,0 +1,22 @@
+
+### Daily total earning
+GET http://localhost:3001/api/v1/admin_dashboard/daily_total_earning
+
+### Daily monthly sale report
+GET http://localhost:3001/api/v1/admin_dashboard/monthly_sale_report
+
+
+### order status report
+GET http://localhost:3001/api/v1/admin_dashboard/order_status_report
+
+
+### weekly income report (past 7 days)
+GET http://localhost:3001/api/v1/admin_dashboard/weekly_income_report   
+
+
+### monthly income report (current month)
+GET http://localhost:3001/api/v1/admin_dashboard/monthly_income_report
+
+
+### yearly income report (current year)
+GET http://localhost:3001/api/v1/admin_dashboard/yearly_income_report

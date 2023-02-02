@@ -12,4 +12,27 @@ const today_date_finder = (() => {
   } as WhereAttributeHashValue<string>;
 })();
 
-export { formattedCurrentDate, today_date_finder };
+const formatISODate = (date: Date) => {
+  return date.toISOString().substring(0, 10);
+};
+
+const getDaysInMonth = (month: number, year: number) => {
+  const date = new Date(year, month, 1);
+
+  const days = [];
+  while (date.getMonth() === month) {
+    const targetDate = new Date(date);
+    days.push(
+      formatISODate(new Date(targetDate.setDate(targetDate.getDate() + 1)))
+    );
+    date.setDate(date.getDate() + 1);
+  }
+  return days;
+};
+
+export {
+  formattedCurrentDate,
+  today_date_finder,
+  formatISODate as formatDate,
+  getDaysInMonth,
+};
