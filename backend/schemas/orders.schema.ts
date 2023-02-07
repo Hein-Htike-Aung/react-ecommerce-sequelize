@@ -5,7 +5,6 @@ export const placeOrderSchema = object({
     orderId: string().required(),
     customer_name: string().required(),
     customer_phone: string().required(),
-    customer_email: string().required(),
     shipping_address: string().required(),
     order_date: string(),
     paymentMethod: string().required(),

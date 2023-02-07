@@ -1,6 +1,6 @@
 import express from "express";
 import { createSubscribe, deleteSubscribe, getAllSubscriber } from "../controllers/SubscriberController";
-import jwt_auth from "../middlewares/jwt_auth";
+import user_jwt from "../middlewares/user_jwt";
 import validateRequest from "../middlewares/validate_request";
 import { paginationQuery } from "../schemas/common.schema";
 
@@ -8,13 +8,13 @@ const router = express.Router();
 
 router.post(
     "/subscribe",
-    [jwt_auth],
+    [user_jwt],
     createSubscribe
 );
 
 router.post(
     "/unsubscribe/:subscriberId",
-    [jwt_auth],
+    [user_jwt],
     deleteSubscribe
 );
 

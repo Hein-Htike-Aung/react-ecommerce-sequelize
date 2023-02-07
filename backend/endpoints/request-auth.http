@@ -4,8 +4,8 @@ POST http://localhost:3001/api/v1/auth/login
 Content-Type: application/json
 
 {
-    "email": "editoruser@gmail.com",
-    "password": "editor123!@#"
+    "email": "cus@gmail.com",
+    "password": "cus123!@#"
 }
 
 ### change user password

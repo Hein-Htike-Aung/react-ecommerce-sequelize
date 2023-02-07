@@ -7,6 +7,7 @@ import OrderItem from "../models/orderitem";
 import Orders from "../models/orders";
 import Product from "../models/product";
 import ProductImage from "../models/productimage";
+import User from "../models/user";
 import OrdersService from "../services/orders.service";
 import { ReqHandler } from "../types";
 import { formattedCurrentDate } from "../utils/date";
@@ -34,17 +35,22 @@ export const createOrder: ReqHandler = async (req: Request, res: Response) => {
     const {
       customer_name,
       customer_phone,
-      customer_email,
       shipping_address,
       paymentMethod,
       orderItems,
     } = req.body;
 
+    const { userId } = req.user;
+
+    const user = await User.findByPk(userId);
+
+    if (!user) return errorResponse(res, 403, "Unauthorized");
+
     const { id: orderId } = await Orders.create({
       orderId: uuidv4(),
       customer_name,
       customer_phone,
-      customer_email,
+      customer_email: user.email,
       shipping_address,
       paymentMethod,
       order_date: formattedCurrentDate,
@@ -201,6 +207,33 @@ export const ordersListForAdmin_filter: ReqHandler = async (
 
       successResponse(res, 200, null, data);
     }
+  } catch (error) {
+    handleError(res, error);
+  }
+};
+
+export const orderListForCustomer: ReqHandler = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const { offset, limit } = getPaginationData(req.query);
+    const { userId } = req.user;
+
+    const user = await User.findByPk(userId);
+
+    if (!user) return errorResponse(res, 403, "Unauthorized");
+
+    const { rows, count } = await Orders.findAndCountAll({
+      offset,
+      limit,
+      raw: true,
+      where: {
+        customer_email: user.email,
+      },
+    });
+
+    successResponse(res, 200, null, { result: rows, count });
   } catch (error) {
     handleError(res, error);
   }

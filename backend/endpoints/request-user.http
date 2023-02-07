@@ -3,12 +3,12 @@ POST http://localhost:3001/api/v1/users/create
 Content-Type: application/json
 
 {
-    "fullName": "test",
-    "email": "test9@gmail.com",
-    "password": "test123!@#",
+    "fullName": "Customer 1",
+    "email": "cus@gmail.com",
+    "password": "cus123!@#",
     "phone": "0934234234",
     "gender": "Female",
-    "role": "Editor"
+    "role": "Customer"
 }   
 
 ### update user

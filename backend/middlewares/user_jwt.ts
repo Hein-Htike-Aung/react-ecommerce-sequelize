@@ -3,12 +3,12 @@ import {
   TokenBasedRequest,
   TokenVerifyError,
   TokenVerifyPayload,
-} from "./../types.d";
+} from "../types";
 import { Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import errorResponse from "../utils/errorResponse";
 
-const jwt_auth: ReqHandler = (
+const user_jwt: ReqHandler = (
   req: TokenBasedRequest,
   res: Response,
   next: NextFunction
@@ -31,4 +31,4 @@ const jwt_auth: ReqHandler = (
   );
 };
 
-export default jwt_auth;
+export default user_jwt;

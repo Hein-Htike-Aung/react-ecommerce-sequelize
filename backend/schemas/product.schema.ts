@@ -39,3 +39,9 @@ export const productNameQueryParam = object({
     ...paginationPayload,
   }),
 });
+
+export const productGenderQueryParam = object({
+  query: object({
+    gender: string().required(),
+  }),
+});

@@ -1,6 +1,6 @@
 import express from "express";
 import { changeUserPassword, userLogin } from "../controllers/AuthController";
-import jwt_auth from "../middlewares/jwt_auth";
+import user_jwt from "../middlewares/user_jwt";
 import validateRequest from "../middlewares/validate_request";
 import { credentialSchema, passwordsSchema } from "../schemas/credential.schema";
 
@@ -14,7 +14,7 @@ router.post(
 
 router.post(
     "/change_user_password",
-    [validateRequest(passwordsSchema), jwt_auth],
+    [validateRequest(passwordsSchema), user_jwt],
     changeUserPassword
 );
 

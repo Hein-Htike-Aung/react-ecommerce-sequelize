@@ -263,6 +263,50 @@ export const getProducts: ReqHandler = async (req: Request, res: Response) => {
   }
 };
 
+export const getProductsByGender: ReqHandler = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const gender = get(req.query, "gender") as string;
+
+    const { offset, limit } = getPaginationData(req.query);
+
+    const { rows, count } = await Product.findAndCountAll({
+      limit,
+      offset,
+      where: {
+        gender,
+      },
+    });
+
+    successResponse(res, 200, null, { result: rows, count });
+  } catch (error) {
+    handleError(res, error);
+  }
+};
+
+export const getFeaturedProducts: ReqHandler = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const { offset, limit } = getPaginationData(req.query);
+
+    const { rows, count } = await Product.findAndCountAll({
+      limit,
+      offset,
+      where: {
+        isFeatured: true,
+      },
+    });
+
+    successResponse(res, 200, null, { result: rows, count });
+  } catch (error) {
+    handleError(res, error);
+  }
+};
+
 export const getProductByProductName: ReqHandler = async (
   req: Request,
   res: Response
@@ -277,7 +321,7 @@ export const getProductByProductName: ReqHandler = async (
       limit,
       where: {
         productName: {
-          [Op.like]: `${productName}%`,
+          [Op.like]: `%${productName}%`,
         },
       },
       order: [["created_at", "DESC"]],
@@ -295,6 +339,104 @@ export const getProductByProductName: ReqHandler = async (
     );
 
     successResponse(res, 200, null, { result: rows, count });
+  } catch (error) {
+    handleError(res, error);
+  }
+};
+
+export const productFilter_1: ReqHandler = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    // top rated, ascending, descending, price low to hight, price hight to low, oldest, newest
+
+    const { offset, limit } = getPaginationData(req.query);
+
+    const {
+      top_rate,
+      ascending,
+      descending,
+      low_to_high,
+      high_to_low,
+      oldest,
+      newest,
+    } = req.query;
+
+    if (top_rate) {
+      const { rows, count } = await Product.findAndCountAll({
+        offset,
+        limit,
+        raw: true,
+      });
+
+      successResponse(res, 200, null, { result: rows, count });
+    } else if (ascending) {
+      const { rows, count } = await Product.findAndCountAll({
+        offset,
+        limit,
+        raw: true,
+        order: [["productName", "ASC"]],
+      });
+
+      successResponse(res, 200, null, { result: rows, count });
+    } else if (descending) {
+      const { rows, count } = await Product.findAndCountAll({
+        offset,
+        limit,
+        raw: true,
+        order: [["productName", "DESC"]],
+      });
+
+      successResponse(res, 200, null, { result: rows, count });
+    } else if (low_to_high) {
+      const { rows, count } = await Product.findAndCountAll({
+        offset,
+        limit,
+        raw: true,
+        order: [["sale_price", "ASC"]],
+      });
+
+      successResponse(res, 200, null, { result: rows, count });
+    } else if (high_to_low) {
+      const { rows, count } = await Product.findAndCountAll({
+        offset,
+        limit,
+        raw: true,
+        order: [["sale_price", "DESC"]],
+      });
+
+      successResponse(res, 200, null, { result: rows, count });
+    } else if (oldest) {
+      const { rows, count } = await Product.findAndCountAll({
+        offset,
+        limit,
+        raw: true,
+        order: [["created_at", "ASC"]],
+      });
+
+      successResponse(res, 200, null, { result: rows, count });
+    } else if (newest) {
+      const { rows, count } = await Product.findAndCountAll({
+        offset,
+        limit,
+        raw: true,
+        order: [["created_at", "DESC"]],
+      });
+
+      successResponse(res, 200, null, { result: rows, count });
+    }
+  } catch (error) {
+    handleError(res, error);
+  }
+};
+
+export const productFilter_2: ReqHandler = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    // gender, color, price,
   } catch (error) {
     handleError(res, error);
   }

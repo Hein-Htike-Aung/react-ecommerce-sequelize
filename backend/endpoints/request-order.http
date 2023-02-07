@@ -1,12 +1,12 @@
 ### PLACE ORDER
 POST http://localhost:3001/api/v1/orders/place_order
 Content-Type: application/json
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUsImlhdCI6MTY3NTQwNzAxNiwiZXhwIjoxNjc1NDI4NjE2fQ.dY5KcPGz1UM0Of88pRYM2uyd7mIscBdXE-gLp1iVWEk
 
 {
     "orderId": "4823098490238032",
     "customer_name": "Aung",
     "customer_phone": "0934324234",
-    "customer_email": "aung@gmail.com",
     "shipping_address": "Yangon",
     "paymentMethod": "COD",
     "status": "Pending",
@@ -36,6 +36,11 @@ GET http://localhost:3001/api/v1/orders/for_admin?page=0&pageSize=10
 
 ### GET ORDERS FOR ADMIN FILTER
 GET http://localhost:3001/api/v1/orders/for_admin_filter?customer_name=Hein&order_date_from=2023-01-30&order_date_to=2023-02-16&page=0&pageSize=10
+
+
+### GET ORDERS FOR CUSTOMER
+GET http://localhost:3001/api/v1/orders/for_customer?page=0&pageSize=10
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUsImlhdCI6MTY3NTQwNzAxNiwiZXhwIjoxNjc1NDI4NjE2fQ.dY5KcPGz1UM0Of88pRYM2uyd7mIscBdXE-gLp1iVWEk
 
 ### GET ORDER
 GET http://localhost:3001/api/v1/orders/by_id/1

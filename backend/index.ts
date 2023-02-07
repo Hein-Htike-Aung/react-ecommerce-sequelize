@@ -6,6 +6,8 @@ import process from "node:process";
 // import fs from "node:fs";
 
 import app from "./app";
+import redis from "./config/redis";
+import db from "./models";
 import logger from "./utils/logger";
 
 const numCPUs = _.cpus();
@@ -29,13 +31,12 @@ if (cluster.isPrimary) {
   });
 } else {
   // Workers can share any TCP connection
-  const port = process.env.PORT || 8080;
+  const port = process.env.PORT || 8081;
 
   (async () => {
     try {
       // await await db.sequelize.sync({ alter: true });
 
-      // await client.connect();
       app.listen(port, () => {
         logger.info(`Listening: http://localhost:${port}`);
       });

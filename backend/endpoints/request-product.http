@@ -70,3 +70,6 @@ GET http://localhost:3001/api/v1/products/list
 
 ### list with pagination
 GET http://localhost:3001/api/v1/products/list?page=0&pageSize=10
+
+### products list by gender
+GET http://localhost:3001/api/v1/products/by_gender?gender=female&page=0&pageSize=10
