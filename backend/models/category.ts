@@ -45,7 +45,7 @@ Category.init(
     categoryName: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: true,
+      unique: "categoryName",
     },
     parentCategoryId: {
       type: DataTypes.INTEGER,

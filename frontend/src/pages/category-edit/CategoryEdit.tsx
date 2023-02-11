@@ -122,6 +122,13 @@ const CategoryEdit = () => {
 
         uploadImg(file, async (downloadURL) => {
           try {
+
+            console.log({
+              ...formValues,
+              parentCategoryId: Number(formValues.parentCategoryId),
+              img: downloadURL,
+            })
+
             const res = await axiosInstance.post(`/categories/create`, {
               ...formValues,
               parentCategoryId: Number(formValues.parentCategoryId),
@@ -129,7 +136,7 @@ const CategoryEdit = () => {
             });
 
             setLoading(false);
-            res.status === 201 && navigate("/categories", { replace: true });
+            res.status === 200 && navigate("/categories", { replace: true });
           } catch (error: any) {
             setLoading(false);
             toast.error(error.response.data.message);

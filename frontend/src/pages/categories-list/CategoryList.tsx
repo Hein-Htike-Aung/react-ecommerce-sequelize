@@ -21,6 +21,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import AddIcon from "@mui/icons-material/Add";
 import TableSkeleton from "../../components/form/TableSkeleton";
 import { StyledTableCell } from "../../components/form/StyledTableCell";
+import { paginateRecords, paginationCount } from "../../utils/pagination";
 
 const CategoryList = () => {
   const navigate = useNavigate();
@@ -39,12 +40,12 @@ const CategoryList = () => {
   // axios functions
   const fetchAllCategories = async (currentPage: number) => {
     setFetching(true);
-    const res = await axiosInstance.get(
-      `/categories/list?page=${currentPage - 1}&pageSize=10`
-    );
+    const res = await axiosInstance.get(`/categories/list`);
 
-    setCategories(res.data.data.result);
-    setCategoriesCount(Math.round(res.data.data.count / 10));
+    if (res.data.data) {
+      setCategories(paginateRecords(currentPage, res.data.data));
+      setCategoriesCount(paginationCount(res.data.data));
+    }
     setFetching(false);
   };
 

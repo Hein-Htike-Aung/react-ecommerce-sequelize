@@ -3,25 +3,25 @@ POST http://localhost:3001/api/v1/categories/create
 Content-Type: application/json
 
 {
-    "categoryName": "Grove",
+    "categoryName": "Grove Clone 9",
     "parentCategoryId": 7,
     "description": "Boxing",
-    "img": "https://res.cloudinary.com/techgater/image/upload/v1669198509/my-uploads/qr6vpmsi7que0uenbwkl.png"
+    "img": "https://images.pexels.com/photos/15465414/pexels-photo-15465414.jpeg?auto=compress&cs=tinysrgb&w=1200&lazy=load"
 }
 
 ### update category
-PATCH http://localhost:3001/api/v1/categories/update/34
+PATCH http://localhost:3001/api/v1/categories/update/16
 Content-Type: application/json
 
 {
-    "categoryName": "redis 16",
+    "categoryName": "updated Grove clone 9",
     "parentCategoryId": 3,
     "description": "Mobiles",
     "img": "https://res.cloudinary.com/techgater/image/upload/v1669198823/my-uploads/ixx3ym9ezdrizeaxepqg.webp"
 }   
 
-### delete category
-DELETE http://localhost:3001/api/v1/categories/delete/34
+### delete category     
+DELETE http://localhost:3001/api/v1/categories/delete/16
 
 
 ### list

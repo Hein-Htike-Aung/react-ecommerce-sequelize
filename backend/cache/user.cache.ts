@@ -9,7 +9,7 @@ class UserCache {
   static setUser = async (user: User) => {
     let existingUsersCache = await getCache<User[]>("users");
 
-    if (!existingUsersCache.length) {
+    if (!existingUsersCache) {
       existingUsersCache = await this.restoreUserList();
     }
 
@@ -20,7 +20,7 @@ class UserCache {
   static updateUser = async (user: User) => {
     let existingUsersCache = await getCache<User[]>("users");
 
-    if (!existingUsersCache.length) {
+    if (!existingUsersCache) {
       existingUsersCache = await this.restoreUserList();
     }
 

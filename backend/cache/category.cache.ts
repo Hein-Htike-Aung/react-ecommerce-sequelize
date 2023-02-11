@@ -12,7 +12,7 @@ class CategoryCache {
       "categories"
     );
 
-    if (!existingCategoriesCache.length) {
+    if (!existingCategoriesCache) {
       existingCategoriesCache = await this.restoreCategoryList();
     }
 
@@ -25,7 +25,7 @@ class CategoryCache {
       "categories"
     );
 
-    if (!existingCategoriesCache.length) {
+    if (!existingCategoriesCache) {
       existingCategoriesCache = await this.restoreCategoryList();
     }
 
@@ -42,7 +42,7 @@ class CategoryCache {
       "categories"
     );
 
-    if (!existingCategoriesCache.length) {
+    if (!existingCategoriesCache) {
       existingCategoriesCache = await this.restoreCategoryList();
     }
 

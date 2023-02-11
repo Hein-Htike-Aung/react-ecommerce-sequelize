@@ -9,7 +9,7 @@ class SubscriberCache {
   static setSubscriber = async (subscriber: Subscriber) => {
     let existingSubscriberCache = await getCache<Subscriber[]>("subscribers");
 
-    if (!existingSubscriberCache.length) {
+    if (!existingSubscriberCache) {
       existingSubscriberCache = await this.restoreSubscriberList();
     }
 
@@ -20,7 +20,7 @@ class SubscriberCache {
   static deleteSubscriber = async (id: number) => {
     let existingSubscriberCache = await getCache<Subscriber[]>("subscribers");
 
-    if (!existingSubscriberCache.length) {
+    if (!existingSubscriberCache) {
       existingSubscriberCache = await this.restoreSubscriberList();
     }
 

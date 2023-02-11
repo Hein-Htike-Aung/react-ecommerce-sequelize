@@ -1,4 +1,4 @@
-version: '3.7'
+version: '3.8'
 services:
   redis:
     container_name: redis
@@ -11,6 +11,20 @@ services:
       - 6379
     ports:
       - $REDIS_PORT:$REDIS_PORT
+
+  mysqldb:
+    container_name: mysqldb
+    image: mysql:latest
+    network_mode: bridge
+    restart: unless-stopped
+    env_file: ./.env
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_PASSWORD=root
+      - MYSQL_ALLOW_EMPTY_PASSWORD=true
+      - MYSQL_DATABASE=$DB_DATABASE
+    ports:
+      - $DB_PORT:$DB_PORT
 
   # api:
   #   container_name: api
@@ -30,27 +44,11 @@ services:
   #     REDIS_URL: "redis://redis_db:6379"
   #     NODE_ENV: $NODE_ENV
   #     PORT: $PORT
-  #     DB_PORT: $DB_PORT
   #     WLIST: $WLIST
-  #     DB_HOST: $DB_HOST
-  #     DB_CONNECTION: $DB_CONNECTION
-  #     DB_DATABASE: $DB_DATABASE
-  #     DB_USERNAME: $DB_USERNAME
-  #     DB_PASSWORD: $DB_PASSWORD
   #     JWT_SECRET: $JWT_SECRET
   #     SALT: $SALT
   #     ACCESS_TOKEN_SECRET: $ACCESS_TOKEN_SECRET
   #     CACHE_EXPIRATION_TIME: $CACHE_EXPIRATION_TIME
   #   links:
   #     - redis
-
-  mysqldb:
-    container_name: mysqldb
-    image: mysql:latest
-    restart: unless-stopped
-    env_file: ./.env
-    environment:
-      - MYSQL_ROOT_PASSWORD=$DB_PASSWORD
-      - MYSQL_DATABASE=$DB_DATABASE
-    ports:
-      - $DB_PORT:$DB_PORT
+  #     - mysqldb

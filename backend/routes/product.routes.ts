@@ -1,5 +1,5 @@
 import { productGenderQueryParam } from './../schemas/product.schema';
-import { getProductsByGender, toggle_isFeatured } from './../controllers/ProductController';
+import { getProductsByGender, productFilter_1, toggle_isFeatured, productFilter_2 } from './../controllers/ProductController';
 import express from "express";
 import { createProduct, deleteProduct, getProduct, getProductByProductName, getProducts, updateProduct } from "../controllers/ProductController";
 import validateRequest from "../middlewares/validate_request";
@@ -52,6 +52,16 @@ router.get(
     "/by_gender",
     [validateRequest(productGenderQueryParam)],
     getProductsByGender
+);
+
+router.get(
+    "/filter_1",
+    productFilter_1
+);
+
+router.get(
+    "/filter_2",
+    productFilter_2
 );
 
 export default router;

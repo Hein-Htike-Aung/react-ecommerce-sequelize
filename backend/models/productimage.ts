@@ -32,7 +32,7 @@ ProductImage.init(
     img: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: true,
+      unique: "img",
       validate: {
         isUrl: true,
       },

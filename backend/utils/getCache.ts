@@ -1,7 +1,7 @@
 import redis from "../config/redis";
 import { RedisData, RedisError } from "../types";
 
-const getCache = <T>(key: string): Promise<T> => {
+const getCache = async <T>(key: string): Promise<T | null> => {
   return new Promise((resolve, reject) => {
     redis.get(key, (error: RedisError, data: T | RedisData) => {
       if (error) return reject(error);

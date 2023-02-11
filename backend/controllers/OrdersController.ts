@@ -153,7 +153,6 @@ export const getOrder: ReqHandler = async (req: Request, res: Response) => {
 
     successResponse(res, 200, null, { orders, orderItems });
   } catch (error) {
-    console.log(error);
     handleError(res, error);
   }
 };

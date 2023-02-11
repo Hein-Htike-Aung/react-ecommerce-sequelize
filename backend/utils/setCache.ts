@@ -1,6 +1,6 @@
 import redis from "../config/redis";
 
-export const setCache = <T>(key: string, value: T) =>
+export const setCache = async <T>(key: string, value: T) =>
   redis.set(
     key,
     JSON.stringify(value),

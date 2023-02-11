@@ -37,10 +37,13 @@ if (cluster.isPrimary) {
     try {
       // await await db.sequelize.sync({ alter: true });
 
+      // await redis.connect();
+
       app.listen(port, () => {
         logger.info(`Listening: http://localhost:${port}`);
       });
     } catch (error) {
+      console.log(error)
       logger.error("Unable to connect to the database:", error);
     }
   })();

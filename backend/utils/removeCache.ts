@@ -1,3 +1,3 @@
 import redis from "../config/redis";
 
-export const removeCache = (key: string) => redis.del(key);
+export const removeCache = async (key: string) => await redis.del(key);

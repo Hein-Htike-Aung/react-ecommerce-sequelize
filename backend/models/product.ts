@@ -53,17 +53,17 @@ Product.init(
     productName: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: true,
+      unique: "productName",
     },
     product_code: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: true,
+      unique: "product_code",
     },
     product_sku: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: true,
+      unique: "product_sku",
     },
     regular_price: {
       type: DataTypes.DECIMAL,

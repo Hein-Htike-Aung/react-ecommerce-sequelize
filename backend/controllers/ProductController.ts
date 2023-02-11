@@ -1,7 +1,9 @@
+import { likeParam } from "./../utils/likeParam";
 import { Request, Response } from "express";
 import { differenceWith, get, isEqual } from "lodash";
-import { Op } from "sequelize";
+import { Op, QueryTypes } from "sequelize";
 import ProductCache from "../cache/product.cache";
+import { sequelize } from "../models";
 import Product, { ProductWithImages } from "../models/product";
 import ProductImage from "../models/productimage";
 import ProductService from "../services/product.service";
@@ -364,13 +366,30 @@ export const productFilter_1: ReqHandler = async (
     } = req.query;
 
     if (top_rate) {
-      const { rows, count } = await Product.findAndCountAll({
-        offset,
-        limit,
+      const q = `select p.*, sum(r.rating) as rating from rating r
+                  inner join product p
+                  on p.id = r.productId
+                  group by r.productId
+                  order by sum(r.rating) desc`;
+
+      const products = await sequelize.query(q, {
         raw: true,
+        type: QueryTypes.SELECT,
       });
 
-      successResponse(res, 200, null, { result: rows, count });
+      const q_count = `select count(r.id) as count from rating r
+                        group by r.productId
+                        order by sum(r.rating) desc`;
+
+      const [{ count }] = await sequelize.query(q_count, {
+        raw: true,
+        type: QueryTypes.SELECT,
+      });
+
+      successResponse(res, 200, null, {
+        result: products,
+        count: count.length,
+      });
     } else if (ascending) {
       const { rows, count } = await Product.findAndCountAll({
         offset,
@@ -437,6 +456,32 @@ export const productFilter_2: ReqHandler = async (
 ) => {
   try {
     // gender, color, price,
+
+    const { offset, limit } = getPaginationData(req.query);
+    const { gender, price_from, price_to, colors } = req.query;
+
+    const { rows, count } = await Product.findAndCountAll({
+      offset,
+      limit,
+      where: {
+        [Op.and]: [
+          { gender: likeParam(gender) },
+          { colors: likeParam(colors) },
+          {
+            sale_price: {
+              [Op.between]: [
+                Number(price_from) || 0,
+                Number(price_to) || 999999999999,
+              ],
+            },
+          },
+        ],
+      },
+      order: [["created_at", "DESC"]],
+      raw: true,
+    });
+
+    successResponse(res, 200, null, { result: rows, count });
   } catch (error) {
     handleError(res, error);
   }

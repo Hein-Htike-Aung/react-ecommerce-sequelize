@@ -1,3 +1,12 @@
+import { Op } from "sequelize";
 import { queryParam } from "../types";
 
-export const likeParam = (value: queryParam) => `%${value || ""}%`;
+const likeParam = (value: queryParam) => {
+  return {
+    [Op.like]: replaceLikeParam(value),
+  };
+};
+
+const replaceLikeParam = (value: queryParam) => `%${value || ""}%`;
+
+export { likeParam, replaceLikeParam };

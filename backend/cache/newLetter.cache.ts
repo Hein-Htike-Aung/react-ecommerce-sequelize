@@ -9,7 +9,7 @@ class NewLetterCache {
   static setNewLetter = async (newLetter: NewLetter) => {
     let existingNewLetterCache = await getCache<NewLetter[]>("newLetters");
 
-    if (!existingNewLetterCache.length) {
+    if (!existingNewLetterCache) {
       existingNewLetterCache = await this.restoreNewLetterList();
     }
 
@@ -20,7 +20,7 @@ class NewLetterCache {
   static updateNewLetter = async (newLetter: NewLetter) => {
     let existingNewLetterCache = await getCache<NewLetter[]>("newLetters");
 
-    if (!existingNewLetterCache.length) {
+    if (!existingNewLetterCache) {
       existingNewLetterCache = await this.restoreNewLetterList();
     }
 
@@ -35,7 +35,7 @@ class NewLetterCache {
   static deleteNewLetter = async (id: number) => {
     let existingNewLetterCache = await getCache<NewLetter[]>("newLetters");
 
-    if (!existingNewLetterCache.length) {
+    if (!existingNewLetterCache) {
       existingNewLetterCache = await this.restoreNewLetterList();
     }
 

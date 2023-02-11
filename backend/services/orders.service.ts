@@ -1,4 +1,4 @@
-import { likeParam } from "./../utils/likeParam";
+import { likeParam, replaceLikeParam } from "./../utils/likeParam";
 import { Op, QueryTypes } from "sequelize";
 import { IOrderList } from "../controllers/OrdersController";
 import { sequelize } from "../models";
@@ -20,7 +20,7 @@ class OrdersService {
 
     const orders = await sequelize.query(q_orders, {
       replacements: [
-        likeParam(customer_name),
+        replaceLikeParam(customer_name),
         order_date_from,
         order_date_to,
         limit,
@@ -37,7 +37,7 @@ class OrdersService {
                         where customer_name like ? and date(order_date) between ? and ?`;
 
     const [{ count }] = await sequelize.query(q_count, {
-      replacements: [likeParam(customer_name), order_date_from, order_date_to],
+      replacements: [replaceLikeParam(customer_name), order_date_from, order_date_to],
       raw: true,
       type: QueryTypes.SELECT,
     });
@@ -54,9 +54,7 @@ class OrdersService {
       limit,
       offset,
       where: {
-        customer_name: {
-          [Op.like]: likeParam(customer_name),
-        },
+        customer_name: likeParam(customer_name),
       },
     });
 
