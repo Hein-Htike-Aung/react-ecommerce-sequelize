@@ -15,6 +15,7 @@ export interface Product {
   status: boolean;
   description: string;
   productImages: ProductImage[];
+  rate?: number;
   created_at: Date;
   updated_at: Date;
 }

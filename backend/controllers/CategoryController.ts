@@ -12,6 +12,7 @@ import errorResponse from "../utils/errorResponse";
 import handleError from "../utils/handleError";
 import isDuplicate from "../utils/isDuplicate";
 import successResponse from "../utils/successResponse";
+import Product from "../models/product";
 
 export const createCategory: ReqHandler = async (
   req: Request,
@@ -84,7 +85,7 @@ export const updateCategory: ReqHandler = async (
       ...updatedCategory,
     } as CategoryWithParentCategory);
 
-    successResponse(res, 202, "Category has been updated");
+    successResponse(res, 200, "Category has been updated");
   } catch (error) {
     handleError(res, error);
   }
@@ -104,7 +105,7 @@ export const deleteCategory: ReqHandler = async (
 
     await CategoryCache.deleteCategory(+id);
 
-    successResponse(res, 202, "Category has been deleted");
+    successResponse(res, 200, "Category has been deleted");
   } catch (error) {
     handleError(res, error);
   }
@@ -130,6 +131,18 @@ export const getCategories: ReqHandler = async (
 ) => {
   try {
     const categories = await CategoryCache.restoreCategoryList();
+
+    await Promise.all(
+      categories.map(async (c) => {
+        const count = await Product.count({
+          where: {
+            categoryId: c.id,
+          },
+        });
+
+        (c as CategoryWithParentCategory)["totalItems"] = count;
+      })
+    );
 
     successResponse(res, 200, null, categories);
   } catch (error) {

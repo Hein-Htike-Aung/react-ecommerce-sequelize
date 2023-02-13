@@ -14,6 +14,7 @@ export interface ParentCategoryWithCategories extends IParentCategory {
 }
 export interface CategoryWithParentCategory extends ICategory {
   parentCategoryName: string;
+  totalItems?: number;
 }
 
 export interface ICategory {

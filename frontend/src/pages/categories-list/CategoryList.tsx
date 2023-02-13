@@ -32,12 +32,10 @@ const CategoryList = () => {
   const [open, setOpen] = React.useState(false);
   const [targetCategory, setTargetCategory] = useState<Category>();
 
-  // useEffect
   useEffect(() => {
     fetchAllCategories(currentPage);
   }, [currentPage]);
 
-  // axios functions
   const fetchAllCategories = async (currentPage: number) => {
     setFetching(true);
     const res = await axiosInstance.get(`/categories/list`);
@@ -51,18 +49,19 @@ const CategoryList = () => {
 
   const searchCategory = async (searchValue: string) => {
     if (searchValue) {
-      const res = await axiosInstance.get(
-        `/categories/by_categoryName?categoryName=${searchValue}&page=${
-          currentPage - 1
-        }&pageSize=10`
+      searchValue = searchValue.toLowerCase();
+
+      const filteredCategories = categories.filter(
+        (c) =>
+          c.categoryName.toLowerCase().indexOf(searchValue) >= 0 ||
+          c.parentCategoryName.toLowerCase().indexOf(searchValue) >= 0
       );
 
-      setCategories(res.data.data.result);
-      setCategoriesCount(Math.round(res.data.data.count / 10));
+      setCategories((prev) => paginateRecords(currentPage, filteredCategories));
+      setCategoriesCount(paginationCount(filteredCategories));
     } else fetchAllCategories(1);
   };
 
-  // handle change
   const openConfirmDialog = (item: Category) => {
     setOpen(true);
     setTargetCategory(item);
@@ -74,7 +73,7 @@ const CategoryList = () => {
         `/categories/delete/${targetCategory.id}`
       );
 
-      if (res.status === 202) {
+      if (res.status === 200) {
         toast.success("Category deleted");
         fetchAllCategories(1);
         setCurrentPage(1);
@@ -127,7 +126,7 @@ const CategoryList = () => {
                       </div>
                     </TableCell>
                     <TableCell>{row.parentCategoryName}</TableCell>
-                    <TableCell>{0}</TableCell>
+                    <TableCell>{row.totalItems}</TableCell>
                     <TableCell>
                       {new Date(row.created_at).toDateString()}
                     </TableCell>

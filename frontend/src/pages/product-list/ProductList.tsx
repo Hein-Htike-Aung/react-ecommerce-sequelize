@@ -27,6 +27,7 @@ import CreateIcon from "@mui/icons-material/Create";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import numberWithComma from "../../utils/numberWithComma";
 import { truncate } from "lodash";
+import Rating from "@mui/material/Rating";
 
 const ProductList = () => {
   const navigate = useNavigate();
@@ -52,7 +53,7 @@ const ProductList = () => {
       );
 
       setProducts(res.data.data.result);
-      setProductsCount(Math.round(res.data.data.count / 10));
+      setProductsCount(Math.ceil(res.data.data.count / 10) || 1);
     } else fetchAllProducts(1);
   };
 
@@ -63,7 +64,7 @@ const ProductList = () => {
     );
 
     setProducts(res.data.data.result);
-    setProductsCount(Math.round(res.data.data.count / 10));
+    setProductsCount(Math.ceil(res.data.data.count / 10));
     setFetching(false);
   };
 
@@ -156,7 +157,9 @@ const ProductList = () => {
                       {new Date(row.created_at).toDateString()}
                     </TableCell>
                     <TableCell>{row.status}</TableCell>
-                    <TableCell>rating</TableCell>
+                    <TableCell>
+                      <Rating name="disabled" value={row.rate} disabled />
+                    </TableCell>
                     <TableCell>
                       ${numberWithComma(row.sale_price | 0)}
                     </TableCell>

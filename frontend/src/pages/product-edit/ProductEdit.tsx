@@ -114,7 +114,7 @@ const ProductEdit = () => {
       setValue("status", product.status);
 
       setGender(product.gender);
-      setIsFeatured(product.isFeatured);
+      setIsFeatured(product.isFeatured ? true : false);
       setDescription(product.description);
       setColorsValue(product.colors.split(","));
       setCategoryId(product.categoryId.toString());
@@ -649,7 +649,7 @@ const ProductEdit = () => {
                     control={
                       <Switch
                         onChange={(e: any) => setIsFeatured(e.target.checked)}
-                        value={isFeatured}
+                        checked={isFeatured}
                       />
                     }
                     label="Featured Product"

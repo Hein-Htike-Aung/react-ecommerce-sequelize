@@ -5,6 +5,7 @@ export interface Category {
   parentCategoryName: string;
   description: string;
   img: string;
+  totalItems: number;
   created_at: Date;
   updated_at: Date;
 }
