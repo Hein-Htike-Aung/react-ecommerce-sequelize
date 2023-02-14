@@ -21,9 +21,10 @@ import CategoryEdit from "./pages/category-edit/CategoryEdit";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ProductEdit from "./pages/product-edit/ProductEdit";
+import { AuthContext } from "./context/authContext";
 
 const App = () => {
-  const currentUser = true;
+  const { currentUser } = useContext(AuthContext);
   const { themeMode } = useContext(ThemeContext);
 
   const ProtectedRoute = ({ children }: any) => {

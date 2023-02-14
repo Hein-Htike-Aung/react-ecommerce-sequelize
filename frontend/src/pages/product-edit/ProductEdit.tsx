@@ -77,9 +77,8 @@ const ProductEdit = () => {
     handleSubmit,
     register,
     formState: { errors },
-    setValue,
-    setError,
-  } = useForm<FormValues>();
+    setValue, 
+  } = useForm<FormValues>();     
 
   // functions
   const fetchProduct = async (id: number) => {

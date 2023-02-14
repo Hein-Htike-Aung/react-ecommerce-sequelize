@@ -6,6 +6,7 @@ import StyledTabs, {
 } from "../../components/layout/styled_tabs/StyledTabs";
 import UserList from "../../components/widgets/user_list/UserList";
 import AddUser from "../../components/widgets/add_user/AddUser";
+import ChangePassword from "../../components/widgets/change-password/ChangePassword";
 
 const Settings = () => {
   const [tabValue, setTabValue] = React.useState(0);
@@ -47,6 +48,7 @@ const Settings = () => {
           </TabPanel>
           <TabPanel value={tabValue} index={4}>
             {/* Change Password */}
+            <ChangePassword />
           </TabPanel>
         </StyledTabs>
       </div>

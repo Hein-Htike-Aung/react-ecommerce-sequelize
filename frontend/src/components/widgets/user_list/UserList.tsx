@@ -39,8 +39,10 @@ const UserList = () => {
       `/users/list?page=${currentPage - 1}*pageSize=10`
     );
 
-    setUsers(res.data.data.result.reverse());
-    setUsersCount(Math.round(res.data.data.count / 10));
+    console.log(res.data.data);
+
+    setUsers(res.data.data.reverse());
+    setUsersCount(Math.ceil(res.data.data.count / 10) || 1);
     setFetching(false);
   };
 
