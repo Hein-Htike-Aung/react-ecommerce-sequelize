@@ -7,7 +7,7 @@ const useJWT = () => {
   const { currentUser, logout } = useContext(AuthContext);
 
   const axiosJWT = axios.create({
-    baseURL: "https://hha-balance.herokuapp.com/api/",
+    baseURL: "http://localhost:3001/api/v1/",
     headers: {
       authorization: "Bearer " + currentUser?.access_token,
     },
@@ -18,6 +18,8 @@ const useJWT = () => {
       const currentDate = new Date();
 
       const decodedToken: any = jwt_decode(currentUser?.access_token as string);
+
+      console.log({ decodedToken });
 
       if (decodedToken.exp * 1000 < currentDate.getTime()) {
         await logout();

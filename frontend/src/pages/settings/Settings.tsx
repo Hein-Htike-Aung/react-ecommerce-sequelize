@@ -7,6 +7,7 @@ import StyledTabs, {
 import UserList from "../../components/widgets/user_list/UserList";
 import AddUser from "../../components/widgets/add_user/AddUser";
 import ChangePassword from "../../components/widgets/change-password/ChangePassword";
+import ProfileSetting from "../../components/widgets/profile-setting/ProfileSetting";
 
 const Settings = () => {
   const [tabValue, setTabValue] = React.useState(0);
@@ -34,6 +35,7 @@ const Settings = () => {
         >
           <TabPanel value={tabValue} index={0}>
             {/* Profile Settings */}
+            <ProfileSetting />
           </TabPanel>
           <TabPanel value={tabValue} index={1}>
             {/* Roles */}

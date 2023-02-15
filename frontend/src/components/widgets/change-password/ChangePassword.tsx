@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import ContainedButton from "../../form/contained-button/ContainedButton";
@@ -6,6 +6,8 @@ import * as yup from "yup";
 import "./change-password.scss";
 import useYupValidationResolver from "../../../hooks/useYupValidationResolver";
 import { axiosInstance } from "../../../utils/axiosInstance";
+import { AuthContext } from "../../../context/authContext";
+import useJWT from "../../../hooks/useJWT";
 
 type FormValues = {
   oldPassword: string;
@@ -14,6 +16,10 @@ type FormValues = {
 };
 
 const ChangePassword = () => {
+  const { logout } = useContext(AuthContext);
+
+  const axiosJWT = useJWT();
+
   const formSchema = yup.object().shape({
     oldPassword: yup
       .string()
@@ -48,7 +54,6 @@ const ChangePassword = () => {
     handleSubmit,
     register,
     formState: { errors },
-    reset,
     watch,
   } = useForm<FormValues>({
     resolver,
@@ -56,14 +61,14 @@ const ChangePassword = () => {
 
   const submitHandler = async (formValues: FormValues) => {
     try {
-      const res = await axiosInstance.post(`/auth/change_user_password`, {
+      const res = await axiosJWT.post(`/auth/change_user_password`, {
         oldPassword: formValues.oldPassword,
         newPassword: formValues.newPassword,
       });
 
       if (res.status === 200) {
         toast.success("Successfully changed");
-        reset();
+        await logout();
       }
     } catch (error: any) {
       console.log(error);

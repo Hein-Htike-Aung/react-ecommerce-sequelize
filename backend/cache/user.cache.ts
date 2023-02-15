@@ -41,6 +41,11 @@ class UserCache {
     )) as User | null;
   };
 
+  // modify single user
+  static modifyUser = async (id: number, value: User) => {
+    await setCache(`user:${id}`, value);
+  };
+
   // restore user list
   static restoreUserList = async () => {
     return (await restoreCache(

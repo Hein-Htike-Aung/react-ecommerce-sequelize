@@ -17,9 +17,5 @@ export const passwordsSchema = object({
         /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{6,16}$/,
         "Password must be strong password."
       ),
-    confirmPassword: string().oneOf(
-      [ref("newPassword"), null],
-      "Passwords do not match"
-    ),
   }),
 });

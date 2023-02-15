@@ -63,8 +63,10 @@ export const changeUserPassword: ReqHandler = async (
 
     if (!loggedInUser) return errorResponse(res, 404, "User not found");
 
+    console.log(oldPassword);
+
     if (!bcrypt.compareSync(oldPassword, loggedInUser.password)) {
-      return errorResponse(res, 403, "Unauthorized");
+      return errorResponse(res, 403, "Enter correct password");
     }
 
     const salt = await bcrypt.genSalt(
@@ -79,9 +81,11 @@ export const changeUserPassword: ReqHandler = async (
     if (!updatedUser) return errorResponse(res, 404, "User not found");
 
     await UserCache.updateUser(updatedUser);
+    await UserCache.modifyUser(updatedUser.id, updatedUser);
 
-    successResponse(res, 202, "Password has been updated");
+    successResponse(res, 200, "Password has been updated");
   } catch (error) {
+    console.log(error);
     handleError(res, error);
   }
 };
