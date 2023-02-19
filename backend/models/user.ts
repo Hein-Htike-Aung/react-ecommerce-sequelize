@@ -19,6 +19,7 @@ class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
   declare img: CreationOptional<string>;
   declare gender: string;
   declare role: string;
+  declare about?: string;
 }
 
 User.init(
@@ -69,6 +70,10 @@ User.init(
       type: DataTypes.STRING,
       allowNull: false,
       defaultValue: "Admin", // Manager, Editor, Customer
+    },
+    about: {
+      type: DataTypes.STRING,
+      allowNull: true,
     },
   },
   {

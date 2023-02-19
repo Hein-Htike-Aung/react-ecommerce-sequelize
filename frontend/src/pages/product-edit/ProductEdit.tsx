@@ -77,8 +77,8 @@ const ProductEdit = () => {
     handleSubmit,
     register,
     formState: { errors },
-    setValue, 
-  } = useForm<FormValues>();     
+    setValue,
+  } = useForm<FormValues>();
 
   // functions
   const fetchProduct = async (id: number) => {
@@ -298,6 +298,7 @@ const ProductEdit = () => {
           productImages.push(downloadURL);
           // All Images are complete uploading
           if (idx === files.length - 1) {
+            console.log(productImages);
             try {
               const res = await axiosInstance.post(`/products/create`, {
                 ...formValues,

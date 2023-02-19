@@ -23,12 +23,21 @@ const payload = {
     img: string(),
     gender: string().required(),
     role: string().required(),
+    about: string(),
   }),
 };
 
 export const createUserSchema = object({ ...payload });
 
-export const updateUserSchema = object({ ...userId, ...payload });
+export const updateUserSchema = object({
+  body: object({
+    fullName: string().required(),
+    phone: string().required(),
+    img: string(),
+    gender: string().required(),
+    about: string(),
+  }),
+});
 
 export const userIdParam = object({ ...userId });
 

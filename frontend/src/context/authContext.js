@@ -18,14 +18,27 @@ export const AuthContextProvider = ({ children }) => {
     setCurrentUser(res.data.data);
   };
 
+  const updateCurrentUser = async (payload) => {
+    setCurrentUser((prev) => ({
+      ...prev,
+      fullName: payload.fullName,
+      email: payload.email,
+      phone: payload.phone,
+      gender: payload.gender,
+      about: payload.about,
+      img: payload.img,
+    }));
+  };
+
   const logout = async () => {
     // await axiosInstance.post("/auth/logout");
-
     setCurrentUser(null);
   };
 
   return (
-    <AuthContext.Provider value={{ currentUser, login, logout }}>
+    <AuthContext.Provider
+      value={{ currentUser, login, logout, updateCurrentUser }}
+    >
       {children}
     </AuthContext.Provider>
   );

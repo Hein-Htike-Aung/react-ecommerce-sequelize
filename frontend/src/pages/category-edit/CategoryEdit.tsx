@@ -122,13 +122,6 @@ const CategoryEdit = () => {
 
         uploadImg(file, async (downloadURL) => {
           try {
-
-            console.log({
-              ...formValues,
-              parentCategoryId: Number(formValues.parentCategoryId),
-              img: downloadURL,
-            })
-
             const res = await axiosInstance.post(`/categories/create`, {
               ...formValues,
               parentCategoryId: Number(formValues.parentCategoryId),
@@ -183,7 +176,7 @@ const CategoryEdit = () => {
             <div className="form-group">
               <label>Description</label>
               <textarea
-                className={`${errors.description && "inputError"}`}
+                className={`textarea ${errors.description && "inputError"}`}
                 rows={4}
                 {...register("description", {
                   required: "Description is required",

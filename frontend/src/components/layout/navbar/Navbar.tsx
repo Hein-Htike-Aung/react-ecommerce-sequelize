@@ -47,7 +47,7 @@ const Navbar: React.FC<{
               <span>3</span>
             </div>
             <FormControlLabel
-            sx={{ marginRight: 0 }}
+              sx={{ marginRight: 0 }}
               control={
                 <MaterialUISwitch
                   name="themeSwitch"
@@ -58,7 +58,7 @@ const Navbar: React.FC<{
               label=""
             />
             <img
-              src={`https://images.pexels.com/photos/1382731/pexels-photo-1382731.jpeg?auto=compress&cs=tinysrgb&w=1200`}
+              src={`${currentUser.img || `./user-profile.png`}`}
               alt=""
               className="profilePic"
             />

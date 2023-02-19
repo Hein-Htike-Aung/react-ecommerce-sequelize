@@ -1,5 +1,6 @@
 import express from "express";
 import { createUser, getUsers, toggleUserStatus, updateUser } from "../controllers/UserController";
+import user_jwt from "../middlewares/user_jwt";
 import validateRequest from "../middlewares/validate_request";
 import { createUserSchema, updateUserSchema, userIdParam } from "../schemas/user.schema";
 
@@ -12,8 +13,8 @@ router.post(
 );
 
 router.patch(
-    "/update/:userId",
-    [validateRequest(updateUserSchema)],
+    "/update",
+    [validateRequest(updateUserSchema), user_jwt],
     updateUser
 );
 

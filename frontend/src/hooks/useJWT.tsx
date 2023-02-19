@@ -19,8 +19,6 @@ const useJWT = () => {
 
       const decodedToken: any = jwt_decode(currentUser?.access_token as string);
 
-      console.log({ decodedToken });
-
       if (decodedToken.exp * 1000 < currentDate.getTime()) {
         await logout();
       }

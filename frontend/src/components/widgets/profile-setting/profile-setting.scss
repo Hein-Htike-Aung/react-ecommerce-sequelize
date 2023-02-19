@@ -5,52 +5,87 @@
   gap: 20px;
   width: 100%;
 
-  .left {
-    flex: 1;
-    padding: 40px;
+  .profileSettingForm {
+    display: flex;
+    width: 100%;
+    gap: 20px;
 
-    .profileImg {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-      gap: 20px;
-      cursor: pointer;
+    .left {
+      flex: 1;
+      padding: 40px;
 
-      .profileImgWrapper {
-        border: 1px solid gray;
-        border-radius: 50%;
-        border-style: dashed;
-        padding: 10px;
+      .profileImg {
         display: flex;
         align-items: center;
         justify-content: center;
+        flex-direction: column;
+        gap: 20px;
+        cursor: pointer;
 
-        img {
-          width: 150px;
-          height: 150px;
+        .profileImgWrapper {
+          border: 1px solid gray;
           border-radius: 50%;
-          object-fit: cover;
+          border-style: dashed;
+          padding: 10px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          position: relative;
+
+          .opacityBlock {
+            .addPhotoIcon {
+              display: none;
+            }
+          }
+
+          .profileImg {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+          }
+
+          &:hover {
+            .opacityBlock {
+              background-color: rgba(0, 0, 0, 0.5);
+              width: 150px;
+              height: 150px;
+              border-radius: 50%;
+              position: absolute;
+              cursor: pointer;
+
+              .addPhotoIcon {
+                display: block;
+                position: absolute;
+                color: white;
+                margin: auto;
+                top: 0;
+                bottom: 0;
+                right: 0;
+                left: 0;
+              }
+            }
+          }
+        }
+
+        p {
+          font-weight: 500;
+          color: gray;
+          font-size: 15px;
+        }
+
+        .profileImgText {
+          text-align: center;
         }
       }
-
-      p {
-        font-weight: 500;
-        color: gray;
-        font-size: 15px;
-      }
-
-      .profileImgText {
-        text-align: center;
-      }
     }
-  }
 
-  .right {
-    flex: 2;
+    .right {
+      flex: 2;
 
-    .form-group {
-      margin: 10px 0;
+      .form-group {
+        margin: 10px 0;
+      }
     }
   }
 }

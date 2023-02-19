@@ -43,21 +43,22 @@ export const createUser: ReqHandler = async (req: Request, res: Response) => {
 
 export const updateUser: ReqHandler = async (req: Request, res: Response) => {
   try {
-    const id = get(req.params, "userId");
+    const { userId } = req.user;
 
-    const user = await UserService.getUser(+id);
+    const user = await UserService.getUser(+userId);
 
     if (!user) return errorResponse(res, 404, "User not found");
 
-    await User.update({ ...req.body }, { where: { id } });
+    // Name, phone, gender, about, img
+    await User.update({ ...req.body }, { where: { id: userId } });
 
-    const updatedUser = await User.findByPk(id);
+    const updatedUser = await User.findByPk(userId);
 
     if (!updatedUser) return errorResponse(res, 404, "User not found");
 
     await UserCache.updateUser(updatedUser);
 
-    successResponse(res, 201, "Account has been updated");
+    successResponse(res, 200, "Account has been updated");
   } catch (error) {
     handleError(res, error);
   }

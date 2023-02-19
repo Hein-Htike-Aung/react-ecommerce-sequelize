@@ -13,7 +13,7 @@ const ContainedButton: React.FC<{
     <div>
       <button
         style={{
-          width: `${width === 100 ? width + "%" : width + " rem"}`,
+          width: `${width === 100 ? width + "%" : width + "rem"}`,
           height: `${height}rem`,
         }}
         className="containedButton"
