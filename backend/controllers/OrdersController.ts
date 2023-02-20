@@ -31,14 +31,9 @@ export interface IOrderList extends Orders {
 }
 
 export const createOrder: ReqHandler = async (req: Request, res: Response) => {
+  const transaction = await sequelize.transaction();
   try {
-    const {
-      customer_name,
-      customer_phone,
-      shipping_address,
-      paymentMethod,
-      orderItems,
-    } = req.body;
+    const { shipping_address, paymentMethod, orderItems } = req.body;
 
     const { userId } = req.user;
 
@@ -46,24 +41,28 @@ export const createOrder: ReqHandler = async (req: Request, res: Response) => {
 
     if (!user) return errorResponse(res, 403, "Unauthorized");
 
-    const { id: orderId } = await Orders.create({
-      orderId: uuidv4(),
-      customer_name,
-      customer_phone,
-      customer_email: user.email,
-      shipping_address,
-      paymentMethod,
-      order_date: formattedCurrentDate,
-      shipping_fee: 0.5,
-    });
+    const { id: orderId } = await Orders.create(
+      {
+        orderId: uuidv4(),
+        shipping_address,
+        paymentMethod,
+        order_date: formattedCurrentDate,
+        shipping_fee: 0.5,
+        userId,
+      },
+      { transaction }
+    );
 
     await Promise.all(
       orderItems.map(async (item: IOrderItem) => {
-        await OrderItem.create({
-          orderId,
-          productId: item.productId,
-          quantity: item.quantity,
-        });
+        await OrderItem.create(
+          {
+            orderId,
+            productId: item.productId,
+            quantity: item.quantity,
+          },
+          { transaction }
+        );
       })
     );
 
@@ -77,13 +76,15 @@ export const createOrder: ReqHandler = async (req: Request, res: Response) => {
 
         await Product.update(
           { quantity: existingProduct.quantity - item.quantity },
-          { where: { id: item.productId } }
+          { where: { id: item.productId }, transaction }
         );
       })
     );
 
+    await transaction.commit();
     successResponse(res, 200, null, "Order has been placed");
   } catch (error) {
+    await transaction.rollback();
     handleError(res, error);
   }
 };
@@ -228,11 +229,22 @@ export const orderListForCustomer: ReqHandler = async (
       limit,
       raw: true,
       where: {
-        customer_email: user.email,
+        userId,
       },
     });
 
     successResponse(res, 200, null, { result: rows, count });
+  } catch (error) {
+    handleError(res, error);
+  }
+};
+
+export const orderDetailsByUserId: ReqHandler = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const userId = get(req.params, "userId");
   } catch (error) {
     handleError(res, error);
   }

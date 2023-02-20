@@ -25,13 +25,7 @@ const Settings = () => {
         <StyledTabs
           value={tabValue}
           handleChange={handleTabChange}
-          tabs={[
-            "Profile Settings",
-            "Roles",
-            "Add Role",
-            "Notifications",
-            "Change Password",
-          ]}
+          tabs={["Profile Settings", "Roles", "Add Role", "Change Password"]}
         >
           <TabPanel value={tabValue} index={0}>
             {/* Profile Settings */}
@@ -46,9 +40,6 @@ const Settings = () => {
             <AddUser />
           </TabPanel>
           <TabPanel value={tabValue} index={3}>
-            {/* Notifications */}
-          </TabPanel>
-          <TabPanel value={tabValue} index={4}>
             {/* Change Password */}
             <ChangePassword />
           </TabPanel>

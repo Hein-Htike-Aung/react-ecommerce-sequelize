@@ -1,3 +1,4 @@
+import { sequelize } from "./../models/index";
 import { Request, Response } from "express";
 import { get } from "lodash";
 import CategoryCache from "../cache/category.cache";
@@ -18,6 +19,7 @@ export const createCategory: ReqHandler = async (
   req: Request,
   res: Response
 ) => {
+  const transaction = await sequelize.transaction();
   try {
     const { categoryName, parentCategoryId, description, img } = req.body;
 
@@ -31,14 +33,18 @@ export const createCategory: ReqHandler = async (
     if (!parentCategory)
       return errorResponse(res, 404, "Parent Category not found");
 
-    const newCategory = await Category.create({
-      categoryName,
-      parentCategoryId,
-      description,
-      img,
-    });
+    const newCategory = await Category.create(
+      {
+        categoryName,
+        parentCategoryId,
+        description,
+        img,
+      },
+      { transaction }
+    );
 
     if (newCategory) {
+      await transaction.commit();
       await CategoryCache.setCategory({
         ...newCategory.get({ plain: true }),
         parentCategoryName: parentCategory.parentCategoryName,
@@ -47,6 +53,7 @@ export const createCategory: ReqHandler = async (
       successResponse(res, 200, "Category has been created");
     } else errorResponse(res, 500, null);
   } catch (error) {
+    await transaction.rollback();
     handleError(res, error);
   }
 };

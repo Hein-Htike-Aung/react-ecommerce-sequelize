@@ -1,5 +1,5 @@
-import { likeParam, replaceLikeParam } from "./../utils/likeParam";
-import { Op, QueryTypes } from "sequelize";
+import { replaceLikeParam } from "./../utils/likeParam";
+import { QueryTypes } from "sequelize";
 import { IOrderList } from "../controllers/OrdersController";
 import { sequelize } from "../models";
 import Orders from "../models/orders";
@@ -13,10 +13,14 @@ class OrdersService {
     limit: number,
     offset: number
   ) => {
-    const q_orders = `select *
-                        from orders
-                        where customer_name like ? and date(order_date) between ? and ?
-                        limit ? offset ?`;
+    const q_orders = `select o.*, u.*
+    from orders o
+    inner join user u
+    on u.id = o.userId
+    where o.userId = (
+      select id from user where fullName like ? limit 1
+    ) and date(o.order_date) between ? and ?
+    limit ? offset ?`;
 
     const orders = await sequelize.query(q_orders, {
       replacements: [
@@ -32,12 +36,20 @@ class OrdersService {
 
     await this.map_order_list(orders);
 
-    const q_count = `select count(id) as count
-                        from orders
-                        where customer_name like ? and date(order_date) between ? and ?`;
+    const q_count = `select count(o.id)
+    from orders o
+    inner join user u
+    on u.id = o.userId
+    where o.userId = (
+      select id from user where fullName like ? limit 1
+    ) and date(o.order_date) between ? and ?`;
 
     const [{ count }] = await sequelize.query(q_count, {
-      replacements: [replaceLikeParam(customer_name), order_date_from, order_date_to],
+      replacements: [
+        replaceLikeParam(customer_name),
+        order_date_from,
+        order_date_to,
+      ],
       raw: true,
       type: QueryTypes.SELECT,
     });
@@ -50,12 +62,33 @@ class OrdersService {
     limit: number,
     offset: number
   ) => {
-    const { rows, count } = await Orders.findAndCountAll({
-      limit,
-      offset,
-      where: {
-        customer_name: likeParam(customer_name),
-      },
+    const q = `select o.*, u.*
+    from orders o
+    inner join user u
+    on u.id = o.userId
+    where o.userId = (
+      select id from user where fullName like ? limit 1
+    )
+    limit ? offset ?`;
+
+    const rows = await sequelize.query(q, {
+      replacements: [replaceLikeParam(customer_name), limit, offset],
+      raw: true,
+      type: QueryTypes.SELECT,
+    });
+
+    const q_count = `select count(o.id)
+    from orders o
+    inner join user u
+    on u.id = o.userId
+    where o.userId = (
+      select id from user where fullName like ? limit 1
+    )`;
+
+    const [{ count }] = await sequelize.query(q_count, {
+      replacements: [replaceLikeParam(customer_name)],
+      raw: true,
+      type: QueryTypes.SELECT,
     });
 
     await this.map_order_list(rows);

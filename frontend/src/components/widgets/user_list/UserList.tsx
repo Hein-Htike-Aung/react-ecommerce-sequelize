@@ -36,13 +36,18 @@ const UserList = () => {
     setFetching(true);
 
     const res = await axiosInstance.get(
-      `/users/list?page=${currentPage - 1}*pageSize=10`
+      `/users/list?page=${currentPage - 1}&pageSize=10`
     );
 
-    console.log(res.data.data);
+    let users = res.data.data;
 
-    setUsers(res.data.data.reverse());
-    setUsersCount(Math.ceil(res.data.data.count / 10) || 1);
+    if (users.length) {
+      users = users.filter((u: User) => u.role !== "Customer");
+
+      setUsers(users.reverse());
+      setUsersCount(Math.ceil(users.count / 10) || 1);
+    }
+
     setFetching(false);
   };
 
@@ -108,7 +113,7 @@ const UserList = () => {
                   </TableCell>
                   <TableCell align="right">
                     <div className="tableIconsWrapper">
-                      {row.role !== "Owner" ? (
+                      {row.role !== "Admin" ? (
                         <div
                           className="tableIcon"
                           onClick={() => openConfirmDialog(row)}

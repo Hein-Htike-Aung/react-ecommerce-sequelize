@@ -19,6 +19,7 @@ export const createProduct: ReqHandler = async (
   req: Request,
   res: Response
 ) => {
+  const transaction = await sequelize.transaction();
   try {
     const {
       categoryId,
@@ -46,31 +47,36 @@ export const createProduct: ReqHandler = async (
 
     if (product) return errorResponse(res, 403, "Product already exists");
 
-    const { id: productId } = await Product.create({
-      categoryId,
-      productName,
-      product_code,
-      product_sku,
-      regular_price,
-      sale_price,
-      tags,
-      sizes,
-      quantity,
-      colors,
-      gender,
-      isFeatured,
-      status,
-      description,
-    });
+    const { id: productId } = await Product.create(
+      {
+        categoryId,
+        productName,
+        product_code,
+        product_sku,
+        regular_price,
+        sale_price,
+        tags,
+        sizes,
+        quantity,
+        colors,
+        gender,
+        isFeatured,
+        status,
+        description,
+      },
+      { transaction }
+    );
 
     await Promise.all(
       productImages?.map(async (img: string) => {
-        await ProductImage.create({ productId, img });
+        await ProductImage.create({ productId, img }, { transaction });
       })
     );
 
+    await transaction.commit();
     successResponse(res, 201, "Product has been created");
   } catch (error) {
+    await transaction.rollback();
     handleError(res, error);
   }
 };
@@ -79,6 +85,7 @@ export const updateProduct: ReqHandler = async (
   req: Request,
   res: Response
 ) => {
+  const transaction = await sequelize.transaction();
   try {
     const id = get(req.params, "productId");
     const { productName, product_code, product_sku, productImages } = req.body;
@@ -96,7 +103,7 @@ export const updateProduct: ReqHandler = async (
     if (isDuplicate<Product>(existingProduct, id))
       return errorResponse(res, 403, "Product already exists");
 
-    await Product.update({ ...req.body }, { where: { id } });
+    await Product.update({ ...req.body }, { where: { id }, transaction });
 
     // Update product Images
     const currentProduct_images = await ProductImage.findAll({
@@ -118,7 +125,10 @@ export const updateProduct: ReqHandler = async (
 
     await Promise.all(
       newImages.map(async (img: string) => {
-        await ProductImage.create({ productId: Number(id), img });
+        await ProductImage.create(
+          { productId: Number(id), img },
+          { transaction }
+        );
       })
     );
 
@@ -130,7 +140,10 @@ export const updateProduct: ReqHandler = async (
 
     await Promise.all(
       excludeImage.map(async (img: string) => {
-        await ProductImage.destroy({ where: { img, productId: id } });
+        await ProductImage.destroy({
+          where: { img, productId: id },
+          transaction,
+        });
       })
     );
 
@@ -139,10 +152,12 @@ export const updateProduct: ReqHandler = async (
 
     if (!updatedProduct) return errorResponse(res, 404, "Product not found");
 
+    await transaction.commit();
     await ProductCache.updateProduct(updatedProduct);
 
     successResponse(res, 202, "Product has been updated");
   } catch (error) {
+    await transaction.rollback();
     handleError(res, error);
   }
 };

@@ -15,14 +15,12 @@ class Orders extends Model<
 > {
   declare id: CreationOptional<number>;
   declare orderId: string;
-  declare customer_name: string;
-  declare customer_phone: string;
-  declare customer_email: string;
   declare shipping_address: string;
   declare order_date: string;
   declare paymentMethod: string;
   declare status: CreationOptional<string>;
   declare shipping_fee: number;
+  declare userId: number;
 }
 
 Orders.init(
@@ -35,21 +33,6 @@ Orders.init(
     orderId: {
       type: DataTypes.STRING,
       allowNull: false,
-    },
-    customer_name: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    customer_phone: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
-    customer_email: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      validate: {
-        isEmail: true,
-      },
     },
     shipping_address: {
       type: DataTypes.STRING,
@@ -72,6 +55,10 @@ Orders.init(
     shipping_fee: {
       type: DataTypes.INTEGER,
       defaultValue: 5,
+    },
+    userId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
     },
   },
   {

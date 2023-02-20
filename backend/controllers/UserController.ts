@@ -8,8 +8,10 @@ import handleError from "../utils/handleError";
 import User from "../models/user";
 import UserCache from "../cache/user.cache";
 import UserService from "../services/user.service";
+import { sequelize } from "../models";
 
 export const createUser: ReqHandler = async (req: Request, res: Response) => {
+  const transaction = await sequelize.transaction();
   try {
     const { fullName, email, password, phone, gender, role } = req.body;
 
@@ -24,19 +26,24 @@ export const createUser: ReqHandler = async (req: Request, res: Response) => {
     );
     const hashedPassword = bcrypt.hashSync(password, salt);
 
-    const newUser = await User.create({
-      fullName,
-      email,
-      password: hashedPassword,
-      phone,
-      gender,
-      role,
-    });
+    const newUser = await User.create(
+      {
+        fullName,
+        email,
+        password: hashedPassword,
+        phone,
+        gender,
+        role,
+      },
+      { transaction }
+    );
 
+    await transaction.commit();
     await UserCache.setUser(newUser);
 
     successResponse(res, 201, "User has been created");
   } catch (error) {
+    await transaction.rollback();
     handleError(res, error);
   }
 };

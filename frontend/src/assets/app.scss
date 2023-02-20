@@ -39,6 +39,26 @@ ul {
   color: $primary-color;
 }
 
+.successBudget {
+  color: rgb(34, 154, 22);
+  background-color: rgba(84, 214, 44, 0.16);
+  width: 50px;
+  border-radius: 10px;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.errorBudget {
+  color: rgb(154, 22, 22);
+  background-color: rgba(214, 44, 44, 0.16);
+  width: 50px;
+  border-radius: 10px;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 500;
+}
+
 .warnBudget {
   color: $light-warn-color;
 }

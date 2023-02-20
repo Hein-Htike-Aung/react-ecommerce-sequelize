@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { get } from "lodash";
 import SubscriberCache from "../cache/subscriber.cache";
+import { sequelize } from "../models";
 import Subscriber from "../models/subscriber";
 import UserService from "../services/user.service";
 import { ReqHandler } from "../types";
@@ -12,6 +13,7 @@ export const createSubscribe: ReqHandler = async (
   req: Request,
   res: Response
 ) => {
+  const transaction = await sequelize.transaction();
   try {
     const { email } = req.body;
 
@@ -28,14 +30,16 @@ export const createSubscribe: ReqHandler = async (
     if (email !== loggedInUser.email)
       return errorResponse(res, 403, "Account's email doesn't match!");
 
-    const newSubscriber = await Subscriber.create({ email });
+    const newSubscriber = await Subscriber.create({ email }, { transaction });
 
     if (newSubscriber) {
+      await transaction.commit();
       await SubscriberCache.setSubscriber(newSubscriber);
 
       successResponse(res, 200, "Subscribed");
     } else errorResponse(res, 200, null);
   } catch (error) {
+    await transaction.rollback();
     handleError(res, error);
   }
 };

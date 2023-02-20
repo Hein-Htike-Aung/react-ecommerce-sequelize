@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { get } from "lodash";
+import { sequelize } from "../models";
 import Rating from "../models/rating";
 import ProductService from "../services/product.service";
 import RatingService from "../services/rating.service";
@@ -9,6 +10,7 @@ import handleError from "../utils/handleError";
 import successResponse from "../utils/successResponse";
 
 export const createRating: ReqHandler = async (req: Request, res: Response) => {
+  const transaction = await sequelize.transaction();
   try {
     const { userId } = req.user;
     const { productId, rating } = req.body;
@@ -24,10 +26,12 @@ export const createRating: ReqHandler = async (req: Request, res: Response) => {
     if (existingRating)
       return errorResponse(res, 403, "Already rated this product");
 
-    await Rating.create({ productId, rating, userId });
+    await Rating.create({ productId, rating, userId }, { transaction });
 
+    await transaction.commit();
     successResponse(res, 200, "Rate has been set");
   } catch (error) {
+    await transaction.rollback();
     handleError(res, error);
   }
 };

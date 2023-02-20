@@ -7,20 +7,24 @@ import { ReqHandler } from "../types";
 import errorResponse from "../utils/errorResponse";
 import handleError from "../utils/handleError";
 import successResponse from "../utils/successResponse";
+import { sequelize } from "../models";
 
 export const createNewLetter: ReqHandler = async (
   req: Request,
   res: Response
 ) => {
+  const transaction = await sequelize.transaction();
   try {
-    const newLetter = await NewLetter.create({ ...req.body });
+    const newLetter = await NewLetter.create({ ...req.body }, { transaction });
 
     if (newLetter) {
+      await transaction.commit();
       await NewLetterCache.setNewLetter(newLetter);
 
       successResponse(res, 201, "New Letter has been created");
     }
   } catch (error) {
+    await transaction.rollback();
     handleError(res, error);
   }
 };

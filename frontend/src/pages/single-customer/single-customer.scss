@@ -1,0 +1,14 @@
+@import "../../assets/index";
+
+.singleCustomer {
+  .singleCustomerWrapper {
+    min-height: calc(100vh - 130px);
+    padding: 20px;
+
+    @include themify($themes) {
+      background-color: themed(bg);
+    }
+
+    
+  }
+}
