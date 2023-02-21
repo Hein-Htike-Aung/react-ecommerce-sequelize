@@ -9,6 +9,7 @@ import app from "./app";
 import redis from "./config/redis";
 import db from "./models";
 import logger from "./utils/logger";
+import http from "http";
 
 const numCPUs = _.cpus();
 
@@ -39,11 +40,13 @@ if (cluster.isPrimary) {
 
       // await redis.connect();
 
-      app.listen(port, () => {
+      const server = http.createServer(app);
+
+      server.listen(port, () => {
         logger.info(`Listening: http://localhost:${port}`);
       });
     } catch (error) {
-      console.log(error)
+      console.log(error);
       logger.error("Unable to connect to the database:", error);
     }
   })();

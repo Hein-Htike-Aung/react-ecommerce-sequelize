@@ -44,3 +44,6 @@ Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjUsImlhd
 
 ### GET ORDER
 GET http://localhost:3001/api/v1/orders/by_id/1
+
+### GET ORDERS DETAILS FOR CUSTOMER
+GET http://localhost:3001/api/v1/orders/details_for_customer/5

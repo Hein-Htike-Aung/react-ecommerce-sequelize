@@ -23,6 +23,7 @@ import "react-toastify/dist/ReactToastify.css";
 import ProductEdit from "./pages/product-edit/ProductEdit";
 import { AuthContext } from "./context/authContext";
 import SingleCustomer from "./pages/single-customer/SingleCustomer";
+import SubscribersList from "./pages/subscribers-list/SubscribersList";
 
 const App = () => {
   const { currentUser } = useContext(AuthContext);
@@ -70,6 +71,10 @@ const App = () => {
         {
           path: "/newLetter-list",
           element: <NewLetterList />,
+        },
+        {
+          path: "/subscribers-list",
+          element: <SubscribersList />,
         },
         {
           path: "/orders-list",

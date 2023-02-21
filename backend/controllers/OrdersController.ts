@@ -9,6 +9,7 @@ import Product from "../models/product";
 import ProductImage from "../models/productimage";
 import User from "../models/user";
 import OrdersService from "../services/orders.service";
+import UserService from "../services/user.service";
 import { ReqHandler } from "../types";
 import { formattedCurrentDate } from "../utils/date";
 import errorResponse from "../utils/errorResponse";
@@ -26,8 +27,11 @@ interface IOrderItemWithProductImages extends OrderItem {
 }
 
 export interface IOrderList extends Orders {
-  price: number;
-  totalQuantity: number;
+  orderDetails: {
+    itemPrice: number;
+    totalQuantity: number;
+    product: Product;
+  };
 }
 
 export const createOrder: ReqHandler = async (req: Request, res: Response) => {
@@ -224,7 +228,7 @@ export const orderListForCustomer: ReqHandler = async (
     const { offset, limit } = getPaginationData(req.query);
     const { userId } = req.user;
 
-    const user = await User.findByPk(userId);
+    const user = await UserService.getUser(+userId);
 
     if (!user) return errorResponse(res, 403, "Unauthorized");
 
@@ -243,12 +247,39 @@ export const orderListForCustomer: ReqHandler = async (
   }
 };
 
-export const orderDetailsByUserId: ReqHandler = async (
+export const orderDetailsForCustomer: ReqHandler = async (
   req: Request,
   res: Response
 ) => {
   try {
     const userId = get(req.params, "userId");
+
+    const user = await UserService.getUser(+userId);
+
+    const order = await Orders.findOne({ where: { userId } });
+
+    if (!order)
+      return successResponse(res, 200, "No order found with this user");
+
+    const q = `select p.*, sum(p.sale_price * oi.quantity) as itemPrice, sum(oi.quantity) as totalQuantity 
+                    from order_item oi
+                    inner join product p
+                    on p.id = oi.productId
+                    where oi.orderId = ?
+                    group by oi.orderId`;
+
+    const orderDetails = await sequelize.query(q, {
+      replacements: [order.id],
+      raw: true,
+      type: QueryTypes.SELECT,
+    });
+
+    (order as IOrderList)["orderDetails"] = orderDetails;
+
+    successResponse(res, 200, null, {
+      user,
+      order,
+    });
   } catch (error) {
     handleError(res, error);
   }

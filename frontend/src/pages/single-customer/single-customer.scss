@@ -3,12 +3,24 @@
 .singleCustomer {
   .singleCustomerWrapper {
     min-height: calc(100vh - 130px);
+    height: 100%;
     padding: 20px;
 
     @include themify($themes) {
       background-color: themed(bg);
     }
 
-    
+    .no_data_wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: calc(100vh - 170px);
+
+      .no_data {
+        width: 600px;
+        height: 600px;
+        object-fit: cover;
+      }
+    }
   }
 }

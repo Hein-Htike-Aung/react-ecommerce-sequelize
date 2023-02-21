@@ -1,5 +1,5 @@
 import express from "express";
-import { createOrder, getOrder, orderListForCustomer, ordersListForAdmin, ordersListForAdmin_filter, updateOrderStatus } from "../controllers/OrdersController";
+import { createOrder, getOrder, orderDetailsForCustomer, orderListForCustomer, ordersListForAdmin, ordersListForAdmin_filter, updateOrderStatus } from "../controllers/OrdersController";
 import user_jwt from "../middlewares/user_jwt";
 import validateRequest from "../middlewares/validate_request";
 import { paginationQuery } from "../schemas/common.schema";
@@ -28,6 +28,12 @@ router.get(
     "/for_customer",
     user_jwt,
     orderListForCustomer
+);
+
+router.get(
+    "/details_for_customer/:userId",
+    // user_jwt,
+    orderDetailsForCustomer
 );
 
 router.get(

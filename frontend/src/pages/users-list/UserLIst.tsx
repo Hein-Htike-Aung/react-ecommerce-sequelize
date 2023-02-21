@@ -21,6 +21,7 @@ import ContentTitle from "../../components/layout/content-title/ContentTitle";
 import OutlinedButton from "../../components/form/outlined-button/OutlinedButton";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import "./user-list.scss";
+import { paginateRecords, paginationCount } from "../../utils/pagination";
 
 const UserLIst = () => {
   const navigate = useNavigate();
@@ -55,7 +56,22 @@ const UserLIst = () => {
     setFetching(false);
   };
 
-  const searchCustomer = async (searchValue: string) => {};
+  const searchCustomer = async (searchValue: string) => {
+    if (searchValue) {
+      searchValue = searchValue.toLowerCase();
+
+      const filteredUsers = users.filter(
+        (u) =>
+          u.fullName.toLowerCase().indexOf(searchValue) >= 0 ||
+          u.email.toLowerCase().indexOf(searchValue) >= 0 ||
+          u.gender.toLowerCase().indexOf(searchValue) >= 0 ||
+          u.phone.toLowerCase().indexOf(searchValue) >= 0
+      );
+
+      setUsers(() => paginateRecords(currentPage, filteredUsers));
+      setUsersCount(paginationCount(filteredUsers));
+    } else fetchAllUsers(1);
+  };
 
   return (
     <div className="customer_list">

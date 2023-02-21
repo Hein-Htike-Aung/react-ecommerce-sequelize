@@ -10,6 +10,7 @@ import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import Toolbar from "@mui/material/Toolbar";
+import CardMembershipIcon from '@mui/icons-material/CardMembership';
 import Typography from "@mui/material/Typography";
 import { NavLink } from "react-router-dom";
 import "./sidebar.scss";
@@ -41,6 +42,11 @@ const Sidebar = () => {
       name: "NewLetters",
       icons: <EmailOutlinedIcon />,
       route: "/newLetter-list",
+    },
+    {
+      name: "Subscribers",
+      icons: <CardMembershipIcon />,
+      route: "/subscribers-list",
     },
     { name: "Settings", icons: <SettingsOutlinedIcon />, route: "/settings" },
   ];

@@ -48,25 +48,6 @@ app.use("/api/v1/rating", RatingRoute);
 app.use("/api/v1/orders", OrdersRoute);
 app.use("/api/v1/admin_dashboard", AdminDashboardRoute);
 
-// interface IPhoto {
-//   albumId: number;
-//   id: number;
-//   title: string;
-//   url: string;
-//   thumbnailUrl: string;
-// }
-
-// app.get("/", async (req: any, res: any) => {
-//   const data = await restoreCache<IPhoto[], IPhoto | null>("photos", async () => {
-//     const { data } = await axios.get(
-//       `https://jsonplaceholder.typicode.com/photos`
-//     );
-//     return data as IPhoto[];
-//   });
-
-//   res.json(data);
-// });
-
 app.use(notFound);
 app.use(errorHandler);
 

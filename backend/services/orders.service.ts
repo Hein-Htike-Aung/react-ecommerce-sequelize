@@ -99,21 +99,20 @@ class OrdersService {
   static map_order_list = async (orders: Orders[]) => {
     await Promise.all(
       orders.map(async (o: IOrderList | Orders) => {
-        const q = `select sum(p.sale_price * oi.quantity) as itemPrice, sum(oi.quantity) as totalQuantity 
+        const q = `select p.*, sum(p.sale_price * oi.quantity) as itemPrice, sum(oi.quantity) as totalQuantity 
                     from order_item oi
                     inner join product p
                     on p.id = oi.productId
                     where oi.orderId = ?
                     group by oi.orderId`;
 
-        const [{ itemPrice, totalQuantity }] = await sequelize.query(q, {
+        const orderDetails = await sequelize.query(q, {
           replacements: [o.id],
           raw: true,
           type: QueryTypes.SELECT,
         });
 
-        (o as IOrderList)["price"] = itemPrice;
-        (o as IOrderList)["totalQuantity"] = totalQuantity;
+        (o as IOrderList)["orderDetails"] = orderDetails;
       })
     );
   };

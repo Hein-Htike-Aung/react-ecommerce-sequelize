@@ -96,7 +96,7 @@ const UserList = () => {
                   }}
                 >
                   <TableCell>
-                    <div className="usernameRow">
+                    <div className="userRow">
                       <img
                         className="userImg"
                         src={row.img || "./user-profile.png"}

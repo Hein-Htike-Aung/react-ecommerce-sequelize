@@ -57,7 +57,7 @@ const CategoryList = () => {
           c.parentCategoryName.toLowerCase().indexOf(searchValue) >= 0
       );
 
-      setCategories((prev) => paginateRecords(currentPage, filteredCategories));
+      setCategories(() => paginateRecords(currentPage, filteredCategories));
       setCategoriesCount(paginationCount(filteredCategories));
     } else fetchAllCategories(1);
   };
