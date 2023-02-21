@@ -93,6 +93,7 @@ export const updateOrderStatus: ReqHandler = async (
   req: Request,
   res: Response
 ) => {
+  const transaction = await sequelize.transaction();
   try {
     const orderId = get(req.params, "orderId");
     const { status } = req.body;
@@ -109,11 +110,14 @@ export const updateOrderStatus: ReqHandler = async (
         where: {
           id: orderId,
         },
+        transaction,
       }
     );
 
+    await transaction.commit();
     successResponse(res, 200, "Order status has been updated");
   } catch (error) {
+    await transaction.rollback();
     handleError(res, error);
   }
 };

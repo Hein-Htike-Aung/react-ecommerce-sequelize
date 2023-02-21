@@ -166,6 +166,7 @@ export const toggle_isFeatured: ReqHandler = async (
   req: Request,
   res: Response
 ) => {
+  const transaction = await sequelize.transaction();
   try {
     const id = get(req.params, "productId");
     const { isFeatured } = req.body;
@@ -182,6 +183,7 @@ export const toggle_isFeatured: ReqHandler = async (
         where: {
           id,
         },
+        transaction,
       }
     );
 
@@ -190,10 +192,12 @@ export const toggle_isFeatured: ReqHandler = async (
 
     if (!updatedProduct) return errorResponse(res, 404, "Product not found");
 
+    await transaction.commit();
     await ProductCache.updateProduct(updatedProduct);
 
     successResponse(res, 202, "Product is_featured status has been updated");
   } catch (error) {
+    transaction.rollback();
     handleError(res, error);
   }
 };
@@ -202,6 +206,7 @@ export const deleteProduct: ReqHandler = async (
   req: Request,
   res: Response
 ) => {
+  const transaction = await sequelize.transaction();
   try {
     const id = get(req.params, "productId");
 
@@ -209,7 +214,7 @@ export const deleteProduct: ReqHandler = async (
 
     if (!product) return errorResponse(res, 404, "Product not found");
 
-    await Product.destroy({ where: { id } });
+    await Product.destroy({ where: { id }, transaction });
 
     const productImages = await ProductImage.findAll({
       where: { productId: id },
@@ -218,14 +223,16 @@ export const deleteProduct: ReqHandler = async (
 
     await Promise.all(
       productImages.map(async ({ id }) => {
-        await ProductImage.destroy({ where: { id } });
+        await ProductImage.destroy({ where: { id }, transaction });
       })
     );
 
+    await transaction.commit();
     ProductCache.removeProduct(+id);
 
     successResponse(res, 202, "Product has been deleted");
   } catch (error) {
+    await transaction.rollback();
     handleError(res, error);
   }
 };

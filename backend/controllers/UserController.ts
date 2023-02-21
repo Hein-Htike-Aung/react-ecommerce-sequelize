@@ -49,6 +49,7 @@ export const createUser: ReqHandler = async (req: Request, res: Response) => {
 };
 
 export const updateUser: ReqHandler = async (req: Request, res: Response) => {
+  const transaction = await sequelize.transaction();
   try {
     const { userId } = req.user;
 
@@ -57,16 +58,18 @@ export const updateUser: ReqHandler = async (req: Request, res: Response) => {
     if (!user) return errorResponse(res, 404, "User not found");
 
     // Name, phone, gender, about, img
-    await User.update({ ...req.body }, { where: { id: userId } });
+    await User.update({ ...req.body }, { where: { id: userId }, transaction });
 
     const updatedUser = await User.findByPk(userId);
 
     if (!updatedUser) return errorResponse(res, 404, "User not found");
 
+    await transaction.commit();
     await UserCache.updateUser(updatedUser);
 
     successResponse(res, 200, "Account has been updated");
   } catch (error) {
+    transaction.rollback();
     handleError(res, error);
   }
 };
@@ -104,6 +107,7 @@ export const toggleUserStatus: ReqHandler = async (
   req: Request,
   res: Response
 ) => {
+  const transaction = await sequelize.transaction();
   try {
     const id = get(req.params, "userId");
     const { status } = req.body;
@@ -112,7 +116,7 @@ export const toggleUserStatus: ReqHandler = async (
 
     if (!user) return errorResponse(res, 404, "User not found");
 
-    await User.update({ status }, { where: { id } });
+    await User.update({ status }, { where: { id }, transaction });
 
     successResponse(
       res,
@@ -124,8 +128,10 @@ export const toggleUserStatus: ReqHandler = async (
 
     if (!updatedUser) return errorResponse(res, 404, "User not found");
 
+    await transaction.commit();
     await UserCache.updateUser(updatedUser);
   } catch (error) {
+    await transaction.rollback();
     handleError(res, error);
   }
 };

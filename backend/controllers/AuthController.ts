@@ -9,6 +9,7 @@ import handleError from "../utils/handleError";
 import User from "../models/user";
 import UserService from "../services/user.service";
 import UserCache from "../cache/user.cache";
+import { sequelize } from "../models";
 
 export const userLogin: ReqHandler = async (req: Request, res: Response) => {
   try {
@@ -47,6 +48,7 @@ export const changeUserPassword: ReqHandler = async (
   req: Request,
   res: Response
 ) => {
+  const transaction = await sequelize.transaction();
   try {
     const { oldPassword, newPassword } = req.body;
 
@@ -63,8 +65,6 @@ export const changeUserPassword: ReqHandler = async (
 
     if (!loggedInUser) return errorResponse(res, 404, "User not found");
 
-    console.log(oldPassword);
-
     if (!bcrypt.compareSync(oldPassword, loggedInUser.password)) {
       return errorResponse(res, 403, "Enter correct password");
     }
@@ -74,18 +74,22 @@ export const changeUserPassword: ReqHandler = async (
     );
     const hashedPassword = bcrypt.hashSync(newPassword, salt);
 
-    await User.update({ password: hashedPassword }, { where: { id: userId } });
+    await User.update(
+      { password: hashedPassword },
+      { where: { id: userId }, transaction }
+    );
 
     const updatedUser = await User.findByPk(userId);
 
     if (!updatedUser) return errorResponse(res, 404, "User not found");
 
+    await transaction.commit();
     await UserCache.updateUser(updatedUser);
     await UserCache.modifyUser(updatedUser.id, updatedUser);
 
     successResponse(res, 200, "Password has been updated");
   } catch (error) {
-    console.log(error);
+    await transaction.rollback();
     handleError(res, error);
   }
 };

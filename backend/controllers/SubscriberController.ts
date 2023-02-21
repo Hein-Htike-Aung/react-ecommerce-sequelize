@@ -48,6 +48,7 @@ export const deleteSubscribe: ReqHandler = async (
   req: Request,
   res: Response
 ) => {
+  const transaction = await sequelize.transaction();
   try {
     const id = get(req.params, "subscriberId");
     const { userId } = req.user;
@@ -66,12 +67,14 @@ export const deleteSubscribe: ReqHandler = async (
     if (subscriber.email !== loggedInUser.email)
       return errorResponse(res, 403, "Unauthorized");
 
-    await Subscriber.destroy({ where: { id } });
+    await Subscriber.destroy({ where: { id }, transaction });
 
+    await transaction.commit();
     await SubscriberCache.deleteSubscriber(+id);
 
     successResponse(res, 200, "Unsubscribed");
   } catch (error) {
+    await transaction.rollback();
     handleError(res, error);
   }
 };

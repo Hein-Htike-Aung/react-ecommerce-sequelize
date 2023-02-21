@@ -62,6 +62,7 @@ export const updateCategory: ReqHandler = async (
   req: Request,
   res: Response
 ) => {
+  const transaction = await sequelize.transaction();
   try {
     const id = get(req.params, "categoryId");
 
@@ -84,16 +85,18 @@ export const updateCategory: ReqHandler = async (
     if (isDuplicate<Category>(existingCategory, id))
       return errorResponse(res, 403, "Category already exists");
 
-    await Category.update({ ...req.body }, { where: { id } });
+    await Category.update({ ...req.body }, { where: { id }, transaction });
 
     const updatedCategory = await CategoryService.getCategoryQuery(+id);
 
+    await transaction.commit();
     await CategoryCache.updateCategory({
       ...updatedCategory,
     } as CategoryWithParentCategory);
 
     successResponse(res, 200, "Category has been updated");
   } catch (error) {
+    await transaction.rollback();
     handleError(res, error);
   }
 };
@@ -102,18 +105,21 @@ export const deleteCategory: ReqHandler = async (
   req: Request,
   res: Response
 ) => {
+  const transaction = await sequelize.transaction();
   try {
     const id = get(req.params, "categoryId");
 
     const category = await CategoryService.getCategory(+id);
     if (!category) return errorResponse(res, 404, "Category not found");
 
-    await Category.destroy({ where: { id } });
+    await Category.destroy({ where: { id }, transaction });
 
+    await transaction.commit();
     await CategoryCache.deleteCategory(+id);
 
     successResponse(res, 200, "Category has been deleted");
   } catch (error) {
+    await transaction.rollback();
     handleError(res, error);
   }
 };
