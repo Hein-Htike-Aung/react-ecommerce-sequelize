@@ -1,4 +1,4 @@
-seeders/*.js
-migrations/*.js
-models/index.ts
-config/*.js
+src/seeders/*.js
+src/migrations/*.js
+src/models/index.ts
+src/config/*.js

@@ -5,7 +5,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "tsnd --respawn index.ts",
+    "dev": "tsnd --respawn src/index.ts",
     "build": "npx tsc"
   },
   "keywords": [],
