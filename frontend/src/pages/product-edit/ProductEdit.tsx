@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./product-edit.scss";
 import "react-quill/dist/quill.snow.css";
 import ReactQuill from "react-quill";
@@ -21,6 +21,8 @@ import OutlinedButton from "../../components/form/outlined-button/OutlinedButton
 import ContainedButton from "../../components/form/contained-button/ContainedButton";
 import { toast } from "react-toastify";
 import uploadImg from "../../utils/uploadImg";
+import useJWT from "../../hooks/useJWT";
+import { AxiosInstance } from "axios";
 
 const sizes = ["XS", "SM", "LG", "XL", "XXL", "Free"];
 const tags = ["New", "Sale", "Featured", "Top", "Best"];
@@ -50,6 +52,8 @@ type FormValues = {
 const ProductEdit = () => {
   const { id: productId } = useParams();
   const navigate = useNavigate();
+  const axiosJWT = useJWT();
+  const jwtReq = useRef<AxiosInstance>(axiosJWT);
 
   const [product, setProduct] = useState<Product>();
   const [dragActive, setDragActive] = useState(false);
@@ -82,7 +86,7 @@ const ProductEdit = () => {
 
   // functions
   const fetchProduct = async (id: number) => {
-    const res = await axiosInstance.get(`/products/by_id/${id}`);
+    const res = await jwtReq.current.get(`/products/by_id/${id}`);
 
     setProduct(res.data.data);
   };
@@ -94,7 +98,7 @@ const ProductEdit = () => {
 
   useEffect(() => {
     const fetchParentCategories = async () => {
-      const res = await axiosInstance.get("/categories/parent_category_list");
+      const res = await jwtReq.current.get("/categories/parent_category_list");
       setParentCategories(res.data.data);
     };
 
@@ -228,7 +232,7 @@ const ProductEdit = () => {
             // All Images are complete uploading
             if (idx === files.length - 1) {
               try {
-                const res = await axiosInstance.patch(
+                const res = await jwtReq.current.patch(
                   `/products/update/${productId}`,
                   {
                     ...formValues,
@@ -263,7 +267,7 @@ const ProductEdit = () => {
         setLoading(true);
 
         try {
-          const res = await axiosInstance.patch(
+          const res = await jwtReq.current.patch(
             `/products/update/${productId}`,
             {
               ...formValues,
@@ -299,7 +303,7 @@ const ProductEdit = () => {
           // All Images are complete uploading
           if (idx === files.length - 1) {
             try {
-              const res = await axiosInstance.post(`/products/create`, {
+              const res = await jwtReq.current.post(`/products/create`, {
                 ...formValues,
                 regular_price: Number(formValues.regular_price),
                 sale_price: Number(formValues.sale_price),

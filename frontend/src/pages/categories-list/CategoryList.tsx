@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import OutlinedButton from "../../components/form/outlined-button/OutlinedButton";
 import ContentTitle from "../../components/layout/content-title/ContentTitle";
 import { Category } from "../../models/category.model";
-import { axiosInstance } from "../../utils/axiosInstance";
 import TableBody from "@mui/material/TableBody";
 import Table from "@mui/material/Table";
 import TableCell from "@mui/material/TableCell";
@@ -13,7 +12,6 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import CreateIcon from "@mui/icons-material/Create";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
-import "./category-list.scss";
 import { Pagination } from "@mui/material";
 import ConfirmDialog from "../../components/widgets/confirm-dialog/ConfirmDialog";
 import { toast } from "react-toastify";
@@ -22,6 +20,9 @@ import AddIcon from "@mui/icons-material/Add";
 import TableSkeleton from "../../components/form/TableSkeleton";
 import { StyledTableCell } from "../../components/form/StyledTableCell";
 import { paginateRecords, paginationCount } from "../../utils/pagination";
+import useJWT from "../../hooks/useJWT";
+import { AxiosInstance } from "axios";
+import "./category-list.scss";
 
 const CategoryList = () => {
   const navigate = useNavigate();
@@ -31,6 +32,8 @@ const CategoryList = () => {
   const [fetching, setFetching] = useState(false);
   const [open, setOpen] = React.useState(false);
   const [targetCategory, setTargetCategory] = useState<Category>();
+  const axiosJWT = useJWT();
+  const jwtReq = useRef<AxiosInstance>(axiosJWT);
 
   useEffect(() => {
     fetchAllCategories(currentPage);
@@ -38,7 +41,7 @@ const CategoryList = () => {
 
   const fetchAllCategories = async (currentPage: number) => {
     setFetching(true);
-    const res = await axiosInstance.get(`/categories/list`);
+    const res = await jwtReq.current.get(`/categories/list`);
 
     if (res.data.data) {
       setCategories(paginateRecords(currentPage, res.data.data));
@@ -69,7 +72,7 @@ const CategoryList = () => {
 
   const confirmDelete = async () => {
     if (targetCategory) {
-      const res = await axiosInstance.delete(
+      const res = await jwtReq.current.delete(
         `/categories/delete/${targetCategory.id}`
       );
 

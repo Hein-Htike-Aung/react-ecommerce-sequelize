@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import {
   Pagination,
@@ -18,6 +18,8 @@ import TableSkeleton from "../../form/TableSkeleton";
 import { StyledTableCell } from "../../form/StyledTableCell";
 import ConfirmDialog from "../confirm-dialog/ConfirmDialog";
 import "./user_list.scss";
+import useJWT from "../../../hooks/useJWT";
+import { AxiosInstance } from "axios";
 
 const UserList = () => {
   const [userCount, setUsersCount] = useState(0);
@@ -27,6 +29,10 @@ const UserList = () => {
   const [open, setOpen] = React.useState(false);
   const [targetUser, setTargetUser] = useState<User>();
 
+  const axiosJWT = useJWT();
+  const jwtReq = useRef<AxiosInstance>(axiosJWT);
+
+
   useEffect(() => {
     fetchAllUsers(currentPage);
   }, [currentPage]);
@@ -35,7 +41,7 @@ const UserList = () => {
   const fetchAllUsers = async (currentPage: number) => {
     setFetching(true);
 
-    const res = await axiosInstance.get(
+    const res = await jwtReq.current.get(
       `/users/list?page=${currentPage - 1}&pageSize=10`
     );
 
@@ -60,7 +66,7 @@ const UserList = () => {
 
   const confirmDelete = async () => {
     if (targetUser) {
-      const res = await axiosInstance.delete(`/users/delete/${targetUser.id}`);
+      const res = await jwtReq.current.delete(`/users/delete/${targetUser.id}`);
 
       if (res.status === 202) {
         toast.success("User deleted");

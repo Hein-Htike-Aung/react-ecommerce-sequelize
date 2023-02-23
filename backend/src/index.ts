@@ -6,8 +6,6 @@ import process from "node:process";
 // import fs from "node:fs";
 
 import app from "./app";
-import redis from "./config/redis";
-import db from "./models";
 import logger from "./utils/logger";
 import http from "http";
 

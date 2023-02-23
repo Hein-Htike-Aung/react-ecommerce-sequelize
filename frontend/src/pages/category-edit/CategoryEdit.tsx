@@ -1,13 +1,14 @@
-import React, { useEffect, useState } from "react";
+import { AxiosInstance } from "axios";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import ContainedButton from "../../components/form/contained-button/ContainedButton";
 import ContentTitle from "../../components/layout/content-title/ContentTitle";
 import ImageUploadCard from "../../components/widgets/image-upload-card/ImageUploadCard";
+import useJWT from "../../hooks/useJWT";
 import { Category } from "../../models/category.model";
 import { ParentCategory } from "../../models/parentCategory.model";
-import { axiosInstance } from "../../utils/axiosInstance";
 import uploadImg from "../../utils/uploadImg";
 import "./category-edit.scss";
 
@@ -21,6 +22,8 @@ type FormValues = {
 const CategoryEdit = () => {
   let { id: categoryId } = useParams();
   const navigate = useNavigate();
+  const axiosJWT = useJWT();
+  const jwtReq = useRef<AxiosInstance>(axiosJWT);
 
   const [category, setCategory] = useState<Category>();
   const [file, setFile] = useState<any>(null);
@@ -39,7 +42,7 @@ const CategoryEdit = () => {
 
   // functions
   const fetchCategory = async (id: number) => {
-    const res = await axiosInstance.get(`/categories/by_id/${id}`);
+    const res = await jwtReq.current.get(`/categories/by_id/${id}`);
 
     setCategory(res.data.data);
   };
@@ -65,7 +68,7 @@ const CategoryEdit = () => {
 
   useEffect(() => {
     const fetchParentCategories = async () => {
-      const res = await axiosInstance.get("/categories/parent_category_list");
+      const res = await jwtReq.current.get("/categories/parent_category_list");
 
       setParentCategories(res.data.data);
     };
@@ -81,7 +84,7 @@ const CategoryEdit = () => {
         setLoading(true);
         uploadImg(file, async (downloadURL) => {
           try {
-            const res = await axiosInstance.patch(
+            const res = await jwtReq.current.patch(
               `/categories/update/${categoryId}`,
               {
                 ...formValues,
@@ -100,7 +103,7 @@ const CategoryEdit = () => {
       } else {
         try {
           setLoading(true);
-          const res = await axiosInstance.patch(
+          const res = await jwtReq.current.patch(
             `/categories/update/${categoryId}`,
             {
               ...formValues,
@@ -122,7 +125,7 @@ const CategoryEdit = () => {
 
         uploadImg(file, async (downloadURL) => {
           try {
-            const res = await axiosInstance.post(`/categories/create`, {
+            const res = await jwtReq.current.post(`/categories/create`, {
               ...formValues,
               parentCategoryId: Number(formValues.parentCategoryId),
               img: downloadURL,

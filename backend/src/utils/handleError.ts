@@ -1,5 +1,4 @@
 import { Response } from "express";
-import { ValidationError } from "sequelize";
 
 const handleError = (res: Response, errors: unknown) => {
   res.status(500).json({

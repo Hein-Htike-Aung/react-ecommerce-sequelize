@@ -1,5 +1,5 @@
 import { InputAdornment, MenuItem, Select, TextField } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import ContainedButton from "../../form/contained-button/ContainedButton";
 import "./add_user.scss";
 import PersonIcon from "@mui/icons-material/Person";
@@ -11,8 +11,9 @@ import VerifiedUserIcon from "@mui/icons-material/VerifiedUser";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import useYupValidationResolver from "../../../hooks/useYupValidationResolver";
-import { axiosInstance } from "../../../utils/axiosInstance";
 import { toast } from "react-toastify";
+import useJWT from "../../../hooks/useJWT";
+import { AxiosInstance } from "axios";
 
 type FormValues = {
   fullName: string;
@@ -25,6 +26,9 @@ type FormValues = {
 
 const AddUser = () => {
   const [loading, setLoading] = useState(false);
+  const axiosJWT = useJWT();
+  const jwtReq = useRef<AxiosInstance>(axiosJWT);
+
 
   const formSchema = yup.object().shape({
     fullName: yup.string().required(),
@@ -63,7 +67,7 @@ const AddUser = () => {
   // form submit
   const submitHandler = async (formValues: FormValues) => {
     try {
-      const res = await axiosInstance.post(`/users/create`, { ...formValues });
+      const res = await jwtReq.current.post(`/users/create`, { ...formValues });
 
       if (res.status === 201) {
         toast.success("Successfully added");

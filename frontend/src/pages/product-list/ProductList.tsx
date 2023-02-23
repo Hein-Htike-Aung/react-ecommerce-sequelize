@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import OutlinedButton from "../../components/form/outlined-button/OutlinedButton";
 import ContentTitle from "../../components/layout/content-title/ContentTitle";
@@ -28,6 +28,8 @@ import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import numberWithComma from "../../utils/numberWithComma";
 import { truncate } from "lodash";
 import Rating from "@mui/material/Rating";
+import useJWT from "../../hooks/useJWT";
+import { AxiosInstance } from "axios";
 
 const ProductList = () => {
   const navigate = useNavigate();
@@ -37,6 +39,8 @@ const ProductList = () => {
   const [fetching, setFetching] = useState(false);
   const [open, setOpen] = React.useState(false);
   const [targetProduct, setTargetProduct] = useState<Product>();
+  const axiosJWT = useJWT();
+  const jwtReq = useRef<AxiosInstance>(axiosJWT);
 
   // useEffect
   useEffect(() => {
@@ -46,7 +50,7 @@ const ProductList = () => {
   // axios functions
   const searchProduct = async (searchValue: string) => {
     if (searchValue) {
-      const res = await axiosInstance.get(
+      const res = await jwtReq.current.get(
         `products/by_productName?productName=${searchValue}&page=${
           currentPage - 1
         }&pageSize=10`
@@ -59,7 +63,7 @@ const ProductList = () => {
 
   const fetchAllProducts = async (currentPage: number) => {
     setFetching(true);
-    const res = await axiosInstance.get(
+    const res = await jwtReq.current.get(
       `/products/list?page=${currentPage - 1}&pageSize=10`
     );
 
@@ -77,7 +81,7 @@ const ProductList = () => {
   // functions
   const confirmDelete = async () => {
     if (targetProduct) {
-      const res = await axiosInstance.delete(
+      const res = await jwtReq.current.delete(
         `/products/delete/${targetProduct.id}`
       );
 
@@ -90,7 +94,7 @@ const ProductList = () => {
   };
 
   const toggleIsFeatured = async (id: number, isFeatured: boolean) => {
-    const res = await axiosInstance.patch(
+    const res = await jwtReq.current.patch(
       `/products/update_is_featured/${id}`,
       { isFeatured }
     );

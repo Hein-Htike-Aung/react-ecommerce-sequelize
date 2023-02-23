@@ -1,9 +1,8 @@
 @import "../../assets/index";
 
 .categoryList {
-  min-height: calc(100vh - 130px);
-
   .categoryListWrapper {
+    min-height: calc(100vh - 130px);
     padding: 20px;
 
     @include themify($themes) {

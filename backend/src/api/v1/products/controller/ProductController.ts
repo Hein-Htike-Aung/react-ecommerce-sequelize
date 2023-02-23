@@ -6,7 +6,6 @@ import ProductCache from "../cache/product.cache";
 import { sequelize } from "../../../../models";
 import Product, {
   ProductWithImages,
-  ProductWithRate,
 } from "../../../../models/product";
 import ProductImage from "../../../../models/productimage";
 import ProductService from "../services/product.service";
@@ -16,7 +15,6 @@ import getPaginationData from "../../../../utils/getPaginationData";
 import handleError from "../../../../utils/handleError";
 import isDuplicate from "../../../../utils/isDuplicate";
 import successResponse from "../../../../utils/successResponse";
-import RatingService from "../services/rating.service";
 
 export const createProduct: ReqHandler = async (
   req: Request,
